@@ -151,7 +151,7 @@ emails:
     hello: Hello
     sincerely: Sincerely
     thank: 'Thank you'
-    team: "The Finoptia Team"
+    team: "The GDB consulting Team"
     all_rights: 'All rights reserved'
     yousign:
         notify_signer: { title: 'You have a document to sign', text_document: 'Document title: %documentName%', text_link: 'here is the link to sign the document: %link%' }

@@ -169,7 +169,7 @@ emails:
     hello: Bonjour
     sincerely: Cordialement
     thank: Merci
-    team: "L'équipe de Finoptia"
+    team: "L'équipe de GDB consulting"
     all_rights: 'Tous droits réservés'
     yousign:
         notify_signer: { title: 'Vous avez un document à signer', text_document: 'Titre du document: %documentName%', text_link: 'Voici le lien pour signer le document: %link%' }
