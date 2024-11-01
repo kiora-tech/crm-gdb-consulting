@@ -12,10 +12,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
-
+use Symfony\Contracts\Translation\TranslatorInterface;
+use App\Form\UserProfilType;
 #[Route('/user')]
 class UserController extends AbstractController
 {
+    public function __construct(
+       private readonly TranslatorInterface $translator,
+    ) {
+    }
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
@@ -93,12 +98,33 @@ class UserController extends AbstractController
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }
     #[Route('/edit/profile', name: 'app_user_profile', methods: ['GET', 'POST'])]
-    public function profile(): void
+    public function profile(Request $request, EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();
         if (!$user instanceof User) {
             throw new \LogicException('User is not valid');
         }
+    
+        // Render the profile template directly, without redirecting
+        return $this->render('user/profile.html.twig', [
+            'form' => $this->createForm(UserProfilType::class, $user)->createView(),
+        ]);
+    }
+    
 
+    #[Route('/profile/delete-picture', name: 'app_user_delete_profile_picture', methods: ['POST'])]
+    public function deleteProfilePicture(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw new \LogicException('User not found');
+        }
+
+        $user->setProfilePicture(null);
+        $entityManager->flush();
+
+        $this->addFlash('success', $this->translator->trans('flash_message.profile_updated.deleted_profile_picture', [], 'messages'));
+
+        return $this->redirectToRoute('app_user_profile');
     }
 }

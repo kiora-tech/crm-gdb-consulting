@@ -12,7 +12,7 @@
                         {% else %}
                             <img src="{{ asset('img/default_user.png') }}" alt="" class="rounded-circle">
                         {% endif %}
-                        <h2>{{ app.user.fullName }}</h2>
+                    {#    <h2>{{ app.user.fullName }}</h2>  #}
                         <h3>{{ app.user.company.name }}</h3>
                     </div>
                 </div>
@@ -60,7 +60,7 @@
                                 </div>
                             </div>
                             <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
-                                {{ form_start(form) }}
+                                 {{ form_start(form) }}
                                 <div class="row mb-3">
                                     {{ form_label(form.lastName, 'update_profile.last_name'|trans, {'label_attr': {'class': 'col-md-4 col-lg-3 col-form-label'}}) }}
                                     <div class="col-md-8 col-lg-9">
@@ -110,7 +110,7 @@
                                 {% endif %}
                             </div>
                             <div class="tab-pane fade pt-3" id="profile-change-password">
-                                {{ form_start(passwordForm) }}
+                                {#  {{ form_start(passwordForm) }}
                                 <div class="row mb-3">
                                     {{ form_label(passwordForm.currentPassword, 'update_profile.current_password'|trans, {'label_attr': {'class': 'col-md-4 col-lg-3 col-form-label'}}) }}
                                     <div class="col-md-8 col-lg-9">
@@ -133,9 +133,9 @@
                                     <button type="submit"
                                             class="btn btn-primary">{{ 'update_profile.submit_password_change'|trans }}</button>
                                 </div>
-                                {{ form_end(passwordForm) }}
+                                {{ form_end(passwordForm) }}#}
                             </div>
-                            <div class="tab-pane fade pt-3" id="profile-2fa">
+                            {# <div class="tab-pane fade pt-3" id="profile-2fa">
                                 <div class="row mb-3">
                                     <div class="col-md-12">
                                         <p class="text-info">
@@ -143,7 +143,7 @@
                                         </p>
                                     </div>
                                     <div class="col-md-8 col-lg-9">
-                                        {% if app.user.isGoogleAuthenticatorEnabled %}
+                                         {% if app.user.isGoogleAuthenticatorEnabled %}
                                             <a href="{{ path('2fa_disable') }}" class="btn btn-outline-danger">
                                                 <i class="bi bi-dash"></i>
                                                 {{ 'update_profile.2fa.disable_google'|trans }}
@@ -157,7 +157,7 @@
                                     </div>
                                 </div>
 
-                                {{ form_start(twoFactorForm) }}
+                                 {{ form_start(twoFactorForm) }}
                                 <div class="row mb-3">
                                     {{ form_label(twoFactorForm.isEmailAuthEnabled, 'update_profile.email_auth'|trans, {'label_attr': {'class': 'col-md-4 col-lg-3 col-form-label'}}) }}
                                     <div class="col-md-8 col-lg-9">
@@ -168,7 +168,7 @@
                                     <button type="submit"
                                             class="btn btn-primary">{{ 'update_profile.submit_changes'|trans }}</button>
                                 </div>
-                                {{ form_end(twoFactorForm) }}
+                                {{ form_end(twoFactorForm) }}#}
                             </div>
                         </div>
                     </div>
