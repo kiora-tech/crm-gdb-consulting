@@ -1,0 +1,105 @@
+<div class="pagetitle">
+    <h1>{{ "menu.customer"|trans }}</h1>
+</div>
+
+<section class="section">
+    <div class="card p-4">
+        <div class="card-body">
+            <!-- Début du formulaire -->
+            {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+            <div class="row">
+                <!-- Champ pour le nom -->
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.name, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Enter customer name'}}) }}
+                    {{ form_errors(form.name) }}
+                </div>
+
+                <!-- Champ pour L'origine du lead -->
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.leadOrigin, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.leadOrigin, {'attr': {'class': 'form-control', 'placeholder': 'Enter lead origin'}}) }}
+                    {{ form_errors(form.leadOrigin) }}
+                </div>
+            </div>
+
+            <!-- Gestion des Business Entities et Contacts en deux colonnes -->
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <h3>{{ 'customer.business_entities'|trans }}</h3>
+                    <div data-controller="form-collection" data-form-collection-index-value="{{ form.businessEntities|length }}" data-form-collection-template-value="{{ form_widget(form.businessEntities.vars.prototype)|e('html_attr') }}">
+                        <div data-form-collection-target="container">
+                            {% for businessEntityForm in form.businessEntities %}
+                                <div class="form-item mb-3 border p-3 rounded">
+                                    {{ form_row(businessEntityForm, {'attr': {'class': 'mb-3'}}) }}
+                                    <button type="button" class="btn btn-danger mt-2" data-action="form-collection#removeItem">{{ 'button.delete'|trans }}</button>
+                                </div>
+                            {% else %}
+                                {{ form(form.businessEntities) }}
+                            {% endfor %}
+                        </div>
+                        <button type="button" class="btn btn-secondary mt-3" data-action="form-collection#addItem">{{ 'customer.add_business_entity'|trans }}</button>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <h3>{{ 'customer.contacts'|trans }}</h3>
+                    <div data-controller="form-collection" data-form-collection-index-value="{{ form.contacts|length }}" data-form-collection-template-value="{{ form_widget(form.contacts.vars.prototype)|e('html_attr') }}">
+                        <div data-form-collection-target="container">
+                            {% for contactForm in form.contacts %}
+                                <div class="form-item mb-3 border p-3 rounded">
+                                    {{ form_row(contactForm, {'attr': {'class': 'mb-3'}}) }}
+                                    <button type="button" class="btn btn-danger mt-2" data-action="form-collection#removeItem">{{ 'button.delete'|trans }}</button>
+                                </div>
+                            {% else %}
+                                {{ form(form.contacts) }}
+                            {% endfor %}
+                        </div>
+                        <button type="button" class="btn btn-secondary mt-3" data-action="form-collection#addItem">{{ 'customer.add_contact'|trans }}</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestion des Energies et Prospects en deux colonnes -->
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <h3>{{ 'customer.energies'|trans }}</h3>
+                    <div data-controller="form-collection" data-form-collection-index-value="{{ form.energies|length }}" data-form-collection-template-value="{{ form_widget(form.energies.vars.prototype)|e('html_attr') }}">
+                        <div data-form-collection-target="container">
+                            {% for energyForm in form.energies %}
+                                <div class="form-item mb-3 border p-3 rounded">
+                                    {{ form_row(energyForm, {'attr': {'class': 'mb-3'}}) }}
+                                    <button type="button" class="btn btn-danger mt-2" data-action="form-collection#removeItem">{{ 'button.delete'|trans }}</button>
+                                </div>
+                            {% else %}
+                                {{ form(form.energies) }}
+                            {% endfor %}
+                        </div>
+                        <button type="button" class="btn btn-secondary mt-3" data-action="form-collection#addItem">{{ 'customer.add_energy'|trans }}</button>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <h3>{{ 'customer.prospects'|trans }}</h3>
+                    <div data-controller="form-collection" data-form-collection-index-value="{{ form.prospects|length }}" data-form-collection-template-value="{{ form_widget(form.prospects.vars.prototype)|e('html_attr') }}">
+                        <div data-form-collection-target="container">
+                            {% for prospectForm in form.prospects %}
+                                <div class="form-item mb-3 border p-3 rounded">
+                                    {{ form_row(prospectForm, {'attr': {'class': 'mb-3'}}) }}
+                                    <button type="button" class="btn btn-danger mt-2" data-action="form-collection#removeItem">{{ 'button.delete'|trans }}</button>
+                                </div>
+                            {% else %}
+                                {{ form(form.prospects) }}
+                            {% endfor %}
+                        </div>
+                        <button type="button" class="btn btn-secondary mt-3" data-action="form-collection#addItem">{{ 'customer.add_prospect'|trans }}</button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary mt-4">{{ button_label|default('Save') }}</button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</section>

@@ -1,0 +1,150 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ "menu.customer"|trans }}
+{% endblock %}
+
+{% block body %}
+    <div class="pagetitle">
+        <h1>{{ "menu.customer"|trans }}</h1>
+    </div>
+
+    <section class="section dashboard">
+        <div class="row">
+            <!-- Section Centrale avec les informations principales -->
+
+            <div class="col-lg-8">
+                <div class="row">
+                    <!-- Nouveau client card -->
+                    <div class="col-md-6">
+                        <div class="card info-card sales-card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ "menu.customer"|trans }}</h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-people"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6>{{ customer.name }}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Revenue card (Lead origin as an example) -->
+                    <div class="col-md-6">
+                        <div class="card info-card revenue-card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ "customer.lead_origin"|trans }}</h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-arrow-up-right-circle"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6>{{ customer.leadOrigin }}</h6> <!-- Origine du lead -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section Historique des signatures (Contracts/Energy Info) -->
+                    <div class="col-12">
+                        <div class="card recent-sales">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ "customer.contract_energies"|trans }}</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                        <tr class="table-primary">
+                                            <th scope="col" class="text-start">{{ "energy.provider"|trans }}</th>
+                                            <th scope="col" class="text-start">{{ "energy.type"|trans }}</th>
+                                            <th scope="col" class="text-start">{{ "energy.code"|trans }}</th>
+                                            <th scope="col" class="text-start">{{ "energy.expiry_date"|trans }}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for energy in customer.energies %}
+                                            <tr>
+                                                <td>{{ energy.provider }}</td>
+                                                <td>{{ energy.type }}</td>
+                                                <td>{{ energy.code }}</td>
+                                                <td>{{ energy.contractEnd ? energy.contractEnd|date('d/m/Y') : "-" }}</td>
+                                            </tr>
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="3" class="text-center">{{ "table.no_data"|trans }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section Contacts -->
+                    <div class="col-12">
+                        <div class="card recent-sales">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ "customer.contacts"|trans }}</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                        <tr class="table-primary">
+                                            <th scope="col" class="text-start">{{ "contact.name"|trans }}</th>
+                                            <th scope="col" class="text-start">{{ "contact.position"|trans }}</th>
+                                            <th scope="col" class="text-start">{{ "contact.email"|trans }}</th>
+                                            <th scope="col" class="text-start">{{ "contact.phone"|trans }}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for contact in customer.contacts %}
+                                            <tr>
+                                                <td>{{ contact.name }}</td>
+                                                <td>{{ contact.position }}</td>
+                                                <td><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></td>
+                                                <td><a href="tel:{{ contact.phone}}">{{ contact.phone}}</a></td>
+                                            </tr>
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="4" class="text-center">{{ "table.no_data"|trans }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="row card">
+                    <div class="card-body">
+                        <!-- Titre de la carte -->
+                        <h5 class="card-title">{{ "customer.siret_list"|trans }}</h5>
+
+                        <!-- Vérification si le client a des business entities associées -->
+                        {% if customer.businessEntities is not empty %}
+                            <!-- Liste des SIRETs dans une boucle -->
+                            <div class="list-group">
+                                {% for entity in customer.businessEntities %}
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <a href="https://www.pappers.fr/recherche?q={{ entity.siret }}" target="_blank">{{ "siret"|trans }}: {{ entity.siret }}</a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <!-- Message affiché s'il n'y a pas de SIRET -->
+                            <p>{{ "customer.no_siret"|trans }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

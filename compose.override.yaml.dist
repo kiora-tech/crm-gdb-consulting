@@ -37,9 +37,6 @@ services:
     networks:
       - kiora_network
       - user_app
-  #ngrok:
-  #  image: ngrok/ngrok:latest
-  #  entrypoint: ngrok http nginx:80 --host-header crm.kiora.tech --authtoken
 
 volumes:
   ###> symfony/mercure-bundle ###

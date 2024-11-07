@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ "customer.new"|trans }}
+{% endblock %}
+
+{% block body %}
+    <div class="pagetitle">
+        <h1>{{ "customer.new"|trans }}</h1>
+    </div>
+    <section class="section">
+        <div class="row">
+            <div class="card p-4">
+                <div class="card-body">
+                    {{ include('customer/_form.html.twig') }}
+                </div>
+
+                <a class="btn btn-primary mt-4" href="{{ path('app_customer_index') }}">{{ "button.back"|trans }}</a>
+                <div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

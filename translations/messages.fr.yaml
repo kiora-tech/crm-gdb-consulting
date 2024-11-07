@@ -18,6 +18,8 @@ menu:
   companies: Entreprises
   user: Utilisateur
   company: Entreprise
+  customer: Client
+  customers: Clients
   impersonate_exit: "Quitter l'usurpation"
   logout: Déconnexion
   login: Connexion
@@ -169,7 +171,7 @@ emails:
     hello: Bonjour
     sincerely: Cordialement
     thank: Merci
-    team: "L'équipe de Finoptia"
+    team: "L'équipe de GDB consulting"
     all_rights: 'Tous droits réservés'
     yousign:
         notify_signer: { title: 'Vous avez un document à signer', text_document: 'Titre du document: %documentName%', text_link: 'Voici le lien pour signer le document: %link%' }
@@ -858,3 +860,34 @@ flash_message:
     profile_updated:
         success: "Votre profil a été mis à jour avec succès."
         deleted_profile_picture: "Votre photo de profil a été supprimée avec succès."
+
+customer:
+  add_prospect: Ajouter un prospect
+  add_energy: Ajouter une énergie
+  add_contact: Ajouter un contact
+  add_business_entity: Ajouter une entité commerciale
+  prospects: Prospects
+  energies: Énergies
+  business_entities: Entités commerciales
+  no_siret: "Aucun SIRET trouvé"
+  contacts: Contacts
+  contract_energies: Contrat d'énergie
+  lead_origin: Origine du lead
+  siret_list: Liste des SIRET
+  edit: Modifier
+  new: Nouveau
+
+contact:
+  name: Nom
+  position: Poste
+  email: Email
+  phone: Téléphone
+
+energy:
+  provider: Fournisseur
+  type: Type
+  code: Code
+  expiry_date: Date d'expiration
+
+table:
+  no_data: Aucune donnée disponible
