@@ -19,6 +19,8 @@ class CustomerType extends AbstractType
             ->add('action')
             ->add('worth')
             ->add('commision')
+            ->add('margin')
+            ->add('companyGroup')
             ->add('contract', ChoiceType::class, [
                 'choices' => [
                     'Gagner' => 'Gagner',

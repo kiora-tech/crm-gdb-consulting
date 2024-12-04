@@ -60,6 +60,12 @@ class Customer
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $commision = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $margin = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $companyGroup = null;
+
     public function __construct()
     {
         $this->businessEntities = new ArrayCollection();
@@ -273,6 +279,30 @@ class Customer
     public function setCommision(?string $commision): static
     {
         $this->commision = $commision;
+
+        return $this;
+    }
+
+    public function getMargin(): ?string
+    {
+        return $this->margin;
+    }
+
+    public function setMargin(?string $margin): static
+    {
+        $this->margin = $margin;
+
+        return $this;
+    }
+
+    public function getCompanyGroup(): ?string
+    {
+        return $this->companyGroup;
+    }
+
+    public function setCompanyGroup(?string $companyGroup): static
+    {
+        $this->companyGroup = $companyGroup;
 
         return $this;
     }

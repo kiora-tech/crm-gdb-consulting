@@ -16,6 +16,8 @@ class EnergyType extends AbstractType
             ->add('code')    // Code de l'énergie ou du contrat
             ->add('provider')  // Fournisseur d'énergie
             ->add('contractEnd')  // Date de fin de contrat
+            ->add('power')
+            ->add('basePrice')
         ;
     }
 

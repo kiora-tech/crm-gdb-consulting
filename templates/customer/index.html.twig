@@ -22,61 +22,35 @@
 					</div>
 				</form>
 
-				<table class="table">
+				<table class="table" data-controller="table-header">
 					<thead class="bg-gray-50">
 						<tr class="table-primary">
-							<th scope="col" class="px-6 py-4 text-center">{{ "name"|trans }}</th>
-							<th scope="col" class="px-6 py-4 text-center">{{ "customer.siret"|trans }}</th>
-							<th scope="col" class="px-6 py-4 text-center">Status</th>
-							<th scope="col" class="px-6 py-4 text-center">{{ "comment"|trans }}</th>
-							<th scope="col" class="px-6 py-4 text-center">{{ "client.contact.label"|trans }}</th>
-							<th scope="col" class="px-6 py-4 text-center">{{ "button.actions"|trans }}</th>
+							<th scope="col" class="px-6 py-4 text-center" data-index="0" data-action="click->table-header#sort">{{ "name"|trans }}</th>
+							<th scope="col" class="px-6 py-4 text-center" data-index="1" data-action="click->table-header#sort">{{ "customer.siret"|trans }}</th>
+							<th scope="col" class="px-6 py-4 text-center" data-index="2" data-action="click->table-header#sort">Prix</th>
+							<th scope="col" class="px-6 py-4 text-center" data-index="3" data-action="click->table-header#sort">{{ "contract"|trans }}</th>
+							<th scope="col" class="px-6 py-4 text-center" data-index="4" data-action="click->table-header#sort">{{ "client.contact.label"|trans }}</th>
+							<th scope="col" class="px-6 py-4 text-center" data-index="5">{{ "button.actions"|trans }}</th>
 						</tr>
 					</thead>
 					<tbody class="bg-white divide-y divide-gray-200">
 						{% for customer in customers %}
-							<tr>
+							<tr data-table-header-target="row">
 								<td class="px-6 py-4 text-center">{{ customer.name }}</td>
 								<td class="px-6 py-4 text-center">
 									{% if customer.businessEntities is not empty %}
 										<div class="scrollable-container">
 											{% for entity in customer.businessEntities %}
-												<a href="https://www.pappers.fr/recherche?q={{ entity.siret }}" target="_blank">
-													{{ entity.siret }}
-												</a><br>
+												<a href="https://www.pappers.fr/recherche?q={{ entity.siret }}" target="_blank">{{ entity.siret }}</a><br>
 											{% endfor %}
 										</div>
 									{% else %}
 										{{ "customer.no_siret"|trans }}
 									{% endif %}
 								</td>
-								<td class="px-6 py-4 text-center">
-									<div class="scrollable-container">
-										{% for prospect in customer.prospects %}
-											{{ prospect.status }}<br>
-										{% else %}
-											{{ "table.no_data"|trans }}
-										{% endfor %}
-									</div>
-								</td>
-								<td class="px-6 py-4 text-center">
-									<div class="scrollable-container">
-										{% for prospect in customer.prospects %}
-											{{ prospect.comments }}<br>
-										{% else %}
-											{{ "table.no_data"|trans }}
-										{% endfor %}
-									</div>
-								</td>
-								<td class="px-6 py-4 text-center">
-									{% if customer.prospects is not empty %}
-										<div class="scrollable-container">
-											{{ customer.prospects[0].customer.leadOrigin }}
-										</div>
-									{% else %}
-										{{ "table.no_data"|trans }}
-									{% endif %}
-								</td>
+								<td class="px-6 py-4 text-center">{{ customer.worth|default("N/A") }}</td>
+								<td class="px-6 py-4 text-center">{{ customer.contract|default("N/A") }}</td>
+								<td class="px-6 py-4 text-center">{{ customer.prospects[0].customer.leadOrigin|default("N/A") }}</td>
 								<td class="px-6 py-4 text-right">
 									<a href="{{ path('app_customer_show', {'id': customer.id}) }}" class="btn btn-primary">{{ "button.show"|trans }}</a>
 									<a href="{{ path('app_customer_edit', {'id': customer.id}) }}" class="btn btn-primary">{{ "button.edit"|trans }}</a>

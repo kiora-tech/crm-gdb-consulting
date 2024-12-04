@@ -58,14 +58,13 @@ body, html {
         padding: 10px !important;
     }
 }
-@media (max-width: 1237px) {
-
 .buttonDisplay{
     display: flex;
     flex-direction: column;
     gap: 5px;
+    padding-bottom: 42px !important;
 }
-}
+
 
 
 [id^="customer_businessEntities_"],
