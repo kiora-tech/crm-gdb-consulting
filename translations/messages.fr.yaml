@@ -3,6 +3,8 @@ vich_uploader:
     delete_confirm: "Supprimer?"
   link:
     download: Télécharger
+ROLE_USER: Utilisateur
+ROLE_ADMIN: Admin
 Register: Inscription
 home:
   title: "Bienvenue sur notre site"
@@ -275,18 +277,6 @@ used: Utilisé
 createdBy: "Créé par"
 generatedAt: "Généré le"
 generatedBy: "Généré par"
-template.name.label: Nom
-template.file.label: Fichier
-template.mime_invalid: "Le fichier doit être un fichier de type Docx"
-template.new: "Nouveau modèle"
-template.edit: "Editer le modèle"
-template.index: "Liste des modèles"
-template.show: Visualiser
-template.modal.header: "Choisir un modèle"
-template.modal.close: Fermer
-template.btn.edit: Edition Rapide
-template.create_success: "Modèle créé avec succès"
-template.delete_success: "Modèle supprimé avec succès"
 client_access:
   login:
     create: { success: "Connexion client créée avec succès" }
@@ -393,310 +383,9 @@ dependent: "A charge"
 childOf: "Enfant de"
 beneficiary: Bénéficiaire
 annualAmount: "Montant annuel"
-client.form.previous: Précédent
-client.form.next: Suivant
-client.index: "Liste des clients"
-client.index_deleted: "Liste des clients supprimés"
-client.new: "Nouveau client"
-client.you: Vous
-client.choice_at.you: Vous
-client.choice_at.spouse: "Votre conjoint"
-client.choice_at.two: "Vous et votre conjoint"
-client.civility.label: Civilité
-client.civility.placeholder: "Sélectionnez votre civilité"
-client.civility.mr: Monsieur
-client.civility.mrs: Madame
-client.name.label: Nom
-client.birth_name.label: "Nom de naissance"
-client.first_name.label: Prénom
-client.birthdate.label: "Date de naissance"
-client.email.label: Email
-client.phone.label: Téléphone
-client.adress: Adresse
-client.contact.label: Contact
-client.children.add_button: "Ajouter un enfant"
-client.children.label: Enfants
-client.children.dependent: "A charge"
-client.children.child_of.label: "Enfant de"
-client.familial.label: "Situation familiale"
-client.patrimonial.label: "Situation patrimoniale"
-client.budget.label: Budget
-client.objectives.label: Objectifs
-client.adresse_number.label: "Numéro de l'adresse"
-client.adresse_street.label: "Rue de l'adresse"
-client.adresse_postal_code.label: "Code postal de l'adresse"
-client.adresse_city.label: "Ville de l'adresse"
-client.adresse_country.label: "Pays de l'adresse"
-client.adresse_country.placeholder: "Sélectionnez le pays de l'adresse"
-client.birthplace: "Lieu de naissance"
-client.spouse.label: Conjoint
-client.spouse.add: " du coinjoint"
-client.birthplace_postal_code.label: "Code postal du lieu de naissance"
-client.birthplace_city.label: "Ville du lieu de naissance"
-client.birthplace_country.label: "Pays du lieu de naissance"
-client.birthplace_country.placeholder: "Sélectionnez le pays de naissance"
-client.nationality.label: Nationalité
-client.handicap.label: "Personne handicapée"
-client.marital_situation.label: "Situation familiale"
-client.marital_situation.married: Marié
-client.marital_situation.pacsed: Pacsé
-client.marital_situation.divorced: Divorcé
-client.marital_situation.separated: Séparé
-client.marital_situation.single: Célibataire
-client.marital_situation.widowed: Veuf
-client.objective.saving_precaution: "Se constituer une épargne de précaution"
-client.objective.short_term_liquidity: "Placer des liquidités à court terme"
-client.objective.additional_income: "Obtenir des revenus complémentaires"
-client.objective.building_wealth: "Se constituer un patrimoine"
-client.objective.optimize_investments: "Optimiser la rentabilité de ses placements"
-client.objective.optimize_taxes: "Optimiser sa fiscalité"
-client.objective.reduce_ifi: "Réduire son IFI"
-client.objective.real_estate_purchase: "Financer un achat immobilier"
-client.objective.help_children: "Aider ses enfants"
-client.objective.protection_accidents: "Se prémunir contre les accidents de la vie"
-client.objective.protect_surviving_spouse: "Protéger le conjoint survivant"
-client.objective.protect_relatives: "Protéger ses proches"
-client.objective.prepare_retirement: "Préparer sa retraite"
-client.objective.prepare_heritage_transfer: "Préparer la transmission de son patrimoine"
-client.objective.prepare_business_transfer: "Préparer la transmission de son entreprise"
-client.job.label: Profession
-client.job_csp.label: "Catégorie socio-professionnelle"
-client.retirement_age.label: "Age de la retraite"
-client.liability.label: "Patrimoine – vos passifs "
-client.liability.nature.label: Nature
-client.liability.nature.home_loan: "Emprunt sur résidence principale"
-client.liability.nature.real_estate_loan: "Emprunt immobilier"
-client.liability.nature.professional_loan: "Emprunt professionnel"
-client.liability.nature.consumer_credit: "Crédit à la consommation"
-client.liability.nature.cash_advances: "Facilités de trésorerie"
-client.liability.nature.tax_debts: "Dettes fiscales"
-client.liability.nature.family_debts: "Dettes familiales"
-client.liability.nature.other_debts: "Autres dettes diverses"
-client.liability.loan_type.label: "Type de prêt"
-client.liability.loan_type.constant_installments: "Échéances constantes"
-client.liability.loan_type.constant_installments_excluding_insurance: "Échéances constantes (hors assur.)"
-client.liability.loan_type.bullet_loan: "In fine"
-client.liability.loan_type.non_amortizable_debt: "Dette non amortissable"
-client.liability.subscription_date: "Date de souscription"
-client.liability.borrowed_amount: "Montant emprunté"
-client.liability.duration: "Durée (mois)"
-client.liability.interest_rate: "Taux d'intérêt"
-client.liability.insurance_rate: "Taux d'assurance"
-client.liability.add_button: "Ajouter un passif"
-client.financial_asset.label: "Actifs financiers"
-client.financial_asset.add_button: "Ajouter un actif financier"
-client.financial_asset.category.label: Catégorie
-client.financial_asset.nature.label: Nature
-client.financial_asset.availability.label: "Disponibilités, épargne à moyen et long terme"
-client.financial_asset.availability.current_account: "Comptes courants"
-client.financial_asset.availability.savings_account: "Comptes sur livret (CSL)"
-client.financial_asset.availability.sustainable_development_booklet: "Livret de développement durable"
-client.financial_asset.availability.a_booklet: "Livrets A"
-client.financial_asset.availability.blue_booklet: "Livrets Bleus"
-client.financial_asset.availability.popular_savings_booklet: "Livrets d'épargne populaire (LEP)"
-client.financial_asset.availability.youth_booklet: "Livrets Jeune"
-client.financial_asset.availability.home_savings_account: CEL
-client.financial_asset.availability.term_account: "Comptes à terme"
-client.financial_asset.availability.associates_current_account: "Compte courant d'associés"
-client.financial_asset.availability.cash_bonds: "Bons de caisse"
-client.financial_asset.availability.other_availabilities: "Autres disponibilités"
-client.financial_asset.availability.home_savings_plan: PEL
-client.financial_asset.availability.bank_pep: "PEP bancaire"
-client.financial_asset.availability.other_deposits: "Autre dépôts"
-client.financial_asset.financial_investments.label: "Valeurs mobilières"
-client.financial_asset.financial_investments.securities_account: "Compte titres"
-client.financial_asset.financial_investments.pea: PEA
-client.financial_asset.financial_investments.pea_pme: PEA-PME
-client.financial_asset.financial_investments.equity_mutual_fund: "SICAV/VCP Action"
-client.financial_asset.financial_investments.bond_mutual_fund: "SICAV/FCP Obligations"
-client.financial_asset.financial_investments.monetary_mutual_fund: "SICAV/FCP Monétaire"
-client.financial_asset.financial_investments.french_and_european_shares: "Actions françaises et européennes"
-client.financial_asset.financial_investments.foreign_shares: "Actions étrangères"
-client.financial_asset.financial_investments.bonds: Obligations
-client.financial_asset.financial_investments.sofica_shares: "Parts de SOFICA"
-client.financial_asset.financial_investments.fcpi_shares: "Parts de FCPI"
-client.financial_asset.financial_investments.fcpr_shares: "Parts de FCPR"
-client.financial_asset.financial_investments.fip_shares: "Parts de FIP"
-client.financial_asset.financial_investments.isf_holding_shares: "Parts de holding - ISF"
-client.financial_asset.financial_investments.sme_tpe_capital: "Capital de PME/TPE (exonération ISF)"
-client.financial_asset.financial_investments.dutreil_pact_social_rights: "Droits sociaux (pacte Dutreil)"
-client.financial_asset.financial_investments.social_rights_employees_managers: "Droits sociaux (salariés, mandataires)"
-client.financial_asset.financial_investments.other_social_rights: "Autres droits sociaux"
-client.financial_asset.financial_investments.other_securities: "Autres valeurs mobilières"
-client.financial_asset.designation: Désignation
-client.financial_asset.estimated_value: "Valeur estimée"
-client.financial_asset.held_by: "Détenu par"
-client.financial_asset.opening_date: "Date d'ouverture"
-client.financial_asset.mode_of_holding.label: "Mode de détention"
-client.financial_asset.mode_of_holding.full_ownership: "Pleine propriété"
-client.financial_asset.mode_of_holding.usufruct: Usufruit
-client.financial_asset.mode_of_holding.bare_ownership: Nue-propriété
-client.non_financial_asset.label: "Actifs non financiers"
-client.non_financial_asset.add_button: "Ajouter un actif non financier"
-client.non_financial_asset.biens_usage.label: "Biens d’usage"
-client.non_financial_asset.biens_usage.principal_residence: "Résidence principale"
-client.non_financial_asset.biens_usage.secondary_residences: "Résidences secondaires"
-client.non_financial_asset.biens_usage.lands: Terrains
-client.non_financial_asset.biens_usage.other_usage_goods: "Autres biens d'usage"
-client.non_financial_asset.biens_usage.furnished_furniture: "Meubles meublant"
-client.non_financial_asset.immobilier_location.label: "Immobilier locatif"
-client.non_financial_asset.immobilier_location.rental_real_estate: "Immobilier locatif"
-client.non_financial_asset.immobilier_location.pinel_law: "Immobilier locatif - Loi Pinel"
-client.non_financial_asset.immobilier_location.pinel_law_overseas: "Immobilier locatif - Loi Pinel (outre-mer)"
-client.non_financial_asset.immobilier_location.denormandie_law: "Immobilier locatif - Loi Denormandie"
-client.non_financial_asset.immobilier_location.denormandie_law_overseas: "Immobilier locatif - Loi Denormandie (outre-mer)"
-client.non_financial_asset.immobilier_location.duflot_law: "Immobilier locatif - Loi Duflot"
-client.non_financial_asset.immobilier_location.duflot_law_overseas: "Immobilier locatif - Loi Duflot (outre-mer)"
-client.non_financial_asset.immobilier_location.scellier_law: "Immobilier locatif - Loi Scellier"
-client.non_financial_asset.immobilier_location.scellier_law_bbc: "Immobilier locatif - Loi Scellier (BBC)"
-client.non_financial_asset.immobilier_location.scellier_law_dom_tom: "Immobilier locatif - Loi Scellier (DOM-TOM)"
-client.non_financial_asset.immobilier_location.demessine_law: "Immobilier locatif - Loi Demessine"
-client.non_financial_asset.immobilier_location.girardin_law_new_housing_free_zone: "Immobilier locatif - Loi Girardin (logement neuf - secteur libre)"
-client.non_financial_asset.immobilier_location.girardin_law_new_housing_intermediate_zone: "Immobilier locatif - Loi Girardin (logement neuf - secteur intermédiaire)"
-client.non_financial_asset.immobilier_location.robien_law_classic_outside_zrr: "Immobilier locatif - Loi de Robien (classique hors ZRR)"
-client.non_financial_asset.immobilier_location.robien_law_classic_zrr: "Immobilier locatif - Loi de Robien (classique en ZRR)"
-client.non_financial_asset.immobilier_location.robien_law_recentrated_outside_zrr: "Immobilier locatif - Loi de Robien (recentré hors ZRR)"
-client.non_financial_asset.immobilier_location.robien_law_recentrated_zrr: "Immobilier locatif - Loi de Robien (recentré en ZRR)"
-client.non_financial_asset.immobilier_location.borloo_law_new: "Immobilier locatif - Loi Borloo (neuf)"
-client.non_financial_asset.immobilier_location.borloo_law_old_social: "Immobilier locatif - Loi Borloo (ancien social)"
-client.non_financial_asset.immobilier_location.borloo_law_old_intermediate: "Immobilier locatif - Loi Borloo (ancien intermédiaire)"
-client.non_financial_asset.immobilier_location.besson_law_new: "Immobilier locatif - Loi Besson (neuf)"
-client.non_financial_asset.immobilier_location.besson_law_old: "Immobilier locatif - Loi Besson (ancien)"
-client.non_financial_asset.immobilier_location.perissol_law: "Immobilier locatif - Loi Périssol"
-client.non_financial_asset.immobilier_location.malraux_law: "Immobilier locatif - Loi Malraux"
-client.non_financial_asset.immobilier_location.historic_monuments: "Immobilier locatif - Monuments historiques"
-client.non_financial_asset.immobilier_location.lmp: "Immobilier - LMP"
-client.non_financial_asset.immobilier_location.lmnp: "Immobilier - LMNP"
-client.non_financial_asset.immobilier_location.lmnp_bouvard_law: "Immobilier - LMNP - Loi Bouvard"
-client.non_financial_asset.immobilier_location.sci_shares: "Parts de SCI"
-client.non_financial_asset.parts_scpi.label: "Parts de SCPI"
-client.non_financial_asset.parts_scpi.scpi_shares: "Parts de SCPI"
-client.non_financial_asset.parts_scpi.scpi_pinel_law: "Parts de SCPI - Loi Pinel"
-client.non_financial_asset.parts_scpi.scpi_pinel_law_overseas: "Parts de SCPI - Loi Pinel (outre-mer)"
-client.non_financial_asset.parts_scpi.scpi_denormandie_law: "Parts de SCPI - Loi Denormandie"
-client.non_financial_asset.parts_scpi.scpi_denormandie_law_overseas: "Parts de SCPI - Loi Denormandie (outre-mer)"
-client.non_financial_asset.parts_scpi.scpi_duflot_law: "Parts de SCPI - Loi Duflot"
-client.non_financial_asset.parts_scpi.scpi_duflot_law_overseas: "Parts de SCPI - Loi Duflot (outre-mer)"
-client.non_financial_asset.parts_scpi.scpi_scellier_law: "Parts de SCPI - Loi Scellier"
-client.non_financial_asset.parts_scpi.scpi_scellier_law_bbc: "Parts de SCPI - Loi Scellier (BBC)"
-client.non_financial_asset.parts_scpi.scpi_scellier_law_dom_tom: "Parts de SCPI - Loi Scellier (DOM-TOM)"
-client.non_financial_asset.parts_scpi.scpi_demessine_law: "Parts de SCPI - Loi Demessine"
-client.non_financial_asset.parts_scpi.scpi_girardin_law_new_housing_free_zone: "Parts de SCPI - Loi Girardin (logement neuf - secteur libre)"
-client.non_financial_asset.parts_scpi.scpi_girardin_law_new_housing_intermediate_zone: "Parts de SCPI - Loi Girardin (logement neuf - secteur intermédiaire)"
-client.non_financial_asset.parts_scpi.scpi_robien_law_classic_outside_zrr: "Parts de SCPI - Loi de Robien (classique hors ZRR)"
-client.non_financial_asset.parts_scpi.scpi_robien_law_classic_zrr: "Parts de SCPI - Loi de Robien (classique en ZRR)"
-client.non_financial_asset.parts_scpi.scpi_robien_law_recentrated_outside_zrr: "Parts de SCPI - Loi de Robien (recentré hors ZRR)"
-client.non_financial_asset.parts_scpi.scpi_robien_law_recentrated_zrr: "Parts de SCPI - Loi de Robien (recentré en ZRR)"
-client.non_financial_asset.parts_scpi.scpi_borloo_law_new: "Parts de SCPI - Loi Borloo (neuf)"
-client.non_financial_asset.parts_scpi.scpi_borloo_law_old_social: "Parts de SCPI - Loi Borloo (ancien social)"
-client.non_financial_asset.parts_scpi.scpi_borloo_law_old_intermediate: "Parts de SCPI - Loi Borloo (ancien intermédiaire)"
-client.non_financial_asset.parts_scpi.scpi_besson_law_new: "Parts de SCPI - Loi Besson (neuf)"
-client.non_financial_asset.parts_scpi.scpi_besson_law_old: "Parts de SCPI - Loi Besson (ancien)"
-client.non_financial_asset.parts_scpi.scpi_perissol_law: "Parts de SCPI - Loi Périssol"
-client.non_financial_asset.parts_scpi.scpi_malraux_law: "Parts de SCPI - Loi Malraux"
-client.non_financial_asset.parts_scpi.scpi_historic_monuments: "Parts de SCPI - Monuments historiques"
-client.non_financial_asset.professional_property.label: "Biens professionnels"
-client.non_financial_asset.professional_property.social_rights: "Droits sociaux"
-client.non_financial_asset.professional_property.individual_company: "Entreprise individuelle"
-client.non_financial_asset.professional_property.commercial_fund_customers: "Fonds de commerce clientèles"
-client.non_financial_asset.professional_property.professional_buildings: "Immeubles professionnels"
-client.non_financial_asset.professional_property.other_professional_goods: "Autres biens professionnels"
-client.non_financial_asset.lead_investment.label: "Placement fonciers et divers"
-client.non_financial_asset.lead_investment.farmland: "Terrains agricoles (loués)"
-client.non_financial_asset.lead_investment.forestry_group: "Parts de groupements forestiers"
-client.non_financial_asset.lead_investment.wood_drill: "Bois et forêts"
-client.non_financial_asset.lead_investment.rural_land: "Biens ruraux (loués à long terme)"
-client.non_financial_asset.lead_investment.gfa_gaf: "Parts de GFA/GAF/GFV et GFR"
-client.non_financial_asset.lead_investment.forest_company: "Parts de sociétés d'épargne forestières"
-client.non_financial_asset.lead_investment.art: "Objets d'art et antiquités"
-client.non_financial_asset.lead_investment.other_land_investment: "Autres placement divers"
-client.non_financial_asset.designation: Désignation
-client.non_financial_asset.estimated_value: "Valeur estimée"
-client.non_financial_asset.held_by: "Détenu par"
-client.revenues.label: Revenus
-client.revenues.add_button: "Ajouter un revenu"
-client.revenues.designation: Désignation
-client.revenues.annual_amount: "Montant annuel"
-client.revenues.beneficiary: Bénéficiaire
-client.revenues.nature.label: Nature
-client.revenues.nature.salary: Salaires
-client.revenues.nature.industrial_commercial: "Revenus industriels et commerciaux"
-client.revenues.nature.non_commercial: "Revenus non commerciaux"
-client.revenues.nature.agricultural: "Revenus agricoles"
-client.revenues.nature.pension_retirement: "Pensions et retraites"
-client.revenues.nature.alimony: "Pensions alimentaires"
-client.revenues.nature.annuity: "Rentes viagères"
-client.revenues.nature.movable_income: "Revenus mobiliers"
-client.revenues.nature.rental_income: "Revenus fonciers"
-client.revenues.nature.capital_gains: "Plus-values mobilières et gains divers"
-client.revenues.nature.other_regular_income: "Autres revenus réguliers"
-client.expenses.label: Dépenses
-client.expenses.add_button: "Ajouter une dépense"
-client.expenses.nature.rent: "Loyers (hors charges)"
-client.expenses.nature.education_expenses: "Charges d'éducation"
-client.expenses.nature.home_employee: "Emploi d'un salarié à domicile"
-client.expenses.nature.childcare: "Frais de garde"
-client.expenses.nature.alimony: "Pensions alimentaires"
-client.expenses.nature.property_tax: "Taxe foncière"
-client.expenses.nature.housing_tax: "Taxe d'habitation"
-client.expenses.nature.other_expenses: "Autres dépenses courantes"
-client.insurance.label: "Assurance vie"
-client.insurance.add_button: "Ajouter une assurance"
-client.insurance.nature.multisupport_life_insurance: "Contrat d'assurance vie multisupports"
-client.insurance.nature.euro_growth_life_insurance: "Contrat d'assurance vie euro-croissance"
-client.insurance.nature.euro_life_insurance: "Contrat d'assurance vie en euros"
-client.insurance.nature.generation_life_insurance: "Contrat vie-génération"
-client.insurance.nature.multisupport_pep_life_insurance: "PEP assurance vie multisupports"
-client.insurance.nature.uc_capitalization_bonds_contracts: "Bons, contrats de capitalisation en UC"
-client.insurance.nature.euro_capitalization_bonds_contracts: "Bons, contrats de capitalisation en euros"
-client.saving.label: "Epargne retraite et salariale"
-client.saving.add_button: "Ajouter une épargne"
-client.saving.held_by: "Souscrit par"
-client.saving.opening_date: Souscription
-client.saving.nature.pee_pei: PEE/PEI
-client.saving.nature.per_individual_insurance: "PER Individuel - Assurance"
-client.saving.nature.per_enterprise_collective_insurance: "PER Entreprise Collectif - Assurance"
-client.saving.nature.per_enterprise_mandatory_insurance: "PER Entreprise Obligatoire - Assurance"
-client.saving.nature.per_individual_securities_account: "PER Individuel - Compte titres"
-client.saving.nature.per_enterprise_collective_securities_account: "PER Entreprise Collectif - Compte titres"
-client.saving.nature.per_enterprise_mandatory_securities_account: "PER Entreprise Obligatoire - Compte titres"
-client.saving.nature.perco_percoi: PERCO/PERCOI
-client.saving.nature.perp: PERP
-client.saving.nature.madelin_contract: "Contrat Loi Madelin"
-client.saving.nature.madelin_agricultural_contract: "Contrat Loi Madelin Agricole"
-client.saving.nature.article_83_contract: "Contrat Article 83"
-client.saving.nature.article_82_contract: "Contrat Article 82"
-client.saving.nature.prefon_retirement_contract: "Contrat Préfon-Retraite"
-client.contract.label: "Vos contrats de prevoyance"
-client.contract.add_button: "Ajouter un contrat"
-client.contract.estimated_value: "Capital assuré"
-client.contract.nature.temporary_death: "Temporaire décès"
-client.contract.nature.whole_life: "Vie entière"
-client.contract.nature.deferred_capital: "Capital différé"
-client.contract.nature.individual_protection_contract: "Contrat Prévoyance Individuel"
-client.submit.update: "Mettre à jour"
-client.submit.create: Création
-client.submit.delete: Supprimer
-client.success_message.create: "Client %name% créé avec succès ! %link%"
-client.success_message.delete: "Utilisateur supprimer avec succès"
-client.success_message.modified: "Utilisateur modifé avec succès"
-client.success_message.hard_delete: "Client supprimé définitivement avec succès"
-client.success_message.restore: "Client restauré avec succès"
-client.view_profile: "Voir la fiche client"
-client.log.client.title: "Logs Client"
-client.log.index.title: "Logs Clients"
-client.log.index.client: Client
-client.log.detail.title: "Détail Log Client"
-client.error_message.right: "Vous n'avez pas les droits pour effectuer cette action"
-client.error_message.exist.email: "Ce client existe déjà avec cet email"
-client.error_message.exist.phone: "Ce client existe déjà avec ce numéro de téléphone"
 isVerified: "Compte vérifié"
 Civility: Civilité
 Name: Nom
-"First Name": Prénom
-"Birth Name": "Nom de naissance"
-"Birth Date": "Date de naissance"
-"Postal Code": "Code postal"
 City: Ville
 Country: Pays
 Nationality: Nationalité
@@ -722,32 +411,6 @@ primaryColor: "Couleur Primaire"
 secondaryColor: "Couleur Secondaire"
 tertiaryColor: "Couleur Tertiaire"
 account: "Mon compte"
-content: __content
-contentPath: __contentPath
-resource: __resource
-resourcePath: __resourcePath
-supportingDocument: __supportingDocument
-parsedResult: __parsedResult
-supportingDocuments: __supportingDocuments
-clientMetadata: __clientMetadata
-document_name: __document_name
-validity_date: __validity_date
-document_type: __document_type
-file_size: __file_size
-supportingDocumentPdfParsed: __supportingDocumentPdfParsed
-parsingStatus: __parsingStatus
-cssPath: __cssPath
-powensAccounts: __powensAccounts
-templates: __templates
-createdAt: __createdAt
-powensAccountNonFinancialAsset: __powensAccountNonFinancialAsset
-powensAccountLiability: __powensAccountLiability
-powensAccountContract: __powensAccountContract
-powensAccountFinancialAsset: __powensAccountFinancialAsset
-powensAccountSaving: __powensAccountSaving
-powensAccountInsurance: __powensAccountInsurance
-personneId: __personneId
-personneRef: __personneRef
 registrationFormCompanyName: "Le nom de vôtre entreprise."
 company.index: "Registre d'entreprise"
 user.index: "Registre d'utilisateur"
@@ -810,34 +473,13 @@ clientTurboError: Une erreur est survenue
 login:
     title: "Connexion à votre compte"
     subtitle: "Entrez votre email et mot de passe pour vous connecter"
-client_profile:
-    information: "Information"
-    expenses:
-        label: "Dépenses"
-        total: "Total des dépenses"
-    revenues:
-        label: "Revenus"
-        total: "Total des revenus"
-    balance:
-        label: "Balance"
-        total: "Total de la balance"
-    beneficiary:
-        client: "Client"
-        spouse: "Conjoint"
-        two: "Client & conjoint"
-    spouse:
-        job_information: "Information sur le travail"
-        birth_information: "Information sur la naissance"
+
 client_stats:
     increase: "Augmentation"
     decrease: "Diminution"
     stable: "Stable"
 dashboard:
     hello: "Bonjour"
-    history_signature:
-        label: "Historique des signatures"
-    actuality:
-        label: "Actualité"
 2fa:
     title: "Authentification à deux facteurs"
     enter_google_code: "Entrez le code de Google Authenticator"

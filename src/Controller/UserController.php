@@ -5,22 +5,29 @@ namespace App\Controller;
 use App\Entity\Company;
 use App\Entity\User;
 use App\Form\UserType;
+use App\Notification\NewCollaboratorNotification;
+use App\Notification\UserRecipient;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Form\UserProfilType;
+
 #[Route('/user')]
 class UserController extends AbstractController
 {
     public function __construct(
-       private readonly TranslatorInterface $translator,
-    ) {
+        private readonly TranslatorInterface $translator,
+    )
+    {
     }
+
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
@@ -30,15 +37,26 @@ class UserController extends AbstractController
     }
 
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(
+        Request                     $request,
+        EntityManagerInterface      $entityManager,
+        UserPasswordHasherInterface $passwordHasher
+    ): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $user->setPassword($passwordHasher->hashPassword(
+                $user,
+                $form->get('plainPassword')->getData()
+            ));
+
             $entityManager->persist($user);
             $entityManager->flush();
+
 
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -48,6 +66,7 @@ class UserController extends AbstractController
             'form' => $form,
         ]);
     }
+
     #[Route('/company/{id}', name: 'app_user_company_index', requirements: ['id' => Requirement::POSITIVE_INT], methods: ['GET'])]
     public function companyIndex(Company $company): Response
     {
@@ -61,6 +80,7 @@ class UserController extends AbstractController
             'impersonate' => true,
         ]);
     }
+
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(User $user): Response
     {
@@ -70,13 +90,26 @@ class UserController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    public function edit(
+        Request $request,
+        User $user,
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $passwordHasher
+    ): Response
     {
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+
+            $newPassword = $form->get('plainPassword')->getData();
+            if ($newPassword) {
+                $user->setPassword($passwordHasher->hashPassword(
+                    $user,
+                    $newPassword
+                ));
+            }
 
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -90,13 +123,14 @@ class UserController extends AbstractController
     #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->request->get('_token'))) {
             $entityManager->remove($user);
             $entityManager->flush();
         }
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }
+
     #[Route('/edit/profile', name: 'app_user_profile', methods: ['GET', 'POST'])]
     public function profile(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -104,13 +138,13 @@ class UserController extends AbstractController
         if (!$user instanceof User) {
             throw new \LogicException('User is not valid');
         }
-    
+
         // Render the profile template directly, without redirecting
         return $this->render('user/profile.html.twig', [
             'form' => $this->createForm(UserProfilType::class, $user)->createView(),
         ]);
     }
-    
+
 
     #[Route('/profile/delete-picture', name: 'app_user_delete_profile_picture', methods: ['POST'])]
     public function deleteProfilePicture(Request $request, EntityManagerInterface $entityManager): Response

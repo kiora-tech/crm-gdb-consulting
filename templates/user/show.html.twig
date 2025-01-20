@@ -20,7 +20,11 @@
                         </tr>
                         <tr>
                             <th>{{ "roles"|trans }}</th>
-                            <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+                            <td>
+                                {% for role in user.roles %}
+                                    <div class="text-sm text-gray-500">{{ role|trans }}</div>
+                                {% endfor %}
+                            </td>
                         </tr>
                         </tbody>
                     </table>
