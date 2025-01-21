@@ -81,6 +81,9 @@ class Customer
     #[ORM\OneToMany(targetEntity: Document::class, mappedBy: 'customer', orphanRemoval: true)]
     private Collection $documents;
 
+    #[ORM\ManyToOne(inversedBy: 'customers')]
+    private ?User $user = null;
+
     public function __construct()
     {
         $this->businessEntities = new ArrayCollection();
@@ -368,5 +371,17 @@ class Customer
     public function __toString()
     {
         return (string) $this->name;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
     }
 }

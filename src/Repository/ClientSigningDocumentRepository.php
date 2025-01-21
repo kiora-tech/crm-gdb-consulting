@@ -26,8 +26,8 @@ class ClientSigningDocumentRepository extends ServiceEntityRepository
         /** @var ClientSigningDocument[] $result */
         $result = $this->createQueryBuilder('csd')
             ->join('csd.clientDocument', 'cd')
-            ->join('cd.client', 'c')
-            ->join('c.assignedCollaborators', 'u')
+            ->join('cd.customer', 'c')
+            ->join('c.user', 'u')
             ->where('u = :user')
             ->setParameter('user', $user)
             ->getQuery()
@@ -44,7 +44,8 @@ class ClientSigningDocumentRepository extends ServiceEntityRepository
         /** @var ClientSigningDocument[] $result */
         $result = $this->createQueryBuilder('csd')
             ->join('csd.clientDocument', 'cd')
-            ->join('cd.client', 'c')
+            ->join('cd.customer', 'c')
+            ->join('c.user', 'u')
             ->join('c.company', 'co')
             ->where('co = :company')
             ->setParameter('company', $company)

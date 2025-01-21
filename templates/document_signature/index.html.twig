@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ 'document_signature.index.title'|trans }}
+{% endblock %}
+
+{% block body %}
+    <div class="pagetitle">
+        <h1>{{ 'document_signature.index.h2'|trans }}</h1>
+    </div>
+    <section class="section">
+        <div class="card p-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                        <tr class="table-primary">
+                            <th scope="col" class="text-start">{{ 'document_signature.index.signers'|trans }}</th>
+                            <th scope="col"
+                                class="text-start">{{ 'document_signature.signature_request_status'|trans }}</th>
+                            <th scope="col" class="text-start">{{ 'head.action'|trans }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for document in documents %}
+                            <tr>
+                                <td class="text-start">
+                                    <ul>
+                                        {% for signer in document.clientSigningDocumentSigners %}
+                                            <li>{{ signer.client.fullName }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                                <td class="text-start">
+                                <span class="badge
+                                    {% if document.signatureRequestStatus.value == 'initiated' %}text-bg-light
+                                    {% elseif document.signatureRequestStatus.value == 'notified' %}text-bg-info
+                                    {% elseif document.signatureRequestStatus.value == 'processing' %}text-bg-primary
+                                    {% elseif document.signatureRequestStatus.value == 'declined' %}text-bg-danger
+                                    {% elseif document.signatureRequestStatus.value == 'signed' %}text-bg-success
+                                    {% elseif document.signatureRequestStatus.value == 'aborted' %}text-bg-secondary
+                                    {% elseif document.signatureRequestStatus.value == 'error' %}text-bg-danger
+                                    {% endif %}">
+                                    {{ document.signatureRequestStatus.label|trans }}
+                                </span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ path('app_document_signature_document_status', {'id': document.id}) }}"
+                                       class="btn btn-link">{{ 'button.show'|trans }}</a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center">{{ 'no_record'|trans }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="navigation mt-4 d-flex justify-content-center">
+                        {{ knp_pagination_render(documents) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

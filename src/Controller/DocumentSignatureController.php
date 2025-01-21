@@ -11,7 +11,6 @@ use App\Message\AskSignatureMessage;
 use App\Repository\ClientSigningDocumentRepository;
 use App\Security\ClientVoterTrait;
 use App\Service\PaginationService;
-use App\Service\WordToPdfService;
 use App\Service\Yousign\YousignApiService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -43,21 +42,12 @@ class DocumentSignatureController extends AbstractController
         TranslatorInterface $tr,
         //WordToPdfService $wordToPdfService,
     ): Response {
-        $response = $this->checkClientAccess($clientDocument->getClient()->toArray());
-        if (null !== $response) {
-            return $response;
-        }
 
         $id = $clientDocument->getId();
 
         if (null === $id) {
             throw $this->createNotFoundException('Document not found');
         }
-
-        /*$documentPath = $clientDocument->getPath();
-        $pdfPath = $clientDocument->getPdfPath();
-
-        $wordToPdfService->convertWordToPdf($documentPath, $pdfPath);*/
 
         $bus->dispatch(new AskSignatureMessage($id));
 
@@ -78,7 +68,7 @@ class DocumentSignatureController extends AbstractController
         }
 
         $query =
-            $user->isCompanyAdmin()
+            $user->isAdmin()
             ? $repository->findByCompany(
                 $user->getCompany()
                             ?? throw new \LogicException('The company is not valid.'))
@@ -94,11 +84,6 @@ class DocumentSignatureController extends AbstractController
     #[Route('/{id}', name: 'document_status', requirements: ['id' => Requirement::UUID], methods: ['GET'])]
     public function documentStatus(ClientSigningDocument $clientSigningDocument): Response
     {
-        $response = $this->checkClientAccess($clientSigningDocument->getDocument()?->getClient()?->toArray());
-        if (null !== $response) {
-            return $response;
-        }
-
         return $this->render('document_signature/document_status.html.twig', [
             'document' => $clientSigningDocument,
         ]);
@@ -118,10 +103,6 @@ class DocumentSignatureController extends AbstractController
         YousignApiService $yousignApiService,
         TranslatorInterface $tr,
     ): Response {
-        $response = $this->checkClientAccess($clientSigningDocument->getDocument()?->getClient()?->toArray());
-        if (null !== $response) {
-            return $response;
-        }
 
         if ($this->isCsrfTokenValid('cancel-'.$clientSigningDocument->getId(), (string) $request->request->get('_token'))) {
             $result = $yousignApiService->cancelSignature($clientSigningDocument);
@@ -142,13 +123,9 @@ class DocumentSignatureController extends AbstractController
         #[Autowire('%kernel.project_dir%')]
         string $projectDir,
     ): Response {
-        $response = $this->checkClientAccess($clientSigningDocument->getDocument()?->getClient()?->toArray());
-        if (null !== $response) {
-            return $response;
-        }
 
-        $pdfPath = $clientSigningDocument->getDocument()?->getPdfPath();
-        $pdfName = $clientSigningDocument->getDocument()?->getPdfName();
+        $pdfPath = $clientSigningDocument->getDocument()?->getPath();
+        $pdfName = $clientSigningDocument->getDocument()?->getName();
 
         if (null === $pdfPath || null === $pdfName) {
             throw $this->createNotFoundException('Document not found');
