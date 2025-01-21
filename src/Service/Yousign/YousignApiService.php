@@ -2,7 +2,7 @@
 
 namespace App\Service\Yousign;
 
-use App\Entity\ClientDocument;
+use App\Entity\Document;
 use App\Entity\ClientSigningDocument;
 use App\Entity\ClientSigningDocumentSigner;
 use App\Enum\YousignSignatureRequestStatus;
@@ -31,7 +31,7 @@ readonly class YousignApiService
      * @throws TransportExceptionInterface
      * @throws ServerExceptionInterface
      */
-    public function askForSignature(ClientDocument $clientDocument): void
+    public function askForSignature(Document $clientDocument): void
     {
         $signatureRequestId = $this->yousignApiClient->createSignatureRequest($clientDocument);
 
@@ -41,7 +41,7 @@ readonly class YousignApiService
         $documentId = $this->yousignApiClient->addDocumentToSignatureRequest($signatureRequestId, $pdfPath, $pdfName);
 
         $clientSigningDocument = new ClientSigningDocument($signatureRequestId);
-        $clientSigningDocument->setClientDocument($clientDocument);
+        $clientSigningDocument->setDocument($clientDocument);
         $this->em->persist($clientSigningDocument);
         $this->em->flush();
 

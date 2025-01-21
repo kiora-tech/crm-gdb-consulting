@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\ClientDocument;
+use App\Entity\Document;
 use App\Entity\ClientSigningDocument;
 use App\Entity\User;
 use App\Message\AskSignatureMessage;
@@ -38,7 +38,7 @@ class DocumentSignatureController extends AbstractController
      */
     #[Route('/new/{id}', name: 'ask', methods: ['GET'])]
     public function ask(
-        ClientDocument $clientDocument,
+        Document $clientDocument,
         MessageBusInterface $bus,
         TranslatorInterface $tr,
         //WordToPdfService $wordToPdfService,
@@ -94,7 +94,7 @@ class DocumentSignatureController extends AbstractController
     #[Route('/{id}', name: 'document_status', requirements: ['id' => Requirement::UUID], methods: ['GET'])]
     public function documentStatus(ClientSigningDocument $clientSigningDocument): Response
     {
-        $response = $this->checkClientAccess($clientSigningDocument->getClientDocument()?->getClient()?->toArray());
+        $response = $this->checkClientAccess($clientSigningDocument->getDocument()?->getClient()?->toArray());
         if (null !== $response) {
             return $response;
         }
@@ -118,7 +118,7 @@ class DocumentSignatureController extends AbstractController
         YousignApiService $yousignApiService,
         TranslatorInterface $tr,
     ): Response {
-        $response = $this->checkClientAccess($clientSigningDocument->getClientDocument()?->getClient()?->toArray());
+        $response = $this->checkClientAccess($clientSigningDocument->getDocument()?->getClient()?->toArray());
         if (null !== $response) {
             return $response;
         }
@@ -142,13 +142,13 @@ class DocumentSignatureController extends AbstractController
         #[Autowire('%kernel.project_dir%')]
         string $projectDir,
     ): Response {
-        $response = $this->checkClientAccess($clientSigningDocument->getClientDocument()?->getClient()?->toArray());
+        $response = $this->checkClientAccess($clientSigningDocument->getDocument()?->getClient()?->toArray());
         if (null !== $response) {
             return $response;
         }
 
-        $pdfPath = $clientSigningDocument->getClientDocument()?->getPdfPath();
-        $pdfName = $clientSigningDocument->getClientDocument()?->getPdfName();
+        $pdfPath = $clientSigningDocument->getDocument()?->getPdfPath();
+        $pdfName = $clientSigningDocument->getDocument()?->getPdfName();
 
         if (null === $pdfPath || null === $pdfName) {
             throw $this->createNotFoundException('Document not found');

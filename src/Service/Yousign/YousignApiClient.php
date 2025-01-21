@@ -3,7 +3,8 @@
 namespace App\Service\Yousign;
 
 use App\Entity\Client;
-use App\Entity\ClientDocument;
+use App\Entity\Contact;
+use App\Entity\Document;
 use App\Entity\ClientSigningDocument;
 use Symfony\Component\Mime\Part\DataPart;
 use Symfony\Component\Mime\Part\Multipart\FormDataPart;
@@ -30,7 +31,7 @@ readonly class YousignApiClient
      * @throws \Exception
      * @throws DecodingExceptionInterface
      */
-    public function createSignatureRequest(ClientDocument $clientDocument): Uuid
+    public function createSignatureRequest(Document $clientDocument): Uuid
     {
         $externalId = $clientDocument->getId();
         $name = $clientDocument->getPdfName();
@@ -128,13 +129,8 @@ readonly class YousignApiClient
      * @throws DecodingExceptionInterface
      * @throws \Exception
      */
-    public function addSignerToSignatureRequest(Uuid $signatureRequestId, Uuid $documentId, ClientDocument $clientDocument, Client $client): void
+    public function addSignerToSignatureRequest(Uuid $signatureRequestId, Uuid $documentId, Document $clientDocument, Contact $client): void
     {
-        $template = $clientDocument->getTemplate();
-        if (null === $template) {
-            throw new \LogicException('Template not found');
-        }
-
         $response = $this->yousignClient->request(
             'POST',
             sprintf('signature_requests/%s/signers', $signatureRequestId),
@@ -299,7 +295,7 @@ readonly class YousignApiClient
 
         $stream = $this->yousignClient->stream($response);
 
-        $pdfPath = $signingDocument->getClientDocument()?->getPdfPath();
+        $pdfPath = $signingDocument->getDocument()?->getPath();
         if (null === $pdfPath) {
             throw new \Exception('Error downloading signature request : invalid pdf path');
         }

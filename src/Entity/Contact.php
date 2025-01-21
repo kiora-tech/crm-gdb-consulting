@@ -21,7 +21,10 @@ class Contact
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private ?string $firstName = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $lastName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $position = null;
@@ -64,16 +67,24 @@ class Contact
         return $this;
     }
 
-    public function getName(): ?string
+    public function getFirstName(): ?string
     {
-        return $this->name;
+        return $this->firstName;
     }
 
-    public function setName(string $name): static
+    public function setFirstName(?string $firstName): void
     {
-        $this->name = $name;
+        $this->firstName = $firstName;
+    }
 
-        return $this;
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(?string $lastName): void
+    {
+        $this->lastName = $lastName;
     }
 
     public function getPosition(): ?string

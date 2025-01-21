@@ -51,7 +51,7 @@ final class YousignSNotifiedWebhookConsumer extends AbstractYousignSWebhookConsu
 
         $signerLink = $this->getSignerLink($signatureRequestId);
 
-        $documentName = $clientSigningDocument->getClientDocument()?->getPdfName();
+        $documentName = $clientSigningDocument->getDocument()?->getPdfName();
         if (null === $documentName) {
             return;
         }

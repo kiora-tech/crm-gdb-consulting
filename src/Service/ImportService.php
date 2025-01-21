@@ -54,7 +54,10 @@ readonly class ImportService
 
             if (!$existingContact) {
                 $contact = new Contact();
-                $contact->setName((string)$row[2]); // CONTACT
+                $names = explode(' ',(string)$row[2], 2);
+
+                $contact->setFirstName($names[0]);
+                $contact->setLastName($names[1]??'');
                 $contact->setEmail((string)$row[3]); // MAIL
                 $contact->setPhone((string)$row[4]); // NUMERO
                 $contact->setCustomer($customer);

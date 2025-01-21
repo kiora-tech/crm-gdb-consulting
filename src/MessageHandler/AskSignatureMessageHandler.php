@@ -3,7 +3,7 @@
 namespace App\MessageHandler;
 
 use App\Message\AskSignatureMessage;
-use App\Repository\ClientDocumentRepository;
+use App\Repository\DocumentRepository;
 use App\Service\Yousign\YousignApiService;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -19,7 +19,7 @@ final readonly class AskSignatureMessageHandler
 {
     public function __construct(
         private YousignApiService $yousignApiService,
-        private ClientDocumentRepository $clientDocumentRepository,
+        private DocumentRepository $clientDocumentRepository,
     ) {
     }
 
