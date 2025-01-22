@@ -39,7 +39,7 @@ class Customer
      * @var Collection<int, Contact>
      */
     #[ORM\OneToMany(targetEntity: Contact::class, mappedBy: 'customer', cascade: ['persist'], orphanRemoval: true)]
-    #[ORM\OrderBy(['name' => 'ASC'])]
+    #[ORM\OrderBy(['firstName' => 'ASC'])]
     private Collection $contacts;
 
     #[ORM\Column(type: Types::STRING, enumType: ProspectOrigin::class)]

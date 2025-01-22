@@ -113,7 +113,7 @@
 											<tbody>
 												{% for contact in customer.contacts %}
 													<tr>
-														<td>{{ contact.name }}</td>
+														<td>{{ contact }}</td>
 														<td>{{ contact.position }}</td>
 														<td>
 															<a href="mailto:{{ contact.email }}" data-turbo="false">{{ contact.email }}</a>

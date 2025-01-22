@@ -34,7 +34,7 @@ readonly class YousignApiClient
     public function createSignatureRequest(Document $clientDocument): Uuid
     {
         $externalId = $clientDocument->getId();
-        $name = $clientDocument->getPdfName();
+        $name = $clientDocument->getPath();
 
         $response = $this->yousignClient->request(
             'POST',

@@ -39,8 +39,7 @@ class DocumentSignatureController extends AbstractController
     public function ask(
         Document $clientDocument,
         MessageBusInterface $bus,
-        TranslatorInterface $tr,
-        //WordToPdfService $wordToPdfService,
+        TranslatorInterface $tr
     ): Response {
 
         $id = $clientDocument->getId();

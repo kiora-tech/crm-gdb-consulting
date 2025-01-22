@@ -134,4 +134,9 @@ class Contact
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return sprintf('%s %s', $this->firstName, $this->lastName);
+    }
 }
