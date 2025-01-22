@@ -50,6 +50,10 @@ class DocumentController extends AbstractController
 
                 // Move the file to the directory where brochures are stored
                 try {
+                    //test if folder $uploadDirectory exist
+                    if(!is_dir($uploadDirectory)) {
+                        mkdir($uploadDirectory, 0777, true);
+                    }
                     $documentFile->move($uploadDirectory, $newFilename);
 
                     $document->setName($originalFilename);

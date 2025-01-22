@@ -3,6 +3,9 @@
         <li>
             <a href="{{ path('app_document_download', {'id': document.id}) }}" data-turbo="false" >{{ document.name }}</a>
             {{ include('docu/_delete_form.html.twig') }}
+            <a href="{{ path('app_document_signature_ask', {'id': document.id} ) }}" data-turbo="false">
+                <i class="bi bi-award"></i>
+            </a>
         </li>
     {% endfor %}
 </ul>
