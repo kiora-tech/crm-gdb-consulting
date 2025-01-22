@@ -50,6 +50,10 @@ class DocumentController extends AbstractController
 
                 // Move the file to the directory where brochures are stored
                 try {
+                    //test if folder $uploadDirectory exist
+                    if(!is_dir($uploadDirectory)) {
+                        mkdir($uploadDirectory, 0777, true);
+                    }
                     $documentFile->move($uploadDirectory, $newFilename);
 
                     $document->setName($originalFilename);
@@ -69,7 +73,7 @@ class DocumentController extends AbstractController
         return $this->render('document/upload_response.html.twig', compact('form', 'customer'));
     }
 
-    #[Route('/{id}', name: 'app_document_download', methods: ['GET'])]
+    #[Route('/{id}/download', name: 'app_document_download', methods: ['GET'])]
     public function downloadDocument(
         Document $document,
         MimeTypesInterface $mimeTypes

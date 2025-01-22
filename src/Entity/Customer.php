@@ -39,7 +39,7 @@ class Customer
      * @var Collection<int, Contact>
      */
     #[ORM\OneToMany(targetEntity: Contact::class, mappedBy: 'customer', cascade: ['persist'], orphanRemoval: true)]
-    #[ORM\OrderBy(['name' => 'ASC'])]
+    #[ORM\OrderBy(['firstName' => 'ASC'])]
     private Collection $contacts;
 
     #[ORM\Column(type: Types::STRING, enumType: ProspectOrigin::class)]
@@ -80,6 +80,9 @@ class Customer
      */
     #[ORM\OneToMany(targetEntity: Document::class, mappedBy: 'customer', orphanRemoval: true)]
     private Collection $documents;
+
+    #[ORM\ManyToOne(inversedBy: 'customers')]
+    private ?User $user = null;
 
     public function __construct()
     {
@@ -368,5 +371,17 @@ class Customer
     public function __toString()
     {
         return (string) $this->name;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
     }
 }

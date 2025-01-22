@@ -255,3 +255,7 @@ body, html {
   .frameHeigh{
     min-height: 246px;
   }
+
+  a form {
+      display: inline;
+  }
