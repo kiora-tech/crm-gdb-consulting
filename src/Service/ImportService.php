@@ -35,18 +35,7 @@ readonly class ImportService
                 continue;
             }
             $customer = $this->getOrCreateCustomer($row[1], $row[5]);
-
-            if (!empty($row[0])) {
-                $businessEntity = $this->entityManager->getRepository(BusinessEntity::class)
-                    ->findOneBy(['siret' => $row[0]]);
-
-                if (!$businessEntity) {
-                    $businessEntity = new BusinessEntity();
-                    $businessEntity->setSiret($row[0]);
-                    $businessEntity->setCustomer($customer);
-                    $this->entityManager->persist($businessEntity);
-                }
-            }
+            $customer->setSiret((string) $row[0]);
 
             // Creating or updating Contact entity
             $existingContact = $this->entityManager->getRepository(Contact::class)

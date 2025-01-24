@@ -24,12 +24,6 @@ class Customer
     private ?string $leadOrigin = null;
 
     /**
-     * @var Collection<int, BusinessEntity>
-     */
-    #[ORM\OneToMany(targetEntity: BusinessEntity::class, mappedBy: 'customer', cascade: ['persist'], orphanRemoval: true)]
-    private Collection $businessEntities;
-
-    /**
      * @var Collection<int, Energy>
      */
     #[ORM\OneToMany(targetEntity: Energy::class, mappedBy: 'customer', cascade: ['persist'], orphanRemoval: true)]
@@ -46,7 +40,7 @@ class Customer
     #[Assert\NotBlank]
     private ProspectOrigin $origin;
 
-    #[ORM\Column(type: 'string', nullable: true, enumType: ProspectStatus::class)]
+    #[ORM\Column(type:  Types::STRING, nullable: true, enumType: ProspectStatus::class)]
     #[Assert\NotBlank]
     private ?ProspectStatus $status = null;
 
@@ -84,9 +78,14 @@ class Customer
     #[ORM\ManyToOne(inversedBy: 'customers')]
     private ?User $user = null;
 
+    #[ORM\Column(length: 14, nullable: true)]
+    private ?string $siret = null;
+
+    #[ORM\Column(type: Types::STRING, nullable: true, enumType: CanalSignature::class)]
+    private ?CanalSignature $canalSignature = null;
+
     public function __construct()
     {
-        $this->businessEntities = new ArrayCollection();
         $this->energies = new ArrayCollection();
         $this->contacts = new ArrayCollection();
         $this->comments = new ArrayCollection();
@@ -118,36 +117,6 @@ class Customer
     public function setLeadOrigin(string $leadOrigin): static
     {
         $this->leadOrigin = $leadOrigin;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, BusinessEntity>
-     */
-    public function getBusinessEntities(): Collection
-    {
-        return $this->businessEntities;
-    }
-
-    public function addBusinessEntity(BusinessEntity $businessEntity): static
-    {
-        if (!$this->businessEntities->contains($businessEntity)) {
-            $this->businessEntities->add($businessEntity);
-            $businessEntity->setCustomer($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBusinessEntity(BusinessEntity $businessEntity): static
-    {
-        if ($this->businessEntities->removeElement($businessEntity)) {
-            // set the owning side to null (unless already changed)
-            if ($businessEntity->getCustomer() === $this) {
-                $businessEntity->setCustomer(null);
-            }
-        }
 
         return $this;
     }
@@ -382,6 +351,28 @@ class Customer
     {
         $this->user = $user;
 
+        return $this;
+    }
+
+    public function getSiret(): ?string
+    {
+        return $this->siret;
+    }
+
+    public function setSiret(?string $siret): Customer
+    {
+        $this->siret = $siret;
+        return $this;
+    }
+
+    public function getCanalSignature(): ?CanalSignature
+    {
+        return $this->canalSignature;
+    }
+
+    public function setCanalSignature(?CanalSignature $canalSignature): Customer
+    {
+        $this->canalSignature = $canalSignature;
         return $this;
     }
 }

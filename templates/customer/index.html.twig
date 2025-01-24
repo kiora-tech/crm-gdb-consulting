@@ -29,7 +29,7 @@
 							<th scope="col" class="px-6 py-4 text-center" data-index="1" data-action="click->table-header#sort">{{ "customer.siret"|trans }}</th>
 							<th scope="col" class="px-6 py-4 text-center" data-index="2" data-action="click->table-header#sort">Prix</th>
 							<th scope="col" class="px-6 py-4 text-center" data-index="3" data-action="click->table-header#sort">{{ "contract"|trans }}</th>
-							<th scope="col" class="px-6 py-4 text-center" data-index="4" data-action="click->table-header#sort">{{ "client.contact.label"|trans }}</th>
+							<th scope="col" class="px-6 py-4 text-center" data-index="4" data-action="click->table-header#sort">{{ "customer.company_group"|trans }}</th>
 							<th scope="col" class="px-6 py-4 text-center" data-index="5">{{ "button.actions"|trans }}</th>
 						</tr>
 					</thead>
@@ -38,15 +38,8 @@
 							<tr data-table-header-target="row">
 								<td class="px-6 py-4 text-center">{{ customer.name }}</td>
 								<td class="px-6 py-4 text-center">
-									{% if customer.businessEntities is not empty %}
-										<div class="scrollable-container">
-											{% for entity in customer.businessEntities %}
-												<a href="https://www.pappers.fr/recherche?q={{ entity.siret }}" target="_blank">{{ entity.siret }}</a><br>
-											{% endfor %}
-										</div>
-									{% else %}
-										{{ "customer.no_siret"|trans }}
-									{% endif %}
+
+									<a href="https://www.pappers.fr/recherche?q={{ customer.siret }}" target="_blank">{{ customer.siret }}</a><br>
 								</td>
 								<td class="px-6 py-4 text-center">{{ customer.worth|default("N/A") }}</td>
 								<td class="px-6 py-4 text-center">{{ customer.action|default("N/A") }}</td>

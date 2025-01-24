@@ -52,6 +52,12 @@
                     {{ form_widget(form.status, {'attr': {'class': 'form-control'}}) }}
                     {{ form_errors(form.status) }}
                 </div>
+
+                <div class="col-md-3 mb-3">
+                    {{ form_label(form.canalSignature, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.canalSignature, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.canalSignature) }}
+                </div>
             </div>
 
             <div class="col-md-6 mb-3">
@@ -64,6 +70,12 @@
                 {{ form_label(form.companyGroup, null, {'label_attr': {'class': 'form-label'}}) }}
                 {{ form_widget(form.companyGroup, {'attr': {'class': 'form-control'}}) }}
                 {{ form_errors(form.companyGroup) }}
+            </div>
+
+            <div class="col-md-6 mb-3">
+                {{ form_label(form.siret, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.siret, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.siret) }}
             </div>
         </div>
        <div>

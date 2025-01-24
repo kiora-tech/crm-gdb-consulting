@@ -29,6 +29,9 @@
 									</div>
 									<div class="ps-3">
 										<h6>{{ customer.name }}</h6>
+										<a href="https://www.pappers.fr/recherche?q={{ customer.siret }}" target="_blank">
+											{{ "siret"|trans }}: {{ customer.siret }}
+										</a>
 									</div>
 								</div>
 							</div>
@@ -108,6 +111,7 @@
 													<th scope="col" class="text-start">{{ "contact.position"|trans }}</th>
 													<th scope="col" class="text-start">{{ "contact.email"|trans }}</th>
 													<th scope="col" class="text-start">{{ "contact.phone"|trans }}</th>
+													<th scope="col" class="text-start">{{ "contact.mobilePhone"|trans }}</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -120,6 +124,9 @@
 														</td>
 														<td>
 															<a href="tel:{{ contact.phone }}" data-turbo="false">{{ contact.phone }}</a>
+														</td>
+														<td>
+															<a href="tel:{{ contact.phone }}" data-turbo="false">{{ contact.mobilePhone }}</a>
 														</td>
 													</tr>
 												{% else %}
@@ -140,32 +147,6 @@
 			</div>
 
 			<div class="col-lg-4">
-				<div class="row card">
-					<div class="card-body frameHeigh">
-						<turbo-frame
-							id="siret">
-							<!-- Titre de la carte -->
-							<h5 class="card-title">{{ "customer.siret_list"|trans }}</h5>
-							<!-- Vérification si le client a des business entities associées -->
-							{% if customer.businessEntities is not empty %}
-								<!-- Liste des SIRETs dans une boucle -->
-								<div class="list-group">
-									{% for entity in customer.businessEntities %}
-										<div class="list-group-item d-flex justify-content-between align-items-center">
-											<a href="https://www.pappers.fr/recherche?q={{ entity.siret }}" target="_blank">{{ "siret"|trans }}:
-												{{ entity.siret }}</a>
-										</div>
-									{% endfor %}
-								</div>
-							{% else %}
-								<!-- Message affiché s'il n'y a pas de SIRET -->
-								<p>{{ "customer.no_siret"|trans }}</p>
-							{% endif %}
-							<a id="open-overlay-button" href="{{ path('app_business_entity_new', {'customer': customer.id}) }}" class="btn btn-primary">{{ "button.add_siret"|trans }}</a>
-						</turbo-frame>
-					</div>
-
-				</div>
 				<div>
 					<div class="row card">
 						<div class="card-body frameHeigh">

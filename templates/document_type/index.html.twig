@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}DocumentType index{% endblock %}
+
+{% block body %}
+    <h1>DocumentType index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Label</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for document_type in document_types %}
+            <tr>
+                <td>{{ document_type.id }}</td>
+                <td>{{ document_type.label }}</td>
+                <td>
+                    <a href="{{ path('app_document_type_show', {'id': document_type.id}) }}">show</a>
+                    <a href="{{ path('app_document_type_edit', {'id': document_type.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_document_type_new') }}">Create new</a>
+{% endblock %}

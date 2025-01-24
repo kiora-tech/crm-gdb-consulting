@@ -23,6 +23,9 @@ class Document
     #[ORM\JoinColumn(nullable: false)]
     private ?Customer $customer = null;
 
+    #[ORM\ManyToOne(inversedBy: 'documents')]
+    private ?DocumentType $type = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -60,6 +63,18 @@ class Document
     public function setCustomer(?Customer $customer): static
     {
         $this->customer = $customer;
+
+        return $this;
+    }
+
+    public function getType(): ?DocumentType
+    {
+        return $this->type;
+    }
+
+    public function setType(?DocumentType $type): static
+    {
+        $this->type = $type;
 
         return $this;
     }

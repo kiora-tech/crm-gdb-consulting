@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New DocumentType{% endblock %}
+
+{% block body %}
+    <h1>Create new DocumentType</h1>
+
+    {{ include('document_type/_form.html.twig') }}
+
+    <a href="{{ path('app_document_type_index') }}">back to list</a>
+{% endblock %}

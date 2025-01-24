@@ -18,7 +18,7 @@ class Energy
     #[ORM\ManyToOne(inversedBy: 'energies')]
     private ?customer $customer = null;
 
-    #[ORM\Column(length: 8)]
+    #[ORM\Column(type: Types::STRING, nullable: true, enumType: EnergyType::class)]
     private ?string $type = null;
 
     #[ORM\Column(type: Types::BIGINT, nullable: true)]

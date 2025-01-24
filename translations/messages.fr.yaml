@@ -6,6 +6,7 @@ vich_uploader:
 ROLE_USER: Utilisateur
 ROLE_ADMIN: Admin
 Register: Inscription
+
 home:
   title: "Bienvenue sur notre site"
   welcome: "Bienvenue sur notre site"
@@ -33,6 +34,7 @@ menu:
   create_account: "Création de compte"
   documents: Documents
   contacts: Contacts
+  document_type: "Type de document"
 choice:
   "yes": Oui
   "no": Non
@@ -222,25 +224,6 @@ invitation_link:
   expired: "Le lien a expiré."
   expired_title: "Lien Expiré"
   expired_message: "Désolé, ce lien d'invitation a expiré ou est invalide."
-document:
-  supporting_documents:
-    label: "Documents justificatifs"
-    add_button: "Ajouter un document"
-    validity_date: "Date de validité"
-    document_type: "Type de document"
-    error_message: { invalid_pdf: "Le fichier doit être un fichier PDF", max_size: "La taille du fichier ne doit pas dépasser 5 Mo" }
-  type:
-    prospect: Prospect
-    resume: Résumé
-    cni: "Carte Nationale d'Identité (CNI)"
-    passport: Passeport
-    driver_license: "Permis de conduire"
-    proof_of_residence: "Justificatif de domicile (facture d'électricité, facture de téléphone, quittance de loyer, etc.)"
-    bank_statements: "Relevés de comptes bancaires"
-    financial_asset_statements: "Relevés d'actifs financiers"
-    birth_certificate: "Certificats de naissance"
-    payslips: "Bulletins de salaire"
-    tax_declarations: "Déclarations de revenus"
 client_document:
   name:
     label: Nom
@@ -515,16 +498,19 @@ Enter customer name:	Entrez le nom du client
 Lead origin:	Origine du prospect
 Enter lead origin:	"Entrer l'origine du prospect"
 Siret:	Siret
-Code:	Code
+Code:	PDL/PCE
 Provider:	Fournisseur
-Contract end:	Fin Contrat
+Contract end:	Echeance du contrat
 Status:	Status
 Comments:	Commentaire
 NoComments:	Pas de commentaire
 Contacts:	Contact
 Position:	Position
 Phone:	Telephone
+elec:    Electricité
+gaz:    Gaz
 customer:
+  company_group: "Groupement d'entreprises"
   add_prospect: Ajouter un prospect
   add_energy: Ajouter une énergie
   add_contact: Ajouter un contact
@@ -543,16 +529,17 @@ customer:
   update_details: Mise à jour
   add_comment: Ajouter un commentaire
 contact:
-  name: Nom
+  name: Nom/Prénom de l'interlocuteur
   position: Poste
   email: Email
-  phone: Téléphone
+  phone: Téléphone fixe
+  mobilePhone: Téléphone portable
 
 energy:
   provider: Fournisseur
-  type: Type
-  code: Code
-  expiry_date: Date d'expiration
+  type: Type d’energie
+  code: PDL/PCE
+  expiry_date: Echeance du contrat
 
 table:
   no_data: Aucune donnée disponible
@@ -563,12 +550,11 @@ Valeur du contrat:	Valeur du contrat
 Commision:	Commision
 Commission du commercial:	Commission du commercial
 Origin:	Origin
-Partenaire:	Partenaire
-Salon professionnel:	Salon professionnel
-Listing:	Listing
-Site web:	Site web
-Référencement:	Référencement
-Autre:	Autre
+acquisition:	Acquisition
+renouvellement:	Renouvellement
+courier: Courier
+fournisseur: Fournisseur
+gdb: GDB
 Gagné:	Gagné
 Perdu:	Perdu
 En cours:	En cours
@@ -577,7 +563,7 @@ Renouvellement:	Renouvellement
 Margin:	Marge
 Company group:	"Groupement d'entreprises"
 Mobile phone:	Téléphone mobile
-Address:	Addresse
+Address:	Adresse
 Power:	Puissance
 Base price:	Prix de base
 Peak hour:	Heure de point
@@ -596,7 +582,7 @@ C5:	C5
 Total:	Total
 customer.comments:	Comment
 Note:	Note
-documentDoc:	document
+documentDoc:	Document
 File:	Fichier
 Drag and drop a file or click to browse: Glisser-déposer un fichier
 Password:	Mot de passe

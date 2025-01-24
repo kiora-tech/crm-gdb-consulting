@@ -21,7 +21,10 @@ class EnergyType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('type')
+            ->add('type', EnumType::class, [
+                'class' => \App\Entity\EnergyType::class,
+                'choice_label' => fn(\App\Entity\EnergyType $energy) => $energy->value,
+            ])
             ->add('code')
             ->add('provider')
             ->add('contractEnd', null, [

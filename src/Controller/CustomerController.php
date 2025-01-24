@@ -22,8 +22,11 @@ class CustomerController extends AbstractController
     #[Route('/', name: 'app_customer_index', methods: ['GET'])]
     public function index(CustomerRepository $customerRepository, PaginationService $paginationService, Request $request): Response
     {
+        $sort = $request->query->get('sort', 'name');
+        $order = $request->query->get('order', 'ASC');
+
         $query = $customerRepository->createQueryBuilder('c')
-            ->orderBy('c.name', 'ASC')
+            ->orderBy('c.'.$sort, $order)
             ->getQuery();
 
         $customers = $paginationService->paginate($query, $request);

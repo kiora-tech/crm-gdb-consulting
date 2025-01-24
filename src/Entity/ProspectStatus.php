@@ -10,8 +10,6 @@ enum ProspectStatus: string implements TranslatableInterface
     case WON = 'Gagné';
     case LOST = 'Perdu';
     case IN_PROGRESS = 'En cours';
-    case ACQUISITION = 'Acquisition';
-    case RENEWAL = 'Renouvellement';
 
     public static function values(): array
     {

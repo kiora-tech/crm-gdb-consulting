@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\CanalSignature;
 use App\Entity\Customer;
 use App\Entity\ProspectOrigin;
 use App\Entity\ProspectStatus;
@@ -25,10 +26,15 @@ class CustomerType extends AbstractType
                 'class' => ProspectStatus::class,
                 'choice_label' => fn(ProspectStatus $status) => $status->value,
             ])
+            ->add('canalSignature', EnumType::class, [
+                'class' => CanalSignature::class,
+                'choice_label' => fn(CanalSignature $status) => $status->value,
+            ])
             ->add('action')
             ->add('worth')
             ->add('commision')
             ->add('margin')
+            ->add('siret')
             ->add('companyGroup');
     }
 

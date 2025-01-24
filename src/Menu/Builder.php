@@ -18,12 +18,8 @@ use function Symfony\Component\Translation\t;
 final readonly class Builder
 {
     public function __construct(
-        private FactoryInterface        $factory,
-        private Security                $security,
-        #[Autowire(service: 'security.impersonate_url_generator', lazy: true)]
-        private ImpersonateUrlGenerator $impersonateUrlGenerator,
-        #[Autowire(lazy: true)]
-        private UrlGeneratorInterface   $urlGenerator,
+        private FactoryInterface $factory,
+        private Security         $security,
     )
     {
     }
@@ -48,28 +44,33 @@ final readonly class Builder
             ->setExtra('safe_label', true);
 
         $menu->addChild('menu.customers', ['route' => 'app_customer_index'])
-            ->setLabel((string) t('menu.customers'))
+            ->setLabel((string)t('menu.customers'))
             ->setExtra('icon', 'bi bi-person')
             ->setExtra('safe_label', true);
 
         $menu->addChild('menu.contacts', ['route' => 'app_contact_index'])
-        ->setLabel((string) t('menu.contacts'))
-        ->setExtra('icon', 'bi bi-person-lines-fill')
-        ->setExtra('safe_label', true);
+            ->setLabel((string)t('menu.contacts'))
+            ->setExtra('icon', 'bi bi-person-lines-fill')
+            ->setExtra('safe_label', true);
 
         $menu->addChild('menu.documents', ['route' => 'app_document_index'])
-            ->setLabel((string) t('menu.documents'))
+            ->setLabel((string)t('menu.documents'))
             ->setExtra('icon', 'bi bi-file-earmark-text')
             ->setExtra('safe_label', true);
-        
+
         $menu->addChild('menu.user', ['route' => 'app_user_index'])
-            ->setLabel((string) t('menu.user'))
+            ->setLabel((string)t('menu.user'))
             ->setExtra('icon', 'bi bi-door-open')
             ->setExtra('safe_label', true);
 
         $menu->addChild('menu.document_signature', ['route' => 'app_document_signature_index'])
-            ->setLabel((string) t('menu.document_signature'))
-        ->setExtra('icon', 'bi bi-file-earmark-text')
+            ->setLabel((string)t('menu.document_signature'))
+            ->setExtra('icon', 'bi bi-file-earmark-text')
+            ->setExtra('safe_label', true);
+
+        $menu->addChild('menu.document_type', ['route' => 'app_document_type_index'])
+            ->setLabel((string)t('menu.document_type'))
+            ->setExtra('icon', 'bi bi-file')
             ->setExtra('safe_label', true);
 
 

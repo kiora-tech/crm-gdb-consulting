@@ -5,10 +5,10 @@ namespace App\Entity;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-enum ProspectOrigin: string implements TranslatableInterface
+enum EnergyType: string implements TranslatableInterface
 {
-    case ACQUISITION = 'acquisition';
-    case RENOUVELLEMENT = 'renouvellement';
+    case ELEC = 'elec';
+    case GAZ = 'gaz';
 
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
