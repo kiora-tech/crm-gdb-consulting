@@ -24,7 +24,7 @@
 					</thead>
 					<tbody class="bg-white divide-y divide-gray-200">
 						{% for contact in entities %}
-							<tr id="contact-row-{{ contact.id }}">
+							<tr  data-table-header-target="row" id="contact-row-{{ contact.id }}">
 								<td class="px-6 py-4 text-center">
 									<a href="mailto:{{ contact.email }}" class="text-blue-500 hover:underline">{{ contact.email }}</a>
 								</td>

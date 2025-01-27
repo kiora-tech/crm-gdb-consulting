@@ -20,7 +20,7 @@
 					</thead>
 					<tbody class="bg-white divide-y divide-gray-200">
 						{% for document in documents %}
-							<tr>
+							<tr data-table-header-target="row">
 								<td class="px-6 py-4 text-center">{{ document.name }}</td>
 								<td class="px-6 py-4 text-center">{{ document.customer }}</td>
 								<td class="px-6 py-4 text-center">

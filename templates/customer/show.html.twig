@@ -9,7 +9,7 @@
 		<h1>{{ "menu.customer"|trans }}</h1>
 		<a href="{{ path('app_customer_edit', {'id': customer.id}) }}" class="btn btn-primary">{{ "button.edit"|trans }}</a>
 	</div>
-
+	{{dump()}}
 	<section class="section dashboard">
 		<div
 			class="row">
@@ -30,7 +30,8 @@
 									<div class="ps-3">
 										<h6>{{ customer.name }}</h6>
 										<a href="https://www.pappers.fr/recherche?q={{ customer.siret }}" target="_blank">
-											{{ "siret"|trans }}: {{ customer.siret }}
+											{{ "siret"|trans }}:
+											{{ customer.siret }}
 										</a>
 									</div>
 								</div>
@@ -66,20 +67,20 @@
 								<turbo-frame id="energies">
 									<h5 class="card-title">{{ "customer.contract_energies"|trans }}</h5>
 									<div class="table-responsive">
-										<table class="table table-hover mb-0">
+										<table class="table table-hover mb-0" data-controller="table-header">
 											<thead class="table-light">
 												<tr class="table-primary">
-													<th scope="col" class="text-start">{{ "energy.provider"|trans }}</th>
-													<th scope="col" class="text-start">{{ "energy.type"|trans }}</th>
-													<th scope="col" class="text-start">{{ "energy.code"|trans }}</th>
-													<th scope="col" class="text-start">{{ "energy.expiry_date"|trans }}</th>
+													<th scope="col" class="text-start" data-index="0" data-action="click->table-header#sort">{{ "energy.provider"|trans }}</th>
+													<th scope="col" class="text-start" data-index="1" data-action="click->table-header#sort">{{ "energy.type"|trans }}</th>
+													<th scope="col" class="text-start" data-index="2" data-action="click->table-header#sort">{{ "energy.code"|trans }}</th>
+													<th scope="col" class="text-start" data-index="4" data-action="click->table-header#sort">{{ "energy.expiry_date"|trans }}</th>
 												</tr>
 											</thead>
 											<tbody>
 												{% for energy in customer.energies %}
-													<tr>
+													<tr data-table-header-target="row">
 														<td>{{ energy.provider }}</td>
-														<td>{{ energy.type }}</td>
+														<td>{{ energy.type.value|default('Unknown') }}</td>
 														<td>{{ energy.code }}</td>
 														<td>{{ energy.contractEnd ? energy.contractEnd|date('d/m/Y') : "-" }}</td>
 													</tr>
