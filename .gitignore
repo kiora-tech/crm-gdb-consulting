@@ -28,4 +28,4 @@
 
 compose.override.yaml
 
-/public/uploads/documents/
+/public/uploads/documents/*
