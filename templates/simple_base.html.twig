@@ -4,14 +4,15 @@
 		<meta charset="UTF-8">
 		<title>
 			{% block title %}Welcome!
-			{% endblock %} - GDB consulting
+			{% endblock %}
+			- GDB consulting
 		</title>
-		<link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
-		{% block stylesheets %}{% endblock %}
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	{#	{% if getCompanyIdentity().cssPath != constant('\\App\\Entity\\CompanyIdentity::TO_BE_GENERATED') -%}
-			<link rel="stylesheet" href="{{ asset(getCompanyIdentity().cssPath) }}">
-		{%- endif %}#}
+		<link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}"> {% block stylesheets %}{% endblock %}
+		<meta
+		name="viewport" content="width=device-width, initial-scale=1.0">
+		{#	{% if getCompanyIdentity().cssPath != constant('\\App\\Entity\\CompanyIdentity::TO_BE_GENERATED') -%}
+							<link rel="stylesheet" href="{{ asset(getCompanyIdentity().cssPath) }}">
+						{%- endif %}#}
 
 		{% block javascripts %}{% endblock %}
 
@@ -29,66 +30,67 @@
 						</a>
 						{% block inner_header %}{% endblock %}
 					</div>
+					<aside>
+						<div class="search-bar">
+							{{ component('client_search') }}
+						</div>
+					</aside>
+					{% if is_granted('ROLE_USER') %}
+						<nav class="header-nav ms-auto">
+							<ul class="d-flex align-items-center">
+								<li class="nav-item d-block d-lg-none">
+									<div class="nav-link nav-icon search-bar-toggle">
+										<i class="bi bi-search"></i>
+									</div>
+								</li>
 
-					<div class="search-bar">
-						{{ component('client_search') }}
-					</div>
-						{% if is_granted('ROLE_USER') %}
-					<nav class="header-nav ms-auto">
-						<ul class="d-flex align-items-center">
-							<li class="nav-item d-block d-lg-none">
-								<div class="nav-link nav-icon search-bar-toggle">
-									<i class="bi bi-search"></i>
-								</div>
-							</li>
-							
-							<li class="nav-item dropdown pe-3">
-								<a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-									{% if app.user.profilePicture is not null %}
-										<img src="{{ asset('uploads/user_profile/' ~ app.user.profilePicture) }}" alt="" class="rounded-circle">
-									{% else %}
-										<img src="{{ asset('img/default_user.png') }}" alt="" class="rounded-circle">
-									{% endif %}
-									<span class="d-none d-md-block dropdown-toggle ps-2">{{ app.user.name ~ ' ' ~ app.user.lastName }}</span>
-								</a>
-								<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
-									<li class="dropdown-header">
-										<h6>{{ app.user.name ~ ' ' ~ app.user.lastName }}</h6>
-										<span>{{ app.user.company.name }}</span>
-									</li>
-									<li>
-										<hr class="dropdown-divider">
-									</li>
-									<li>
-										<a class="dropdown-item d-flex align-items-center" href="{{ path('app_user_profile') }}">
-											<i class="bi bi-person"></i>
-											<span>{{ 'header.profile.my_profile'|trans }}</span>
-										</a>
-									</li>
-									<li>
-										<hr class="dropdown-divider">
-									</li>
-									{% if is_granted('ROLE_COMPANY_ADMIN') %}
+								<li class="nav-item dropdown pe-3">
+									<a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+										{% if app.user.profilePicture is not null %}
+											<img src="{{ asset('uploads/user_profile/' ~ app.user.profilePicture) }}" alt="" class="rounded-circle">
+										{% else %}
+											<img src="{{ asset('img/default_user.png') }}" alt="" class="rounded-circle">
+										{% endif %}
+										<span class="d-none d-md-block dropdown-toggle ps-2">{{ app.user.name ~ ' ' ~ app.user.lastName }}</span>
+									</a>
+									<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+										<li class="dropdown-header">
+											<h6>{{ app.user.name ~ ' ' ~ app.user.lastName }}</h6>
+											<span>{{ app.user.company.name }}</span>
+										</li>
 										<li>
-											<a class="dropdown-item d-flex align-items-center" href="{{ path('app_company_show', { 'id': app.user.company.id }) }}">
-												<i class="bi bi-gear"></i>
-												<span>{{ 'header.company.settings'|trans }}</span>
+											<hr class="dropdown-divider">
+										</li>
+										<li>
+											<a class="dropdown-item d-flex align-items-center" href="{{ path('app_user_profile') }}">
+												<i class="bi bi-person"></i>
+												<span>{{ 'header.profile.my_profile'|trans }}</span>
 											</a>
 										</li>
 										<li>
 											<hr class="dropdown-divider">
 										</li>
-									{% endif %}
-									<li>
-										<a class="dropdown-item d-flex align-items-center" href="{{ path('app_logout') }}">
-											<i class="bi bi-box-arrow-right"></i>
-											<span>{{ 'header.profile.sign_out'|trans }}</span>
-										</a>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</nav>
+										{% if is_granted('ROLE_COMPANY_ADMIN') %}
+											<li>
+												<a class="dropdown-item d-flex align-items-center" href="{{ path('app_company_show', { 'id': app.user.company.id }) }}">
+													<i class="bi bi-gear"></i>
+													<span>{{ 'header.company.settings'|trans }}</span>
+												</a>
+											</li>
+											<li>
+												<hr class="dropdown-divider">
+											</li>
+										{% endif %}
+										<li>
+											<a class="dropdown-item d-flex align-items-center" href="{{ path('app_logout') }}">
+												<i class="bi bi-box-arrow-right"></i>
+												<span>{{ 'header.profile.sign_out'|trans }}</span>
+											</a>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</nav>
 					{% endif %}
 				</header>
 			{% endblock %}
