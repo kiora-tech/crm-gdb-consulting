@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Document;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -13,6 +14,9 @@ class DropzoneForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('type', EntityType::class, [
+                'class' => \App\Entity\DocumentType::class,
+            ])
             ->add('file', DropzoneType::class, [
                 'attr' => [
                     'placeholder' => 'Drag and drop a file or click to browse',
