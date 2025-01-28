@@ -31,7 +31,7 @@ class ContactType extends AbstractType
                 'class' => Customer::class
             ]);
         }
-        $builder->setAction($this->router->generate('app_contact_index', ['customer' => $options['customer']?->getId()]));
+        $builder->setAction($this->router->generate('app_contact_new', ['customer' => $options['customer']?->getId()]));
 
     }
 
