@@ -29,7 +29,7 @@
     </thead>
     <tbody class="bg-white divide-y divide-gray-200">
         {% for energy in entities %}
-            <tr id="energy-row-{{ energy.id }}">
+            <tr data-table-header-target="row" id="energy-row-{{ energy.id }}">
                 <td class="px-4 py-2 text-center">{{ energy.id }}</td>
                 <td class="px-4 py-2 text-center">{{ energy.type }}</td>
                 <td class="px-4 py-2 text-center">{{ energy.code }}</td>

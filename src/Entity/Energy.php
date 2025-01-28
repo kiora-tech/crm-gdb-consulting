@@ -19,7 +19,7 @@ class Energy
     private ?customer $customer = null;
 
     #[ORM\Column(type: Types::STRING, nullable: true, enumType: EnergyType::class)]
-    private ?string $type = null;
+    private ?EnergyType $type = null;
 
     #[ORM\Column(type: Types::BIGINT, nullable: true)]
     private ?int $code = null;
@@ -80,12 +80,12 @@ class Energy
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): ?EnergyType
     {
         return $this->type;
     }
 
-    public function setType(string $type): static
+    public function setType(?EnergyType $type): static
     {
         $this->type = $type;
 
