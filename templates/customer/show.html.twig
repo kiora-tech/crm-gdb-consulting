@@ -175,9 +175,7 @@
 							<h5 class="card-title">{{ "documentDoc"|trans }}</h5>
 							<turbo-frame id="list_document">
 								<div class="d-flex align-items-center">
-									<div class="ps-3">
 										{% include 'document/_document_list.html.twig' with {'documents': customer.documents} %}
-									</div>
 								</div>
 								{% include 'document/_dropzone.html.twig' with {'form': formDocument} %}
 							</turbo-frame>

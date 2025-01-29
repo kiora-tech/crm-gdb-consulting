@@ -1,11 +1,24 @@
-<ul>
-    {% for document in documents %}
-        <li>
-            <a href="{{ path('app_document_download', {'id': document.id}) }}" data-turbo="false" >{{ document.name }}</a>
-            {{ include('docu/_delete_form.html.twig') }}
-            <a href="{{ path('app_document_signature_ask', {'id': document.id} ) }}" data-turbo="false">
-                <i class="bi bi-award"></i>
-            </a>
-        </li>
-    {% endfor %}
-</ul>
+<table class="table">
+	<thead class="bg-gray-50">
+		<tr class="table-primary">
+			<th scope="col" class="px-6 py-4 text-start">{{ "name"|trans }}</th>
+			<th scope="col" class="px-6 py-4 text-start">{{ "button.actions"|trans }}</th>
+		</tr>
+	</thead>
+	<tbody class="bg-white divide-y divide-gray-200">
+		{% for document in documents %}
+			<tr>
+				<td>
+					<a href="{{ path('app_document_download', {'id': document.id}) }}" data-turbo="false">{{ document.name }}</a>
+				</td>
+				<td>
+					<div class="flexDoc">{{ include('docu/_delete_form.html.twig') }}
+						<a href="{{ path('app_document_signature_ask', {'id': document.id} ) }}" data-turbo="false">
+							<i class="bi bi-award"></i>
+						</a>
+					</div>
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
