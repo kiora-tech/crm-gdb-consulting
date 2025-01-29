@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Data\CustomerSearchData;
 use App\Entity\Customer;
 use App\Entity\Document;
+use App\Form\CustomerSearchType;
 use App\Form\CustomerType;
 use App\Form\DropzoneForm;
 use App\Repository\CustomerRepository;
@@ -22,17 +24,17 @@ class CustomerController extends AbstractController
     #[Route('/', name: 'app_customer_index', methods: ['GET'])]
     public function index(CustomerRepository $customerRepository, PaginationService $paginationService, Request $request): Response
     {
-        $sort = $request->query->get('sort', 'name');
-        $order = $request->query->get('order', 'ASC');
+        $data = new CustomerSearchData();
+        $form = $this->createForm(CustomerSearchType::class, $data);
+        $form->handleRequest($request);
 
-        $query = $customerRepository->createQueryBuilder('c')
-            ->orderBy('c.'.$sort, $order)
-            ->getQuery();
+        $query = $customerRepository->search($data);
 
         $customers = $paginationService->paginate($query, $request);
 
         return $this->render('customer/index.html.twig', [
             'customers' => $customers,
+            'form' => $form,
         ]);
     }
 

@@ -1,0 +1,66 @@
+<section class="section">
+{{ form_start(form, {attr: {class: 'filter js-filter-form'}}) }}
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Filtres de recherche</h5>
+
+        <div class="row mb-3">
+            {# Nom du client #}
+            <div class="col-md-4">
+                <div class="form-floating">
+                    {{ form_widget(form.name, {
+                        attr: {
+                            class: 'form-control',
+                            placeholder: 'Nom du client',
+                            id: 'floatingName'
+                        }
+                    }) }}
+                    <label for="floatingName">Nom du client</label>
+                    {{ form_errors(form.name) }}
+                </div>
+            </div>
+
+            {# Statut #}
+            <div class="col-md-4">
+                <div class="form-floating">
+                    {{ form_widget(form.status, {
+                        attr: {
+                            class: 'form-select',
+                            id: 'floatingStatus'
+                        }
+                    }) }}
+                    <label for="floatingStatus">Statut</label>
+                    {{ form_errors(form.status) }}
+                </div>
+            </div>
+
+            {# Nom du contact #}
+            <div class="col-md-4">
+                <div class="form-floating">
+                    {{ form_widget(form.contactName, {
+                        attr: {
+                            class: 'form-control',
+                            placeholder: 'Nom du contact',
+                            id: 'floatingContact'
+                        }
+                    }) }}
+                    <label for="floatingContact">Nom du contact</label>
+                    {{ form_errors(form.contactName) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-search"></i> Filtrer
+            </button>
+            <button type="reset" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> Réinitialiser
+            </button>
+        </div>
+    </div>
+</div>
+
+{{ form_end(form) }}
+</section>

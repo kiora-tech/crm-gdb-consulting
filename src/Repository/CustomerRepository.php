@@ -2,8 +2,10 @@
 
 namespace App\Repository;
 
+use App\Data\CustomerSearchData;
 use App\Entity\Customer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,28 +18,32 @@ class CustomerRepository extends ServiceEntityRepository
         parent::__construct($registry, Customer::class);
     }
 
-    //    /**
-    //     * @return Customer[] Returns an array of Customer objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('c.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function search(CustomerSearchData $search): Query
+    {
+        $query = $this->createQueryBuilder('c');
 
-    //    public function findOneBySomeField($value): ?Customer
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if (!empty($search->name)) {
+            $query = $query
+                ->andWhere('c.name LIKE :name')
+                ->setParameter('name', '%'.$search->name.'%');
+        }
+
+        if($search->status) {
+            $query = $query
+                ->andWhere('c.status = :status')
+                ->setParameter('status', $search->status);
+        }
+
+        // search on first and last name of contact
+        if (!empty($search->contactName)) {
+            $query = $query
+                ->join('c.contacts', 'co')
+                ->andWhere('(co.firstName LIKE :contactName OR co.lastName LIKE :contactName)')
+                ->setParameter('contactName', '%'.$search->contactName.'%');
+        }
+
+        return $query
+            ->orderBy('c.'.$search->sort, $search->order)
+            ->getQuery();
+    }
 }

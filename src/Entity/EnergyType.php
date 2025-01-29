@@ -7,8 +7,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 enum EnergyType: string implements TranslatableInterface
 {
-    case ELEC = 'elec';
-    case GAZ = 'gaz';
+    case ELEC = 'ELEC';
+    case GAZ = 'GAZ';
 
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {

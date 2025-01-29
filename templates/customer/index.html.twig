@@ -1,16 +1,18 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-	{{ "customer.edit"|trans }}
+	{{ "customer.list"|trans }}
 {% endblock %}
 
 {% block body %}
 	<div class="pagetitle d-flex justify-content-between">
-		<h1>{{ "customer.edit"|trans }}</h1>
+		<h1>{{ "customer.list"|trans }}</h1>
 		<a href="{{ path('app_customer_new') }}" class="btn btn-primary">
 			{{ "create"|trans }}
 		</a>
 	</div>
+
+	{% include 'customer/_filter.html.twig' %}
 
 	<section class="section">
 		<div class="card p-4">

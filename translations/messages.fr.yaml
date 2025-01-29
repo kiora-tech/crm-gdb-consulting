@@ -525,6 +525,7 @@ customer:
   siret_list: Liste des SIRET
   edit: Modifier
   new: Nouveau
+  list: Liste des clients
   siret: Numéro de Siret
   update_details: Mise à jour
   add_comment: Ajouter un commentaire

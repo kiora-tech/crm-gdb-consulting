@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Comment;
 use App\Entity\Customer;
 use App\Entity\Energy;
+use App\Entity\EnergyType;
 use App\Entity\Prospect;
 use App\Entity\Contact;
 use App\Entity\BusinessEntity;
@@ -82,7 +83,7 @@ readonly class ImportService
                         $date = \DateTime::createFromFormat('d/m/Y', $row[7]);
                         $energy->setContractEnd($date); // ECHEANCE
                     }
-                    $energy->setType($row[8]); // ELEC / GAZ
+                    $energy->setType(EnergyType::tryFrom($row[8]) ?? EnergyType::ELEC); // ELEC / GAZ
                     if($row[9]) {
                         $energy->setCode((int)$row[9]); // PDL / PCE
                     }
