@@ -36,12 +36,6 @@ class CustomerSearchType extends AbstractType
             'attr' => [
                 'placeholder' => 'Nom du contact'
             ]
-        ])
-        ->add('order', ChoiceType::class, [
-            'choices' => [
-                'ASC' => 'ASC',
-                'DESC' => 'DESC',
-            ]
         ]);
     }
 
