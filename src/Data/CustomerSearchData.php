@@ -10,11 +10,11 @@ class CustomerSearchData
 
     public int $page = 1;
 
-    public string $order = 'ASC';
+    public ?string $order = null;
 
     public string $sort = 'name';
 
-    public ?ProspectStatus $status = ProspectStatus::IN_PROGRESS;
+    public ?ProspectStatus $status = NULL;
 
     public ?string $contactName = '';
 }

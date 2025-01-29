@@ -7,6 +7,7 @@ use App\Entity\ProspectStatus;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -34,6 +35,12 @@ class CustomerSearchType extends AbstractType
             'required' => false,
             'attr' => [
                 'placeholder' => 'Nom du contact'
+            ]
+        ])
+        ->add('order', ChoiceType::class, [
+            'choices' => [
+                'ASC' => 'ASC',
+                'DESC' => 'DESC',
             ]
         ]);
     }
