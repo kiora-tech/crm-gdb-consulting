@@ -259,3 +259,9 @@ body, html {
   a form {
       display: inline;
   }
+
+  .flexDoc{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
