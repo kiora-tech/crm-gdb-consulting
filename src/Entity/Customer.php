@@ -27,6 +27,7 @@ class Customer
      * @var Collection<int, Energy>
      */
     #[ORM\OneToMany(targetEntity: Energy::class, mappedBy: 'customer', cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OrderBy(['contractEnd' => 'DESC'])]
     private Collection $energies;
 
     /**
@@ -149,6 +150,11 @@ class Customer
         }
 
         return $this;
+    }
+
+    public function getLastEnergy(): Energy|false
+    {
+        return $this->energies->last();
     }
 
     /**

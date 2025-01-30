@@ -10,41 +10,41 @@
 	<section class="section">
 		<div class="card p-4">
 			<div class="card-body">
-				<table class="table">
+				<table class="table" data-controller="table-header">
 					<thead class="bg-gray-50">
 						<tr class="table-primary">
-							<th scope="col" class="px-6 py-4 text-center">Email</th>
-							<th scope="col" class="px-6 py-4 text-center">{{ "name"|trans }}</th>
-							<th scope="col" class="px-6 py-4 text-center">Position</th>
-							<th scope="col" class="px-6 py-4 text-center">Phone</th>
-							<th scope="col" class="px-6 py-4 text-center">Mobile Phone</th>
-							<th scope="col" class="px-6 py-4 text-center">Address</th>
-							<th scope="col" class="px-6 py-4 text-center" data-index="6">Actions</th>
+							<th scope="col" class="text-center" data-index="0" data-action="click->table-header#sort">{{ 'contact.email'|trans }}</th>
+							<th scope="col" class="text-center" data-index="1" data-action="click->table-header#sort">{{ "contact.name"|trans }}</th>
+							<th scope="col" class="text-center" data-index="2" data-action="click->table-header#sort">{{ 'contact.position'|trans }}</th>
+							<th scope="col" class="text-center" data-index="3" data-action="click->table-header#sort">{{ 'contact.phone'|trans }}</th>
+							<th scope="col" class="text-center" data-index="4" data-action="click->table-header#sort">{{ 'contact.mobile_phone'|trans }}</th>
+							<th scope="col" class="text-center" data-index="5" data-action="click->table-header#sort">{{ 'contact.address'|trans }}</th>
+							<th scope="col" class="text-center" data-index="6">Actions</th>
 						</tr>
 					</thead>
 					<tbody class="bg-white divide-y divide-gray-200">
 						{% for contact in entities %}
 							<tr id="contact-row-{{ contact.id }}">
-								<td class="px-6 py-4 text-center">
+								<td class="text-center">
 									<a href="mailto:{{ contact.email }}" class="text-blue-500 hover:underline">{{ contact.email }}</a>
 								</td>
-								<td class="px-6 py-4 text-center">{{ contact.firstName }} {{ contact.lastName }}</td>
-								<td class="px-6 py-4 text-center">{{ contact.position }}</td>
-								<td class="px-6 py-4 text-center">
+								<td class="text-center">{{ contact.firstName }} {{ contact.lastName }}</td>
+								<td class="text-center">{{ contact.position }}</td>
+								<td class="text-center">
 									<a href="tel:{{ contact.phone }}" class="text-blue-500 hover:underline">{{ contact.phone }}</a>
 								</td>
-								<td class="px-6 py-4 text-center">
+								<td class="text-center">
 									<a href="tel:{{ contact.mobilePhone }}" class="text-blue-500 hover:underline">{{ contact.mobilePhone }}</a>
 								</td>
-								<td class="px-6 py-4 text-center">{{ contact.address }}</td>
-								<td class="buttonDisplay px-6 py-4 text-right">
+								<td class=" text-center">{{ contact.address }}</td>
+								<td class="buttonDisplay  text-right">
 									<a href="{{ path('app_contact_show', {'id': contact.id}) }}" class="btn btn-primary">{{ "button.show"|trans }}</a>
 									<a href="{{ path('app_contact_edit', {'id': contact.id}) }}" class="btn btn-primary">{{ "button.edit"|trans }}</a>
 								</td>
 							</tr>
 						{% else %}
 							<tr>
-								<td colspan="7" class="px-6 py-4 text-center">No records found</td>
+								<td colspan="7" class=" text-center">No records found</td>
 							</tr>
 						{% endfor %}
 					</tbody>

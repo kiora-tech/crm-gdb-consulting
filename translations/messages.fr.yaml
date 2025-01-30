@@ -507,8 +507,9 @@ NoComments:	Pas de commentaire
 Contacts:	Contact
 Position:	Position
 Phone:	Telephone
-elec:    Electricité
-gaz:    Gaz
+ELEC:    Electricité
+GAZ:    Gaz
+
 customer:
   company_group: "Groupement d'entreprises"
   add_prospect: Ajouter un prospect
@@ -529,18 +530,20 @@ customer:
   siret: Numéro de Siret
   update_details: Mise à jour
   add_comment: Ajouter un commentaire
+  name: Nom
+  status: Statut
 contact:
   name: Nom/Prénom de l'interlocuteur
   position: Poste
   email: Email
   phone: Téléphone fixe
-  mobilePhone: Téléphone portable
-
+  mobile_phone: Téléphone portable
+  address: Adresse
 energy:
+  contract_end: Echéance du contrat
   provider: Fournisseur
   type: Type d’energie
   code: PDL/PCE
-  expiry_date: Echeance du contrat
 
 table:
   no_data: Aucune donnée disponible

@@ -6,22 +6,19 @@
         <h5 class="card-title">Filtres de recherche</h5>
 
         <div class="row mb-3">
-            {# Nom du client #}
             <div class="col-md-4">
                 <div class="form-floating">
                     {{ form_widget(form.name, {
                         attr: {
                             class: 'form-control',
-                            placeholder: 'Nom du client',
                             id: 'floatingName'
                         }
                     }) }}
-                    <label for="floatingName">Nom du client</label>
+                    <label for="floatingName">{{ 'customer.name'|trans }}</label>
                     {{ form_errors(form.name) }}
                 </div>
             </div>
 
-            {# Statut #}
             <div class="col-md-4">
                 <div class="form-floating">
                     {{ form_widget(form.status, {
@@ -30,7 +27,7 @@
                             id: 'floatingStatus'
                         }
                     }) }}
-                    <label for="floatingStatus">Statut</label>
+                    <label for="floatingStatus">{{ 'customer.status'|trans }}</label>
                     {{ form_errors(form.status) }}
                 </div>
             </div>
@@ -41,11 +38,10 @@
                     {{ form_widget(form.contactName, {
                         attr: {
                             class: 'form-control',
-                            placeholder: 'Nom du contact',
                             id: 'floatingContact'
                         }
                     }) }}
-                    <label for="floatingContact">Nom du contact</label>
+                    <label for="floatingContact">{{ 'contact.name'|trans }}</label>
                     {{ form_errors(form.contactName) }}
                 </div>
             </div>

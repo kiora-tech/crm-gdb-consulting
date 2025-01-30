@@ -30,8 +30,7 @@
 									<div class="ps-3">
 										<h6>{{ customer.name }}</h6>
 										<a href="https://www.pappers.fr/recherche?q={{ customer.siret }}" target="_blank">
-											{{ "siret"|trans }}:
-											{{ customer.siret }}
+											{{ "siret"|trans }}: {{ customer.siret }}
 										</a>
 									</div>
 								</div>
@@ -67,20 +66,20 @@
 								<turbo-frame id="energies">
 									<h5 class="card-title">{{ "customer.contract_energies"|trans }}</h5>
 									<div class="table-responsive">
-										<table class="table table-hover mb-0" data-controller="table-header">
+										<table class="table table-hover mb-0">
 											<thead class="table-light">
 												<tr class="table-primary">
-													<th scope="col" class="text-start" data-index="0" data-action="click->table-header#sort">{{ "energy.provider"|trans }}</th>
-													<th scope="col" class="text-start" data-index="1" data-action="click->table-header#sort">{{ "energy.type"|trans }}</th>
-													<th scope="col" class="text-start" data-index="2" data-action="click->table-header#sort">{{ "energy.code"|trans }}</th>
-													<th scope="col" class="text-start" data-index="4" data-action="click->table-header#sort">{{ "energy.expiry_date"|trans }}</th>
+													<th scope="col" class="text-start">{{ "energy.provider"|trans }}</th>
+													<th scope="col" class="text-start">{{ "energy.type"|trans }}</th>
+													<th scope="col" class="text-start">{{ "energy.code"|trans }}</th>
+													<th scope="col" class="text-start">{{ "energy.contract_end"|trans }}</th>
 												</tr>
 											</thead>
 											<tbody>
 												{% for energy in customer.energies %}
-													<tr data-table-header-target="row">
+													<tr>
 														<td>{{ energy.provider }}</td>
-														<td>{{ energy.type.value|default('Unknown') }}</td>
+														<td>{{ energy.type|trans }}</td>
 														<td>{{ energy.code }}</td>
 														<td>{{ energy.contractEnd ? energy.contractEnd|date('d/m/Y') : "-" }}</td>
 													</tr>
@@ -112,7 +111,7 @@
 													<th scope="col" class="text-start">{{ "contact.position"|trans }}</th>
 													<th scope="col" class="text-start">{{ "contact.email"|trans }}</th>
 													<th scope="col" class="text-start">{{ "contact.phone"|trans }}</th>
-													<th scope="col" class="text-start">{{ "contact.mobilePhone"|trans }}</th>
+													<th scope="col" class="text-start">{{ "contact.mobile_phone"|trans }}</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -174,8 +173,8 @@
 						<div class="card-body frameHeigh">
 							<h5 class="card-title">{{ "documentDoc"|trans }}</h5>
 							<turbo-frame id="list_document">
-								<div class="d-flex align-items-center">
-										{% include 'document/_document_list.html.twig' with {'documents': customer.documents} %}
+								<div class="align-items-center">
+									{% include 'document/_document_list.html.twig' with {'documents': customer.documents} %}
 								</div>
 								{% include 'document/_dropzone.html.twig' with {'form': formDocument} %}
 							</turbo-frame>

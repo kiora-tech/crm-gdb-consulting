@@ -19,7 +19,7 @@ class CustomerSearchType extends AbstractType
                 'label' => false,
                 'required' => false,
                 'attr' => [
-                    'placeholder' => 'Nom du client'
+                    'placeholder' => 'customer.name'
                 ]
             ])
         ->add('status', EnumType::class,
@@ -27,13 +27,12 @@ class CustomerSearchType extends AbstractType
                 'label' => false,
                 'required' => false,
                 'class' => ProspectStatus::class,
-                'placeholder' => 'Statut'
             ])
         ->add('contactName', TextType::class, [
             'label' => false,
             'required' => false,
             'attr' => [
-                'placeholder' => 'Nom du contact'
+                'placeholder' => 'contact.name'
             ]
         ]);
     }
