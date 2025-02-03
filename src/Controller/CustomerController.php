@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Data\CustomerSearchData;
 use App\Entity\Customer;
 use App\Entity\Document;
+use App\Entity\ProspectStatus;
 use App\Form\CustomerSearchType;
 use App\Form\CustomerType;
 use App\Form\DropzoneForm;
@@ -38,6 +39,15 @@ class CustomerController extends AbstractController
         ]);
     }
 
+    #[Route('/customer/{id}/status/{status}', name: 'app_customer_status')]
+    public function updateStatus(Customer $customer, string $status, EntityManagerInterface $entityManager): Response
+    {
+        $newStatus = ProspectStatus::from($status);
+        $customer->setStatus($newStatus);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
+    }
     #[Route('/new', name: 'app_customer_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
