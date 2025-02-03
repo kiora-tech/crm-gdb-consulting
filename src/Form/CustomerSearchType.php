@@ -7,9 +7,9 @@ use App\Entity\ProspectStatus;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class CustomerSearchType extends AbstractType
 {
@@ -20,23 +20,35 @@ class CustomerSearchType extends AbstractType
                 'label' => false,
                 'required' => false,
                 'attr' => [
-                    'placeholder' => 'Nom du client'
+                    'placeholder' => 'customer.name'
                 ]
             ])
-        ->add('status', EnumType::class,
-            [
+            ->add(
+                'status',
+                EnumType::class,
+                [
+                    'label' => false,
+                    'required' => false,
+                    'class' => ProspectStatus::class,
+                ]
+            )
+            ->add('contactName', TextType::class, [
                 'label' => false,
                 'required' => false,
-                'class' => ProspectStatus::class,
-                'placeholder' => 'Statut'
+                'attr' => [
+                    'placeholder' => 'contact.name'
+                ]
             ])
-        ->add('contactName', TextType::class, [
-            'label' => false,
-            'required' => false,
-            'attr' => [
-                'placeholder' => 'Nom du contact'
-            ]
-        ]);
+            ->add('order', ChoiceType::class, [
+                'choices' => [
+                    'ASC' => 'ASC',
+                    'DESC' => 'DESC',
+                ],
+                'label' => false,
+                'attr' => [
+                    'style' => 'display:none;'
+                ]
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

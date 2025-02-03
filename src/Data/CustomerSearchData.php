@@ -12,7 +12,7 @@ class CustomerSearchData
 
     public string $order = 'ASC';
 
-    public string $sort = 'name';
+    public string $sort = '';
 
     public ?ProspectStatus $status = ProspectStatus::IN_PROGRESS;
 

@@ -27,35 +27,56 @@
 				<table class="table">
 					<thead class="bg-gray-50">
 						<tr class="table-primary">
-							<th scope="col" class="px-6 py-4 text-center">{{ "name"|trans }}</th>
-							<th scope="col" class="px-6 py-4 text-center">{{ "customer.siret"|trans }}</th>
-							<th scope="col" class="px-6 py-4 text-center">Echeance</th>
-							<th scope="col" class="px-6 py-4 text-center">{{ "Lead origin"|trans }}</th>
-							<th scope="col" class="px-6 py-4 text-center">{{ "customer.company_group"|trans }}</th>
-							<th scope="col" class="px-6 py-4 text-center">{{ "button.actions"|trans }}</th>
+							{% set currentOrder = app.request.query.get('order', 'ASC') %}
+							{% set newOrder = currentOrder == 'ASC' ? 'DESC' : 'ASC' %}
+
+							<th scope="col" class="text-center">
+								<a href="{{ path(app.request.attributes.get('_route'), app.request.query.all()|merge({ name: '', order: newOrder })) }}">
+									{{ "name"|trans }}
+								</a>
+							</th>
+							<th scope="col" class="text-center">
+								<a href="{{ path(app.request.attributes.get('_route'), app.request.query.all()|merge({ siret: '', order: newOrder })) }}">
+									{{ "customer.siret"|trans }}
+								</a>
+							</th>
+							<th scope="col" class="text-center">
+								<a href="{{ path(app.request.attributes.get('_route'), app.request.query.all()|merge({ contactName: '', order: newOrder })) }}">
+									{{ "contact.name"|trans }}
+								</a>
+							</th>
+							<th scope="col" class="text-center">
+								<a href="{{ path(app.request.attributes.get('_route'), app.request.query.all()|merge({ contactName: '', order: newOrder })) }}">
+									{{ "energy.contract_end"|trans }}
+								</a>
+							</th>
+							<th scope="col" class="text-center">{{ "button.actions"|trans }}</th>
 						</tr>
 					</thead>
 					<tbody class="bg-white divide-y divide-gray-200">
 						{% for customer in customers %}
 							<tr>
-								<td class="px-6 py-4 text-center">{{ customer.name }}</td>
-								<td class="px-6 py-4 text-center">
+								<td class=" text-center">{{ customer.name }}</td>
+								<td class=" text-center">
 									<a href="https://www.pappers.fr/recherche?q={{ customer.siret }}" target="_blank">{{ customer.siret }}</a><br>
 								</td>
-								<td class="px-6 py-4 text-center">
-									{% set earliestEnd = customer.energies|map(e => e.contractEnd)|filter(end => end is not null)|sort|first %}
-									{{ earliestEnd ? earliestEnd|date('d/m/Y') : "-" }}
+								<td class="text-center">
+									{% for contact in customer.contacts %}
+
+										{{ contact }}<br>
+									{% endfor %}
 								</td>
-								<td class="px-6 py-4 text-center">{{ customer.leadOrigin|default("N/A") }}</td>
-								<td class="px-6 py-4 text-center">{{ customer.companyGroup|default("N/A") }}</td>
-								<td class="buttonDisplay px-6 py-4 text-right">
+								<td class=" text-center">
+									{{ customer.getLastEnergy ? customer.getLastEnergy.contractEnd|date('d/m/Y') : "-" }}
+								</td>
+								<td class="buttonDisplay  text-right">
 									<a href="{{ path('app_customer_show', {'id': customer.id}) }}" class="btn btn-primary">{{ "button.show"|trans }}</a>
 									<a href="{{ path('app_customer_edit', {'id': customer.id}) }}" class="btn btn-primary">{{ "button.edit"|trans }}</a>
 								</td>
 							</tr>
 						{% else %}
 							<tr>
-								<td colspan="6" class="px-6 py-4 text-center">{{ "no_record"|trans }}</td>
+								<td colspan="4" class=" text-center">{{ "no_record"|trans }}</td>
 							</tr>
 						{% endfor %}
 

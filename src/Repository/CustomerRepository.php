@@ -22,28 +22,35 @@ class CustomerRepository extends ServiceEntityRepository
     {
         $query = $this->createQueryBuilder('c');
 
+        $allowedSortFields = ['name', 'siret', 'contactName'];
+
+        if (!in_array($search->sort, $allowedSortFields)) {
+            $search->sort = 'name';
+        }
+
+        $order = strtoupper($search->order) === 'DESC' ? 'DESC' : 'ASC';
+
         if (!empty($search->name)) {
             $query = $query
                 ->andWhere('c.name LIKE :name')
-                ->setParameter('name', '%'.$search->name.'%');
+                ->setParameter('name', '%' . $search->name . '%');
         }
 
-        if($search->status) {
+        if ($search->status) {
             $query = $query
                 ->andWhere('c.status = :status')
                 ->setParameter('status', $search->status);
         }
 
-        // search on first and last name of contact
         if (!empty($search->contactName)) {
             $query = $query
                 ->join('c.contacts', 'co')
                 ->andWhere('(co.firstName LIKE :contactName OR co.lastName LIKE :contactName)')
-                ->setParameter('contactName', '%'.$search->contactName.'%');
+                ->setParameter('contactName', '%' . $search->contactName . '%');
         }
 
         return $query
-            ->orderBy('c.'.$search->sort, $search->order)
+            ->orderBy('c.' . $search->sort, $order)
             ->getQuery();
     }
 }
