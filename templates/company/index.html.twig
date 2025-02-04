@@ -33,13 +33,13 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                     {% for company in companies %}
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900">{{ company.id }}</div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="whitespace-nowrap">
                                 <div class="text-sm text-gray-900">{{ company.name }}</div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <td class="whitespace-nowrap text-right text-sm font-medium">
                                 <a href="{{ path('app_company_show', {'id': company.id}) }}"
                                    class="btn btn-primary">{{ "button.show"|trans }}</a>
                                 <a href="{{ path('app_company_edit', {'id': company.id}) }}"
@@ -49,7 +49,7 @@
                     {% else %}
                         <tr>
                             <td colspan="5"
-                                class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-gray-500">
+                                class="whitespace-nowrap text-center text-sm font-medium text-gray-500">
                                 {{ "no_record"|trans }}
                             </td>
                         </tr>

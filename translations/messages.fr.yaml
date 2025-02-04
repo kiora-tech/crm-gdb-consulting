@@ -1,77 +1,77 @@
 vich_uploader:
-  form_label:
-    delete_confirm: "Supprimer?"
-  link:
-    download: Télécharger
+    form_label:
+        delete_confirm: "Supprimer?"
+    link:
+        download: Télécharger
 ROLE_USER: Utilisateur
 ROLE_ADMIN: Admin
 Register: Inscription
 
 home:
-  title: "Bienvenue sur notre site"
-  welcome: "Bienvenue sur notre site"
+    title: "Bienvenue sur notre site"
+    welcome: "Bienvenue sur notre site"
 reset:
-  title: "Réinitialiser votre mot de passe"
-  page_title: "Réinitialiser votre mot de passe"
-  button: "Réinitialiser le mot de passe"
-  send: "Envoyer un e-mail de réinitialisation du mot de passe"
-  email: "Entrez votre adresse e-mail, et nous vous enverrons un lien pour réinitialiser votre mot de passe."
+    title: "Réinitialiser votre mot de passe"
+    page_title: "Réinitialiser votre mot de passe"
+    button: "Réinitialiser le mot de passe"
+    send: "Envoyer un e-mail de réinitialisation du mot de passe"
+    email: "Entrez votre adresse e-mail, et nous vous enverrons un lien pour réinitialiser votre mot de passe."
 menu:
-  home: Accueil
-  companies: Entreprises
-  user: Utilisateur
-  company: Entreprise
-  customer: Client
-  customers: Clients
-  impersonate_exit: "Quitter l'usurpation"
-  logout: Déconnexion
-  login: Connexion
-  client: Client
-  invite: Inviter
-  template: Modèle
-  client_document: "Document client"
-  document_signature: "Signature de document"
-  create_account: "Création de compte"
-  documents: Documents
-  contacts: Contacts
-  document_type: "Type de document"
+    home: Accueil
+    companies: Entreprises
+    user: Utilisateur
+    company: Entreprise
+    customer: Client
+    customers: Clients
+    impersonate_exit: "Quitter l'usurpation"
+    logout: Déconnexion
+    login: Connexion
+    client: Client
+    invite: Inviter
+    template: Modèle
+    client_document: "Document client"
+    document_signature: "Signature de document"
+    create_account: "Création de compte"
+    documents: Documents
+    contacts: Contacts
+    document_type: "Type de document"
 choice:
-  "yes": Oui
-  "no": Non
+    "yes": Oui
+    "no": Non
 manage_user:
-  email:
-    label: Email
-  name:
-    label: Prénom
-  lastname:
-    label: "Nom de famille"
-  password:
-    label_first: "Mot de passe"
-    label_second: "Confirmer le mot de passe"
-    error_message: "Les mots de passe ne correspondent pas"
-  error_message:
-    not_blank: "Ce champ ne peut pas être vide"
+    email:
+        label: Email
+    name:
+        label: Prénom
+    lastname:
+        label: "Nom de famille"
+    password:
+        label_first: "Mot de passe"
+        label_second: "Confirmer le mot de passe"
+        error_message: "Les mots de passe ne correspondent pas"
+    error_message:
+        not_blank: "Ce champ ne peut pas être vide"
 manage_client:
-  assigned_collaborators:
-    title: "Modification des collaborateurs affectés"
-    label: "Collaborateurs affectés"
-    not_blank: "Ce champ ne peut pas être vide"
+    assigned_collaborators:
+        title: "Modification des collaborateurs affectés"
+        label: "Collaborateurs affectés"
+        not_blank: "Ce champ ne peut pas être vide"
 client: __client
 common:
-  date_format: "H:i:s d/m/Y"
-  date_day_format: d/m/Y
+    date_format: "H:i:s d/m/Y"
+    date_day_format: d/m/Y
 loggable:
-  common:
-    action: Action
-    version: Version
-    editor: Éditeur
-    modified_fields: "Champs Modifiés"
-    date: Date
-    actions: Actions
-    details: Détails
-    no_records_found: "Aucun enregistrement n'a été trouvé"
-    old_value: "Ancienne valeur"
-    new_value: "Nouvelle valeur"
+    common:
+        action: Action
+        version: Version
+        editor: Éditeur
+        modified_fields: "Champs Modifiés"
+        date: Date
+        actions: Actions
+        details: Détails
+        no_records_found: "Aucun enregistrement n'a été trouvé"
+        old_value: "Ancienne valeur"
+        new_value: "Nouvelle valeur"
 id: Id
 civility: Civilité
 last_name: Nom
@@ -104,145 +104,145 @@ create: Ajout
 update: Modification
 deletedAt: "Date de suppression"
 reset_password:
-  email:
-    expiration: "Ce lien va expirer dans %date%."
-    account: "Réinitialiser votre mot de passe pour accéder a votre compte"
-  session:
-    token_error: "Aucun token de reinitialisation a été trouver dans URL our la session."
-    user_not_found_error: "Aucun utilisateur a été trouver pour le token donner."
-    invalid_password_error: "Mot de passe invalide."
-    no_mail_error: "Objet Utilisateur doit avoir un email"
-    mail_request: "Votre requête de réinitialisation de mot de passe."
+    email:
+        expiration: "Ce lien va expirer dans %date%."
+        account: "Réinitialiser votre mot de passe pour accéder a votre compte"
+    session:
+        token_error: "Aucun token de reinitialisation a été trouver dans URL our la session."
+        user_not_found_error: "Aucun utilisateur a été trouver pour le token donner."
+        invalid_password_error: "Mot de passe invalide."
+        no_mail_error: "Objet Utilisateur doit avoir un email"
+        mail_request: "Votre requête de réinitialisation de mot de passe."
 button:
-    meet: 'Rendez-vous'
-    reset: Réinitialiser
-    restore_version: 'Restaurer cette version'
-    show: Voir
-    show_active: 'Voir actif'
-    show_deleted: 'Voir supprimé'
-    restore: Restaurer
-    hard_delete: 'Supprimer définitivement'
-    edit: Editer
-    generate: Générer
-    back: Retour
-    download: Télécharger
-    delete: Supprimer
-    save: Sauvegarder
-    update: 'Modifier utilisateur'
-    newUser: 'Créer un nouvelle utilisateur'
-    newAddUser: 'Nouvelle utilisateur'
-    actions: Actions
-    updateAll: 'Mettre a jour'
-    editCompany: 'Editer la compagnie'
-    add_supporting_documents: 'Ajouter des documents justificatifs'
-    close: Fermer
-    impersonate: "Usurper l'identité"
-    manage: 'Gérer'
-    add_siret: Ajouter un Siret
-    login: Connexion
-    add_energy: Ajouter une énergie
-    add_contact: Ajouter un contact
-    add_comment: Ajouter un commentaire
-    company:
-        update: "Modifier l'entreprise"
-        users: "Utilisateurs de l'entreprise"
+        meet: 'Rendez-vous'
+        reset: Réinitialiser
+        restore_version: 'Restaurer cette version'
+        show: Voir
+        show_active: 'Voir actif'
+        show_deleted: 'Voir supprimé'
+        restore: Restaurer
+        hard_delete: 'Supprimer définitivement'
+        edit: Editer
+        generate: Générer
+        back: Retour
+        download: Télécharger
+        delete: Supprimer
+        save: Sauvegarder
+        update: 'Modifier utilisateur'
+        newUser: 'Créer un nouvelle utilisateur'
+        newAddUser: 'Nouvelle utilisateur'
+        actions: Actions
+        updateAll: 'Mettre a jour'
+        editCompany: 'Editer la compagnie'
+        add_supporting_documents: 'Ajouter des documents justificatifs'
+        close: Fermer
+        impersonate: "Usurper l'identité"
+        manage: 'Gérer'
+        add_siret: Ajouter un Siret
+        login: Connexion
+        add_energy: Ajouter une énergie
+        add_contact: Ajouter un contact
+        add_comment: Ajouter un commentaire
+        company:
+                update: "Modifier l'entreprise"
+                users: "Utilisateurs de l'entreprise"
 no_record: "Pas d'enregistrement"
 head:
-  action: Actions
+    action: Actions
 emails:
-    collaborators:
-        notify_client_update: { title: 'Client %clientFullName% modifié', text: 'Le client %clientFullName% à été modifié par %modifierFullName%.' }
-        notify_client_delete: { title: 'Client %clientFullName% supprimé', text: 'Le client %clientFullName% à été supprimé par %modifierFullName%.' }
-        notify_new_collaborator:
-          {
-            title: "Nouveau collaborateur",
-            text:
-              {
-                created: "Un compte a été créé pour vous.",
-                password: "Cliquez sur le lien ci-dessous pour définir votre mot de passe :",
-                login: "Définir mon mot de passe",
-              },
-          }
-        prospect:
-        invitation: Invitation
-        invitation_by: 'Vous avez été invité à rejoindre notre plateforme par'
-        complete_information: 'Veuillez cliquer sur le lien ci-dessous pour compléter vos informations'
-        link_informations: 'Compléter vos informations'
-        invitation_client_created:
-          {
-            title: "%clientFullName% a été créé avec succès !",
-            text: "Le client a finalisé la création de sa fiche de données personnels.",
-            link: "Vous pouvez consulter son profil ici",
-            button: "Voir le profil",
-            prospect_text: "Merci %clientName% d'avoir finialisé la création de votre fiche de données personnelles.",
-            prospect_thank: "Vous serez contacté par %userFullName% si besoin dans les blus brefs délais.",
-            prospect_title: "Bonjour %clientName% !",
-          }
-    hello: Bonjour
-    sincerely: Cordialement
-    thank: Merci
-    team: "L'équipe de GDB consulting"
-    all_rights: 'Tous droits réservés'
-    yousign:
-        notify_signer: { title: 'Vous avez un document à signer', text_document: 'Titre du document: %documentName%', text_link: 'Voici le lien pour signer le document: %link%' }
-    client_access:
-        login: { title: 'Votre espace client a été créé', text: "Un compte a été créé par %userFullName% pour vous permettre d'accéder à votre espace client.", link: 'Vous pouvez maintenant accéder à votre compte en cliquant sur le lien ci-dessous :', button: 'Aller à la page de connexion', email: 'Email : %email%', password: 'Mot de passe : %password%' }
-        powens: { created: { title: 'Powens activé pour votre compte', text: 'Powens a été activé par %userFullName% pour votre compte.', link: 'Vous pouvez maintenant synchroniser vos comptes à votre espace client en cliquant sur le lien ci-dessous :', button: 'Connecter vos comptes' } }
-    verify_email:
-        subject: 'Bienvenue sur notre plateforme'
-        text: 'Veuillez confirmer votre adresse e-mail en cliquant sur le bouton ci-dessous.'
-        button: "Confirmer l'email"
-    2fa:
-        alert: "Nous avons détecté une tentative de connexion à votre compte. Pour des raisons de sécurité, nous avons généré un code de vérification pour confirmer cette action."
-        code: "Votre code de vérification est :"
-        info: "Veuillez entrer ce code pour compléter votre connexion dans les prochaines minutes."
-        detail: "Détails de la tentative de connexion :"
-        ip: "Adresse IP :"
-        location: "Localisation approximative :"
-        warning: "Si vous n'êtes pas à l'origine de cette tentative de connexion, nous vous recommandons de modifier immédiatement votre mot de passe et de contacter notre support."
+        collaborators:
+                notify_client_update: { title: 'Client %clientFullName% modifié', text: 'Le client %clientFullName% à été modifié par %modifierFullName%.' }
+                notify_client_delete: { title: 'Client %clientFullName% supprimé', text: 'Le client %clientFullName% à été supprimé par %modifierFullName%.' }
+                notify_new_collaborator:
+                    {
+                        title: "Nouveau collaborateur",
+                        text:
+                            {
+                                created: "Un compte a été créé pour vous.",
+                                password: "Cliquez sur le lien ci-dessous pour définir votre mot de passe :",
+                                login: "Définir mon mot de passe",
+                            },
+                    }
+                prospect:
+                invitation: Invitation
+                invitation_by: 'Vous avez été invité à rejoindre notre plateforme par'
+                complete_information: 'Veuillez cliquer sur le lien ci-dessous pour compléter vos informations'
+                link_informations: 'Compléter vos informations'
+                invitation_client_created:
+                    {
+                        title: "%clientFullName% a été créé avec succès !",
+                        text: "Le client a finalisé la création de sa fiche de données personnels.",
+                        link: "Vous pouvez consulter son profil ici",
+                        button: "Voir le profil",
+                        prospect_text: "Merci %clientName% d'avoir finialisé la création de votre fiche de données personnelles.",
+                        prospect_thank: "Vous serez contacté par %userFullName% si besoin dans les blus brefs délais.",
+                        prospect_title: "Bonjour %clientName% !",
+                    }
+        hello: Bonjour
+        sincerely: Cordialement
+        thank: Merci
+        team: "L'équipe de GDB consulting"
+        all_rights: 'Tous droits réservés'
+        yousign:
+                notify_signer: { title: 'Vous avez un document à signer', text_document: 'Titre du document: %documentName%', text_link: 'Voici le lien pour signer le document: %link%' }
+        client_access:
+                login: { title: 'Votre espace client a été créé', text: "Un compte a été créé par %userFullName% pour vous permettre d'accéder à votre espace client.", link: 'Vous pouvez maintenant accéder à votre compte en cliquant sur le lien ci-dessous :', button: 'Aller à la page de connexion', email: 'Email : %email%', password: 'Mot de passe : %password%' }
+                powens: { created: { title: 'Powens activé pour votre compte', text: 'Powens a été activé par %userFullName% pour votre compte.', link: 'Vous pouvez maintenant synchroniser vos comptes à votre espace client en cliquant sur le lien ci-dessous :', button: 'Connecter vos comptes' } }
+        verify_email:
+                subject: 'Bienvenue sur notre plateforme'
+                text: 'Veuillez confirmer votre adresse e-mail en cliquant sur le bouton ci-dessous.'
+                button: "Confirmer l'email"
+        2fa:
+                alert: "Nous avons détecté une tentative de connexion à votre compte. Pour des raisons de sécurité, nous avons généré un code de vérification pour confirmer cette action."
+                code: "Votre code de vérification est :"
+                info: "Veuillez entrer ce code pour compléter votre connexion dans les prochaines minutes."
+                detail: "Détails de la tentative de connexion :"
+                ip: "Adresse IP :"
+                location: "Localisation approximative :"
+                warning: "Si vous n'êtes pas à l'origine de cette tentative de connexion, nous vous recommandons de modifier immédiatement votre mot de passe et de contacter notre support."
 prospect:
-    email: 'Email du prospect'
-    send: 'Envoyer un e-mail'
-    invite: 'Inviter le prospect'
-    invalid_token: 'Token invalide, veuillez contacter votre conseiller'
-    statistics: "Statistiques des invitations"
-    invitation_explanation: "En tant que conseiller en gestion de patrimoine (CGP), vous pouvez créer un lien d'invitation personnalisé pour un prospect. Ce lien permettra au prospect de saisir ses informations dans le système."
-    invited: "Invités"
-    used: "Utilisés"
-    created: "Créés"
-    success_message:
-        create: 'Merci %name% tes informations ont bien été enregistrées !'
-    create_account:
-        success: "Merci d'avoir crée votre compte. Un email vous à été envoyé!"
-    validate_account:
-        success: 'Votre compte a été validé avec succès !'
-    success_mail: Email envoyé avec succès
+        email: 'Email du prospect'
+        send: 'Envoyer un e-mail'
+        invite: 'Inviter le prospect'
+        invalid_token: 'Token invalide, veuillez contacter votre conseiller'
+        statistics: "Statistiques des invitations"
+        invitation_explanation: "En tant que conseiller en gestion de patrimoine (CGP), vous pouvez créer un lien d'invitation personnalisé pour un prospect. Ce lien permettra au prospect de saisir ses informations dans le système."
+        invited: "Invités"
+        used: "Utilisés"
+        created: "Créés"
+        success_message:
+                create: 'Merci %name% tes informations ont bien été enregistrées !'
+        create_account:
+                success: "Merci d'avoir crée votre compte. Un email vous à été envoyé!"
+        validate_account:
+                success: 'Votre compte a été validé avec succès !'
+        success_mail: Email envoyé avec succès
 prospect_email:
-  invitation_sent: "Invitation envoyée !"
-  invitation: Invitation
+    invitation_sent: "Invitation envoyée !"
+    invitation: Invitation
 invitation_link:
-  expired: "Le lien a expiré."
-  expired_title: "Lien Expiré"
-  expired_message: "Désolé, ce lien d'invitation a expiré ou est invalide."
+    expired: "Le lien a expiré."
+    expired_title: "Lien Expiré"
+    expired_message: "Désolé, ce lien d'invitation a expiré ou est invalide."
 client_document:
-  name:
-    label: Nom
-  type:
-    label: Type
-  generate_at:
-    label: "Généré le"
-  index: "Liste des documents clients"
-  delete_success: "Document client supprimé avec succès"
-  word_generated:
-    success: "Fichier généré avec succès ! %link%"
-    view_file: "Voir le fichier"
-  clients:
-    label: Clients
-  show_signature: "Consulter la signature"
-  ask_signature: "Demander une signature"
+    name:
+        label: Nom
+    type:
+        label: Type
+    generate_at:
+        label: "Généré le"
+    index: "Liste des documents clients"
+    delete_success: "Document client supprimé avec succès"
+    word_generated:
+        success: "Fichier généré avec succès ! %link%"
+        view_file: "Voir le fichier"
+    clients:
+        label: Clients
+    show_signature: "Consulter la signature"
+    ask_signature: "Demander une signature"
 template: Modèle
 delete_confirmation:
-  message: "Êtes-vous sûr de vouloir supprimer cet élément ?"
+    message: "Êtes-vous sûr de vouloir supprimer cet élément ?"
 clientDocuments: "Documents clients"
 logo: Logo
 logoName: "Nom du logo"
@@ -261,12 +261,12 @@ createdBy: "Créé par"
 generatedAt: "Généré le"
 generatedBy: "Généré par"
 client_access:
-  login:
-    create: { success: "Connexion client créée avec succès" }
-  powens:
-    create: { success: "Powens activé avec succès pour le client" }
-  client:
-    button: { generate: "Créer un identifiant d'accès client", show: "Gérer l'accès client" }
+    login:
+        create: { success: "Connexion client créée avec succès" }
+    powens:
+        create: { success: "Powens activé avec succès pour le client" }
+    client:
+        button: { generate: "Créer un identifiant d'accès client", show: "Gérer l'accès client" }
 job: Profession
 jobCsp: "Catégorie socio-professionnelle"
 retirementAge: "Age de la retraite"
@@ -285,69 +285,69 @@ saving: Épargne
 clientLogin: "Identifiant client"
 authToken: "Token d'authentification"
 document_signature:
-  asked:
-    success_message: "La demande de signature a été envoyée avec succès"
-  index:
-    title: "Liste des demandes de signature"
-    h2: "Liste des demandes de signature"
-    signers: Signataires
-  signature_request_status: "Statut de la demande de signature"
-  document_status:
-    title: "Statut du document"
-    h2: "Statut du document"
-    cancel_confirmation_message: "Êtes-vous sûr de vouloir annuler cette demande de signature ?"
-    cancel: Annuler
-    client_document: "Document client"
-    signer_status: "Statut du signataire"
-    signer: Signataire
-    reason: Raison
-  cancel:
-    success_message: "Demande de signature annulée avec succès"
-    error_message: "Une erreur est survenue lors de l'annulation de la demande de signature"
+    asked:
+        success_message: "La demande de signature a été envoyée avec succès"
+    index:
+        title: "Liste des demandes de signature"
+        h2: "Liste des demandes de signature"
+        signers: Signataires
+    signature_request_status: "Statut de la demande de signature"
+    document_status:
+        title: "Statut du document"
+        h2: "Statut du document"
+        cancel_confirmation_message: "Êtes-vous sûr de vouloir annuler cette demande de signature ?"
+        cancel: Annuler
+        client_document: "Document client"
+        signer_status: "Statut du signataire"
+        signer: Signataire
+        reason: Raison
+    cancel:
+        success_message: "Demande de signature annulée avec succès"
+        error_message: "Une erreur est survenue lors de l'annulation de la demande de signature"
 clientSigningDocumentSigners: Signataires
 clientSigningDocument: "Document client"
 status: Statut
 declineReason: "Raison du refus"
 yousign:
-  signature_request_status:
-    draft: Brouillon
-    ongoing: "En cours"
-    declined: Refusé
-    expired: Expiré
-    done: Signé
-    deleted: Supprimé
-    canceled: Annulé
-  signer_status:
-    initiated: Initié
-    notified: Notifié
-    processing: "En cours"
-    declined: Refusé
-    signed: Signé
-    aborted: Abandonné
-    error: Erreur
+    signature_request_status:
+        draft: Brouillon
+        ongoing: "En cours"
+        declined: Refusé
+        expired: Expiré
+        done: Signé
+        deleted: Supprimé
+        canceled: Annulé
+    signer_status:
+        initiated: Initié
+        notified: Notifié
+        processing: "En cours"
+        declined: Refusé
+        signed: Signé
+        aborted: Abandonné
+        error: Erreur
 downloaded: Téléchargé
 invited:
-  validate: "Vous avez été invitée !"
+    validate: "Vous avez été invitée !"
 client_assets:
-  actif:
-    resume: "Résumé des actifs"
-  financial_assets:
-    title: "Actifs financiers"
-    label: "Résumé des actifs financiers"
-    total: "Total des actifs financiers"
-  non_financial_assets:
-    title: "Actifs non financiers"
-    label: "Résumé des actifs non financiers"
-    total: "Total des actifs non financiers"
-  asset_distribution:
-    label: "Répartition des actifs"
-    total: "Total des actifs"
-  liabilities:
-    title: Passifs
-    label: "Résumé des passifs"
-    total: "Total des passifs"
-  asset_vs_liabilities:
-    label: "Actifs vs Passifs"
+    actif:
+        resume: "Résumé des actifs"
+    financial_assets:
+        title: "Actifs financiers"
+        label: "Résumé des actifs financiers"
+        total: "Total des actifs financiers"
+    non_financial_assets:
+        title: "Actifs non financiers"
+        label: "Résumé des actifs non financiers"
+        total: "Total des actifs non financiers"
+    asset_distribution:
+        label: "Répartition des actifs"
+        total: "Total des actifs"
+    liabilities:
+        title: Passifs
+        label: "Résumé des passifs"
+        total: "Total des passifs"
+    asset_vs_liabilities:
+        label: "Actifs vs Passifs"
 powensUser: "Utilisateur Powens"
 category: Catégorie
 nature: Nature
@@ -378,17 +378,17 @@ Job: Profession
 "Marital Situation": "Situation familiale"
 Handicap: "Personne handicapée"
 powens:
-  button:
-    show: "Voir Powens"
+    button:
+        show: "Voir Powens"
 Hide: Cacher
 Show: Afficher
 repeated_password:
-  password_same: "Le mot de passe et sa confirmation doivent être identiques"
-  password_length: "Le mot de passe doit contenir au moins %value% caractères"
-  password_min_nb_special: "Le mot de passe doit contenir au moins %value% caractères spéciaux"
-  password_min_nb_upper: "Le mot de passe doit contenir au moins %value% majuscules"
-  password_min_nb_lower: "Le mot de passe doit contenir au moins %value% minuscules"
-  password_min_nb_digit: "Le mot de passe doit contenir au moins %value% chiffres"
+    password_same: "Le mot de passe et sa confirmation doivent être identiques"
+    password_length: "Le mot de passe doit contenir au moins %value% caractères"
+    password_min_nb_special: "Le mot de passe doit contenir au moins %value% caractères spéciaux"
+    password_min_nb_upper: "Le mot de passe doit contenir au moins %value% majuscules"
+    password_min_nb_lower: "Le mot de passe doit contenir au moins %value% minuscules"
+    password_min_nb_digit: "Le mot de passe doit contenir au moins %value% chiffres"
 defaultColor: "Couleur par défaut"
 primaryColor: "Couleur Primaire"
 secondaryColor: "Couleur Secondaire"
@@ -417,81 +417,81 @@ birthPlacePostalCode: Lieu de naissance - Code postale
 birthPlaceCity: Ville de naissance
 birthPlaceCountry: Pay de naissance
 update_profile:
-    overview: 'Aperçu'
-    edit_profile: 'Modifier le profil'
-    change_password: 'Changer le mot de passe'
-    profile_details: 'Détails du profil'
-    last_name: 'Nom'
-    first_name: 'Prénom'
-    profile_picture:
-        label: 'Photo de profil'
-        mime_type: 'Veuillez télécharger une image valide (JPEG/PNG).'
-        delete_sumbit: 'Supprimer la photo de profil'
-    email: 'Email'
-    submit_changes: 'Enregistrer les modifications'
-    current_password: 'Mot de passe actuel'
-    new_password: 'Nouveau mot de passe'
-    confirm_new_password: 'Confirmer le nouveau mot de passe'
-    submit_password_change: 'Changer le mot de passe'
-    tooltip_name: "Pour modifier votre nom, veuillez contacter l'administrateur."
-    tooltip_first_name: "Pour modifier votre prénom, veuillez contacter l'administrateur."
-    2fa:
-        label: 'Authentification'
-        enable_email: "Activer l'authentification par email"
-        enable_google: "Activer l'authentification Google"
-        disable_google: "Désactiver l'authentification Google"
-        warning: "L'activation de Google Authenticator désactivera l'authentification par email et inversement."
+        overview: 'Aperçu'
+        edit_profile: 'Modifier le profil'
+        change_password: 'Changer le mot de passe'
+        profile_details: 'Détails du profil'
+        last_name: 'Nom'
+        first_name: 'Prénom'
+        profile_picture:
+                label: 'Photo de profil'
+                mime_type: 'Veuillez télécharger une image valide (JPEG/PNG).'
+                delete_sumbit: 'Supprimer la photo de profil'
+        email: 'Email'
+        submit_changes: 'Enregistrer les modifications'
+        current_password: 'Mot de passe actuel'
+        new_password: 'Nouveau mot de passe'
+        confirm_new_password: 'Confirmer le nouveau mot de passe'
+        submit_password_change: 'Changer le mot de passe'
+        tooltip_name: "Pour modifier votre nom, veuillez contacter l'administrateur."
+        tooltip_first_name: "Pour modifier votre prénom, veuillez contacter l'administrateur."
+        2fa:
+                label: 'Authentification'
+                enable_email: "Activer l'authentification par email"
+                enable_google: "Activer l'authentification Google"
+                disable_google: "Désactiver l'authentification Google"
+                warning: "L'activation de Google Authenticator désactivera l'authentification par email et inversement."
 header:
-    search:
-        placeholder: "Recherche"
-        title: "Entrez un mot-clé pour la recherche"
-        button:
-            title: "Rechercher"
-    profile:
-        my_profile: "Mon Profil"
-        sign_out: "Déconnexion"
-    company:
-        settings: "Paramètres de l'entreprise"
+        search:
+                placeholder: "Recherche"
+                title: "Entrez un mot-clé pour la recherche"
+                button:
+                        title: "Rechercher"
+        profile:
+                my_profile: "Mon Profil"
+                sign_out: "Déconnexion"
+        company:
+                settings: "Paramètres de l'entreprise"
 clientTurboError: Une erreur est survenue
 login:
-    title: "Connexion à votre compte"
-    subtitle: "Entrez votre email et mot de passe pour vous connecter"
+        title: "Connexion à votre compte"
+        subtitle: "Entrez votre email et mot de passe pour vous connecter"
 
 client_stats:
-    increase: "Augmentation"
-    decrease: "Diminution"
-    stable: "Stable"
+        increase: "Augmentation"
+        decrease: "Diminution"
+        stable: "Stable"
 dashboard:
-    hello: "Bonjour"
+        hello: "Bonjour"
 2fa:
-    title: "Authentification à deux facteurs"
-    enter_google_code: "Entrez le code de Google Authenticator"
-    enter_email_code: "Entrez le code envoyé à votre adresse e-mail"
-    google_code_info: "Veuillez entrer le code généré par Google Authenticator."
-    email_code_info: "Veuillez entrer le code envoyé à votre adresse e-mail."
-    enter_code: "Entrez le code de vérification 2FA"
-    code_sent: "Nous avons envoyé un code de vérification."
-    code_label: "Code d'authentification"
-    invalid_code: "Code d'authentification invalide."
-    submit: "Valider"
-    resend: "Renvoyer le code"
-    google:
-        title: "Configurer Google Authenticator"
-        scan: "Scannez ce code QR avec votre application Google Authenticator pour lier votre compte."
-        manual_code: "Si vous ne pouvez pas scanner le QR code, vous pouvez saisir manuellement ce code dans l'application :"
+        title: "Authentification à deux facteurs"
+        enter_google_code: "Entrez le code de Google Authenticator"
+        enter_email_code: "Entrez le code envoyé à votre adresse e-mail"
+        google_code_info: "Veuillez entrer le code généré par Google Authenticator."
+        email_code_info: "Veuillez entrer le code envoyé à votre adresse e-mail."
+        enter_code: "Entrez le code de vérification 2FA"
+        code_sent: "Nous avons envoyé un code de vérification."
+        code_label: "Code d'authentification"
+        invalid_code: "Code d'authentification invalide."
+        submit: "Valider"
+        resend: "Renvoyer le code"
+        google:
+                title: "Configurer Google Authenticator"
+                scan: "Scannez ce code QR avec votre application Google Authenticator pour lier votre compte."
+                manual_code: "Si vous ne pouvez pas scanner le QR code, vous pouvez saisir manuellement ce code dans l'application :"
 flash_message:
-    google_authenticator:
-        enabled: "Google Authenticator a été activé."
-        disabled: "Google Authenticator a été désactivé."
-    mail_authenticator:
-        enabled: "L'authentification par email a été activée."
-        disabled: "L'authentification par email a été désactivée."
-    change_password:
-        success: "Votre mot de passe a été modifié avec succès."
-        invalid_format: "Le mot de passe à un format invalide."
-    profile_updated:
-        success: "Votre profil a été mis à jour avec succès."
-        deleted_profile_picture: "Votre photo de profil a été supprimée avec succès."
+        google_authenticator:
+                enabled: "Google Authenticator a été activé."
+                disabled: "Google Authenticator a été désactivé."
+        mail_authenticator:
+                enabled: "L'authentification par email a été activée."
+                disabled: "L'authentification par email a été désactivée."
+        change_password:
+                success: "Votre mot de passe a été modifié avec succès."
+                invalid_format: "Le mot de passe à un format invalide."
+        profile_updated:
+                success: "Votre profil a été mis à jour avec succès."
+                deleted_profile_picture: "Votre photo de profil a été supprimée avec succès."
 siret: siret
 upload_file:	Télécharger
 Enter customer name:	Entrez le nom du client
@@ -507,43 +507,47 @@ NoComments:	Pas de commentaire
 Contacts:	Contact
 Position:	Position
 Phone:	Telephone
-elec:    Electricité
-gaz:    Gaz
-customer:
-  company_group: "Groupement d'entreprises"
-  add_prospect: Ajouter un prospect
-  add_energy: Ajouter une énergie
-  add_contact: Ajouter un contact
-  add_business_entity: Ajouter une entité commerciale
-  prospects: Prospects
-  energies: Énergies
-  business_entities: Entités commerciales
-  no_siret: "Aucun SIRET trouvé"
-  contacts: Contacts
-  contract_energies: Contrat d'énergie
-  lead_origin: Origine du lead
-  siret_list: Liste des SIRET
-  edit: Modifier
-  new: Nouveau
-  list: Liste des clients
-  siret: Numéro de Siret
-  update_details: Mise à jour
-  add_comment: Ajouter un commentaire
-contact:
-  name: Nom/Prénom de l'interlocuteur
-  position: Poste
-  email: Email
-  phone: Téléphone fixe
-  mobilePhone: Téléphone portable
+ELEC:        Electricité
+GAZ:        Gaz
 
+customer:
+    company_group: "Groupement d'entreprises"
+    add_prospect: Ajouter un prospect
+    add_energy: Ajouter une énergie
+    add_contact: Ajouter un contact
+    add_business_entity: Ajouter une entité commerciale
+    prospects: Prospects
+    energies: Énergies
+    business_entities: Entités commerciales
+    no_siret: "Aucun SIRET trouvé"
+    contacts: Contacts
+    contract_energies: Contrat d'énergie
+    lead_origin: Origine du lead
+    siret_list: Liste des SIRET
+    edit: Modifier
+    new: Nouveau
+    list: Liste des clients
+    siret: Numéro de Siret
+    update_details: Mise à jour
+    add_comment: Ajouter un commentaire
+    name: Nom
+    status: Statut
+    information: Informations
+contact:
+    name: Nom/Prénom de l'interlocuteur
+    position: Poste
+    email: Email
+    phone: Téléphone fixe
+    mobile_phone: Téléphone portable
+    address: Adresse
 energy:
-  provider: Fournisseur
-  type: Type d’energie
-  code: PDL/PCE
-  expiry_date: Echeance du contrat
+    contract_end: Echéance du contrat
+    provider: Fournisseur
+    type: Type d’energie
+    code: PDL/PCE
 
 table:
-  no_data: Aucune donnée disponible
+    no_data: Aucune donnée disponible
 Action:	Action
 Action a mener:	Action a mener
 Worth: Valeur

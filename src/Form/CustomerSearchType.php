@@ -35,6 +35,7 @@ class CustomerSearchType extends AbstractType
             ->add('contactName', TextType::class, [
                 'label' => false,
                 'required' => false,
+
                 'attr' => [
                     'placeholder' => 'contact.name'
                 ]
@@ -49,6 +50,7 @@ class CustomerSearchType extends AbstractType
                     'style' => 'display:none;'
                 ]
             ]);
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void

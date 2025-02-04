@@ -1,4 +1,14 @@
-{{ form_start(form, {'action': path('app_document', {'id': customer.id})}) }}
-{{ form_widget(form) }}
-<button type="submit" class="btn btn-primary">Envoyer</button>
+{# _dropzone.html.twig #}
+{{ form_start(form, {
+    'action': path('app_document', {'id': customer.id}),
+    'attr': {'class': 'dropzone-form'}
+}) }}
+    {{ form_widget(form.file, {
+        'attr': {
+            'data-dropzone-target': 'fileInput',
+            'data-action': 'change->dropzone#handleFileSelect'
+        }
+    }) }}
+    {{ form_widget(form) }}
+<button type="submit" class="btn btn-primary">{{ "button.send"|trans|default('Envoyer') }}</button>
 {{ form_end(form) }}

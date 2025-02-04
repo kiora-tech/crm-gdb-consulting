@@ -1,188 +1,241 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-	{{ "menu.customer"|trans }}
+    {{ "menu.customer"|trans }}
 {% endblock %}
 
 {% block body %}
-	<div class="pagetitle" style="display: flex;justify-content:space-between;">
-		<h1>{{ "menu.customer"|trans }}</h1>
-		<a href="{{ path('app_customer_edit', {'id': customer.id}) }}" class="btn btn-primary">{{ "button.edit"|trans }}</a>
-	</div>
+    <div class="pagetitle" style="display: flex;justify-content:space-between;">
+        <h1>{{ customer.name }}</h1>
+        <a href="{{ path('app_customer_edit', {'id': customer.id}) }}"
+           class="btn btn-primary">{{ "button.edit"|trans }}</a>
+    </div>
 
-	<section class="section dashboard">
-		<div
-			class="row">
-			<!-- Section Centrale avec les informations principales -->
+    <section class="section dashboard">
+        <div
+                class="row">
+            <!-- Section Centrale avec les informations principales -->
 
-			<div class="col-lg-8">
-				<div
-					class="row">
-					<!-- Nouveau client card -->
-					<div class="col-md-6">
-						<div class="card info-card sales-card">
-							<div class="card-body">
-								<h5 class="card-title">{{ "menu.customer"|trans }}</h5>
-								<div class="d-flex align-items-center">
-									<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-										<i class="bi bi-people"></i>
-									</div>
-									<div class="ps-3">
-										<h6>{{ customer.name }}</h6>
-										<a href="https://www.pappers.fr/recherche?q={{ customer.siret }}" target="_blank">
-											{{ "siret"|trans }}:
-											{{ customer.siret }}
-										</a>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+            <div class="col-lg-8">
+                <div
+                        class="row">
+                    <!-- Nouveau client card -->
+                    <div class="col-md-12">
+                        <div class="card info-card sales-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h5 class="card-title">{{ 'customer.information'|trans }}</h5>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-people"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <a href="https://www.pappers.fr/recherche?q={{ customer.siret }}"
+                                           target="_blank">
+                                            {{ "siret"|trans }}: {{ customer.siret }}
+                                        </a>
+                                        <div class="mt-2">
+                                            <span class="badge bg-secondary">{{ customer.leadOrigin }}</span>
+                                            <span class="badge bg-info">{{ customer.origin|trans }}</span>
+                                            <span class="badge bg-{{ customer.status == 'En cours' ? 'warning' : (customer.status == 'Gagné' ? 'success' : 'danger') }}">
+                                                {{ customer.status|trans }}
+                                            </span>
+                                        </div>
+                                        {% if customer.status == 'En cours' %}
+                                            <div class="mt-2">
+                                                <a href="{{ path('app_customer_status', {'id': customer.id, 'status': 'WON'}) }}"
+                                                   class="btn btn-sm btn-success">{{ "status.won"|trans }}</a>
+                                                <a href="{{ path('app_customer_status', {'id': customer.id, 'status': 'LOST'}) }}"
+                                                   class="btn btn-sm btn-danger">{{ "status.lost"|trans }}</a>
+                                            </div>
+                                        {% else %}
+                                            <div class="mt-2">
+                                                <a href="{{ path('app_customer_status', {'id': customer.id, 'status': 'IN_PROGRESS'}) }}"
+                                                   class="btn btn-sm btn-warning">{{ "status.in_progress"|trans }}</a>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-					<!-- Revenue card (Lead origin as an example) -->
-					<div class="col-md-6">
-						<div class="card info-card revenue-card">
-							<div class="card-body">
-								<h5 class="card-title">{{ "customer.lead_origin"|trans }}</h5>
-								<div class="d-flex align-items-center">
-									<div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-										<i class="bi bi-arrow-up-right-circle"></i>
-									</div>
-									<div class="ps-3">
-										<h6>{{ customer.leadOrigin }}</h6>
-										<div>{{ customer.origin|trans }}
-											/
-											{{ customer.status|trans }}</div>
-									</div>
+                    <!-- Section Historique des signatures (Contracts/Energy Info) -->
+                    <div class="col-12">
+                        <div class="card recent-sales">
+                            <div class="card-body frameHeight">
+                                <turbo-frame id="energies">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="card-title mb-0">{{ "customer.contract_energies"|trans }}</h5>
+                                        <a href="{{ path('app_energy_new', {'customer': customer.id}) }}"
+                                           class="btn btn-sm btn-primary rounded-circle">
+                                            <i class="bi bi-plus"></i>
+                                        </a>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0">
+                                            <thead class="table-light">
+                                            <tr class="table-primary">
+                                                <th scope="col" class="text-start">{{ "energy.provider"|trans }}</th>
+                                                <th scope="col" class="text-start">{{ "energy.type"|trans }}</th>
+                                                <th scope="col" class="text-start">{{ "energy.code"|trans }}</th>
+                                                <th scope="col"
+                                                    class="text-start">{{ "energy.contract_end"|trans }}</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for energy in customer.energies %}
+                                                <tr>
+                                                    <td>{{ energy.provider }}</td>
+                                                    <td>{{ energy.type|trans }}</td>
+                                                    <td>{{ energy.code }}</td>
+                                                    <td>{{ energy.contractEnd ? energy.contractEnd|date('d/m/Y') : "-" }}</td>
+                                                </tr>
+                                            {% else %}
+                                                <tr>
+                                                    <td colspan="3" class="text-center">{{ "table.no_data"|trans }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </turbo-frame>
+                            </div>
+                        </div>
+                    </div>
 
-								</div>
-							</div>
-						</div>
-					</div>
+                    <!-- Section Contacts -->
+                    <div class="col-12">
+                        <div class="card recent-sales">
+                            <div class="card-body frameHeight">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">{{ "customer.contacts"|trans }}</h5>
+                                    <a href="{{ path('app_contact_new', {'customer': customer.id}) }}"
+                                       class="btn btn-sm btn-primary rounded-circle">
+                                        <i class="bi bi-plus"></i>
+                                    </a>
+                                </div>
+                                <turbo-frame id="contact">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0">
+                                            <thead class="table-light">
+                                            <tr class="table-primary">
+                                                <th scope="col" class="text-start">{{ "contact.name"|trans }}</th>
+                                                <th scope="col" class="text-start">{{ "contact.position"|trans }}</th>
+                                                <th scope="col" class="text-start">{{ "contact.email"|trans }}</th>
+                                                <th scope="col" class="text-start">{{ "contact.phone"|trans }}</th>
+                                                <th scope="col"
+                                                    class="text-start">{{ "contact.mobile_phone"|trans }}</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for contact in customer.contacts %}
+                                                <tr>
+                                                    <td>{{ contact }}</td>
+                                                    <td>{{ contact.position }}</td>
+                                                    <td>
+                                                        <a href="mailto:{{ contact.email }}"
+                                                           data-turbo="false">{{ contact.email }}</a>
+                                                    </td>
+                                                    <td>
+                                                        <a href="tel:{{ contact.phone }}"
+                                                           data-turbo="false">{{ contact.phone }}</a>
+                                                    </td>
+                                                    <td>
+                                                        <a href="tel:{{ contact.phone }}"
+                                                           data-turbo="false">{{ contact.mobilePhone }}</a>
+                                                    </td>
+                                                </tr>
+                                            {% else %}
+                                                <tr>
+                                                    <td colspan="4" class="text-center">{{ "table.no_data"|trans }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </turbo-frame>
+                            </div>
+                        </div>
+                    </div>
 
-					<!-- Section Historique des signatures (Contracts/Energy Info) -->
-					<div class="col-12">
-						<div class="card recent-sales">
-							<div class="card-body frameHeigh">
-								<turbo-frame id="energies">
-									<h5 class="card-title">{{ "customer.contract_energies"|trans }}</h5>
-									<div class="table-responsive">
-										<table class="table table-hover mb-0" data-controller="table-header">
-											<thead class="table-light">
-												<tr class="table-primary">
-													<th scope="col" class="text-start" data-index="0" data-action="click->table-header#sort">{{ "energy.provider"|trans }}</th>
-													<th scope="col" class="text-start" data-index="1" data-action="click->table-header#sort">{{ "energy.type"|trans }}</th>
-													<th scope="col" class="text-start" data-index="2" data-action="click->table-header#sort">{{ "energy.code"|trans }}</th>
-													<th scope="col" class="text-start" data-index="4" data-action="click->table-header#sort">{{ "energy.expiry_date"|trans }}</th>
-												</tr>
-											</thead>
-											<tbody>
-												{% for energy in customer.energies %}
-													<tr data-table-header-target="row">
-														<td>{{ energy.provider }}</td>
-														<td>{{ energy.type.value|default('Unknown') }}</td>
-														<td>{{ energy.code }}</td>
-														<td>{{ energy.contractEnd ? energy.contractEnd|date('d/m/Y') : "-" }}</td>
-													</tr>
-												{% else %}
-													<tr>
-														<td colspan="3" class="text-center">{{ "table.no_data"|trans }}</td>
-													</tr>
-												{% endfor %}
-											</tbody>
-										</table>
-									</div>
-									<a id="open-overlay-button" href="{{ path('app_energy_new', {'customer': customer.id}) }}" class="btn btn-primary">{{ "button.add_energy"|trans }}</a>
-								</turbo-frame>
-							</div>
-						</div>
-					</div>
+                </div>
+            </div>
 
-					<!-- Section Contacts -->
-					<div class="col-12">
-						<div class="card recent-sales">
-							<div class="card-body frameHeigh">
-								<h5 class="card-title" class="frameHeigh">{{ "customer.contacts"|trans }}</h5>
-								<turbo-frame id="contact">
-									<div class="table-responsive">
-										<table class="table table-hover mb-0">
-											<thead class="table-light">
-												<tr class="table-primary">
-													<th scope="col" class="text-start">{{ "contact.name"|trans }}</th>
-													<th scope="col" class="text-start">{{ "contact.position"|trans }}</th>
-													<th scope="col" class="text-start">{{ "contact.email"|trans }}</th>
-													<th scope="col" class="text-start">{{ "contact.phone"|trans }}</th>
-													<th scope="col" class="text-start">{{ "contact.mobilePhone"|trans }}</th>
-												</tr>
-											</thead>
-											<tbody>
-												{% for contact in customer.contacts %}
-													<tr>
-														<td>{{ contact }}</td>
-														<td>{{ contact.position }}</td>
-														<td>
-															<a href="mailto:{{ contact.email }}" data-turbo="false">{{ contact.email }}</a>
-														</td>
-														<td>
-															<a href="tel:{{ contact.phone }}" data-turbo="false">{{ contact.phone }}</a>
-														</td>
-														<td>
-															<a href="tel:{{ contact.phone }}" data-turbo="false">{{ contact.mobilePhone }}</a>
-														</td>
-													</tr>
-												{% else %}
-													<tr>
-														<td colspan="4" class="text-center">{{ "table.no_data"|trans }}</td>
-													</tr>
-												{% endfor %}
-											</tbody>
-										</table>
-									</div>
-									<a id="open-overlay-button" href="{{ path('app_contact_new', {'customer': customer.id}) }}" class="btn btn-primary">{{ "button.add_contact"|trans }}</a>
-								</turbo-frame>
-							</div>
-						</div>
-					</div>
+            <div class="col-lg-4">
+                <div>
+                    <div class="row card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">{{ "comment"|trans }}</h5>
+                                <a href="{{ path('app_comment_new', {'customer': customer.id}) }}"
+                                   class="btn btn-sm btn-primary rounded-circle">
+                                    <i class="bi bi-plus"></i>
+                                </a>
+                            </div>
+                            <turbo-frame id="comment">
+                                <div class="frameHeight">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center">
+                                            <div class="ps-3">
+                                                {% for comment in customer.comments %}
+                                                    <div class="mb-2">
+                                                        {{ comment.note }}
+                                                    </div>
+                                                {% else %}
+                                                    <p>{{ "NoComments"|trans }}</p>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </turbo-frame>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="row card" data-controller="dropzone">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ "documentDoc"|trans }}</h5>
+                            <turbo-frame id="list_document">
+                                <div class="frameHeight overflow-auto">
+                                    <div class="align-items-center">
+                                        {% include 'document/_document_list.html.twig' with {'documents': customer.documents} %}
+                                    </div>
+                                </div>
 
-				</div>
-			</div>
+                                <!-- Zone de drop visible -->
+                                <div class="drop-zone mt-3 text-center p-4 border-2 border-dashed rounded-lg"
+                                     data-dropzone-target="dropZone"
+                                     data-action="dragover->dropzone#dragOver dragleave->dropzone#dragLeave drop->dropzone#drop click->dropzone#openFileSelector">
+                                    <i class="bi bi-cloud-upload fs-2"></i>
+                                    <p class="mt-2">{{ "dropzone.message"|trans|default('Déposez vos fichiers ici ou cliquez pour parcourir') }}</p>
+                                </div>
 
-			<div class="col-lg-4">
-				<div>
-					<div class="row card">
-						<div class="card-body frameHeigh">
-							<h5 class="card-title">{{ "comment"|trans }}</h5>
-							<turbo-frame id="comment">
-								<div class="d-flex align-items-center">
-									<div class="ps-3">
-										{% for comment in customer.comments %}
-											<div>
-												{{ comment.note }}
-											</div>
-										{% else %}
-											<p>{{ "NoComments"|trans }}</p>
-										{% endfor %}
-									</div>
-								</div>
-								<a id="open-overlay-button" href="{{ path('app_comment_new', {'customer': customer.id}) }}" class="btn btn-primary">{{ "button.add_comment"|trans }}</a>
-							</turbo-frame>
-						</div>
-					</div>
-				</div>
-				<div>
-					<div class="row card">
-						<div class="card-body frameHeigh">
-							<h5 class="card-title">{{ "documentDoc"|trans }}</h5>
-							<turbo-frame id="list_document">
-								<div class="d-flex align-items-center">
-										{% include 'document/_document_list.html.twig' with {'documents': customer.documents} %}
-								</div>
-								{% include 'document/_dropzone.html.twig' with {'form': formDocument} %}
-							</turbo-frame>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+                                <!-- Modal pour le formulaire -->
+                                <div class="modal fade"
+                                     data-dropzone-target="modal"
+                                     tabindex="-1"
+                                     aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">{{ "upload.title"|trans|default('Télécharger un document') }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                {% include 'document/_dropzone.html.twig' with {'form': formDocument} %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </turbo-frame>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}

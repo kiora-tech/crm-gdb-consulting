@@ -58,13 +58,15 @@ class DocumentController extends AbstractController
 
                     $entityManager->persist($document);
                     $entityManager->flush();
+
+                    return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
                 } catch (FileException $e) {
                     $logger->error('There was an issue with the file upload: ' . $e->getMessage());
                     $this->addFlash('error', 'There was an issue with the file upload. Please try again.');
                 }
             }
         }
-        $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
+
 
         return $this->render('document/upload_response.html.twig', compact('form', 'customer'));
     }

@@ -13,26 +13,26 @@
 				<table class="table" data-controller="table-header">
 					<thead class="bg-gray-50">
 						<tr class="table-primary">
-							<th scope="col" class="px-6 py-4 text-center" data-index="0" data-action="click->table-header#sort">Name</th>
-							<th scope="col" class="px-6 py-4 text-center" data-index="1" data-action="click->table-header#sort">Type</th>
-							<th scope="col" class="px-6 py-4 text-center" data-index="2" data-action="click->table-header#sort">Client</th>
-							<th scope="col" class="px-6 py-4 text-center" data-index="3">Actions</th>
+							<th scope="col" class=" text-center" data-index="0" data-action="click->table-header#sort">Name</th>
+							<th scope="col" class=" text-center" data-index="1" data-action="click->table-header#sort">Type</th>
+							<th scope="col" class=" text-center" data-index="2" data-action="click->table-header#sort">Client</th>
+							<th scope="col" class=" text-center" data-index="3">Actions</th>
 						</tr>
 					</thead>
 					<tbody class="bg-white divide-y divide-gray-200">
 						{% for document in documents %}
-							<tr data-table-header-target="row">
-								<td class="px-6 py-4 text-center">{{ document.name }}</td>
-								<td class="px-6 py-4 text-center">{{ document.type }}</td>
-								<td class="px-6 py-4 text-center">{{ document.customer }}</td>
-								<td class="px-6 py-4 text-center">
+							<tr>
+								<td class=" text-center">{{ document.name }}</td>
+								<td class=" text-center">{{ document.type }}</td>
+								<td class=" text-center">{{ document.customer }}</td>
+								<td class=" text-center">
 									<a href="{{ path('app_document_download', {'id': document.id}) }}" data-turbo="false" class="text-blue-500 hover:underline">Show</a>
 									<a href="{{ path('app_docu_edit', {'id': document.id}) }}" class="text-blue-500 hover:underline">Edit</a>
 								</td>
 							</tr>
 						{% else %}
 							<tr>
-								<td colspan="2" class="px-6 py-4 text-center">No records found</td>
+								<td colspan="2" class=" text-center">No records found</td>
 							</tr>
 						{% endfor %}
 					</tbody>
