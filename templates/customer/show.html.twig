@@ -30,27 +30,27 @@
 										<i class="bi bi-people"></i>
 									</div>
 									<div class="ps-3">
+										{% if customer.siret %}
 										<a href="https://www.pappers.fr/recherche?q={{ customer.siret }}" target="_blank">
-											{{ "siret"|trans }}:
+											{{ "customer.siret"|trans }}:
 											{{ customer.siret }}
 										</a>
+										{% endif %}
 										<div class="mt-2">
 											<span class="badge bg-secondary">{{ customer.leadOrigin }}</span>
 											<span class="badge bg-info">{{ customer.origin|trans }}</span>
-											<span class="badge bg-{{ customer.status == 'En cours' ? 'warning' : (customer.status == 'Gagné' ? 'success' : 'danger') }}">
+											<span class="badge bg-{{ customer.status == enum('App\\Entity\\ProspectStatus').IN_PROGRESS ? 'warning' : (customer.status == enum('App\\Entity\\ProspectStatus').WON ? 'success' : 'danger') }}">
 												{{ customer.status|trans }}
 											</span>
 										</div>
-										{% if customer.status == 'En cours' %}
-											<div class="mt-2">
-												<a href="{{ path('app_customer_status', {'id': customer.id, 'status': 'WON'}) }}" class="btn btn-sm btn-success">{{ "status.won"|trans }}</a>
-												<a href="{{ path('app_customer_status', {'id': customer.id, 'status': 'LOST'}) }}" class="btn btn-sm btn-danger">{{ "status.lost"|trans }}</a>
-											</div>
+										<div class="mt-2">
+										{% if customer.status == enum('App\\Entity\\ProspectStatus').IN_PROGRESS %}
+											<a href="{{ path('app_customer_status', {'id': customer.id, 'status':  enum('App\\Entity\\ProspectStatus').WON.value}) }}" class="btn btn-sm btn-success">{{ enum('App\\Entity\\ProspectStatus').WON|trans }}</a>
+											<a href="{{ path('app_customer_status', {'id': customer.id, 'status':  enum('App\\Entity\\ProspectStatus').LOST.value }) }}" class="btn btn-sm btn-danger">{{ enum('App\\Entity\\ProspectStatus').LOST|trans }}</a>
 										{% else %}
-											<div class="mt-2">
-												<a href="{{ path('app_customer_status', {'id': customer.id, 'status': 'IN_PROGRESS'}) }}" class="btn btn-sm btn-warning">{{ "status.in_progress"|trans }}</a>
-											</div>
+											<a href="{{ path('app_customer_status', {'id': customer.id, 'status':  enum('App\\Entity\\ProspectStatus').IN_PROGRESS.value }) }}" class="btn btn-sm btn-warning">{{  enum('App\\Entity\\ProspectStatus').IN_PROGRESS|trans }}</a>
 										{% endif %}
+										</div>
 									</div>
 								</div>
 							</div>

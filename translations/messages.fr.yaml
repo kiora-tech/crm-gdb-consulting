@@ -560,9 +560,9 @@ renouvellement:	Renouvellement
 courier: Courier
 fournisseur: Fournisseur
 gdb: GDB
-Gagné:	Gagné
-Perdu:	Perdu
-En cours:	En cours
+won:	Gagné
+lost:	Perdu
+in_progress:	En cours
 Acquisition:	Acquisition
 Renouvellement:	Renouvellement
 Margin:	Marge
