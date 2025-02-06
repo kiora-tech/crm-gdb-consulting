@@ -120,6 +120,7 @@
 													<th scope="col" class="text-start">{{ "contact.email"|trans }}</th>
 													<th scope="col" class="text-start">{{ "contact.phone"|trans }}</th>
 													<th scope="col" class="text-start">{{ "contact.mobile_phone"|trans }}</th>
+													<th>delete</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -134,12 +135,18 @@
 															<a href="tel:{{ contact.phone }}" data-turbo="false">{{ contact.phone }}</a>
 														</td>
 														<td>
-															<a href="tel:{{ contact.phone }}" data-turbo="false">{{ contact.mobilePhone }}</a>
+															<a href="tel:{{ contact.mobilePhone }}" data-turbo="false">{{ contact.mobilePhone }}</a>
+														</td>
+														<td>
+															<a href="{{ path('app_contact_edit', {'id': contact.id, 'customer': contact.customer.id}) }}" turbo-visit-control="reload" data-turbo-frame="contact">
+																<input type="hidden" name="_token" value="{{ csrf_token('edit' ~ contact.id) }}">
+																<button class="btn btn-primary btn-sm">Edit</button>
+															</a>
 														</td>
 													</tr>
 												{% else %}
 													<tr>
-														<td colspan="4" class="text-center">{{ "table.no_data"|trans }}</td>
+														<td colspan="6" class="text-center">{{ "table.no_data"|trans }}</td>
 													</tr>
 												{% endfor %}
 											</tbody>

@@ -10,12 +10,21 @@
 	<section class="section">
 		<div class="card p-4">
 			<div class="card-body">
-				{{ include('contact/_form.html.twig', {'button_label': 'Update'}) }}
-				<div class="divFlexGap">
-					<a class="btn btn-secondary" href="{{ path('app_contact_index') }}" data-turbo-action="remove" data-turbo-frame="contact">{{ "button.close"|trans }}</a>
-					{{ include('contact/_delete_form.html.twig') }}
+				<turbo-frame id="contact">
+					<div class="overlay" id="contact-overlay">
+						<div class="overlay-content">
+							{{ include('contact/_form.html.twig', {'button_label': 'Update'}) }}
+
+						</turbo-frame>
+						<div class="divFlexGap">
+							<a class="btn btn-secondary" href="{{ path('app_contact_index') }}" data-turbo-action="remove" data-turbo-frame="contact">
+								{{ "button.close"|trans }}
+							</a>
+							{{ include('contact/_delete_form.html.twig') }}
+						</div>
+					</div>
 				</div>
-			</div>	
+			</div>
 		</div>
 	</section>
 {% endblock %}

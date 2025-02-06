@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Contact;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/contact', name: 'app_contact')]
 final class ContactController extends CustomerInfoController
@@ -17,8 +17,8 @@ final class ContactController extends CustomerInfoController
    #[Route('/{id}', name: '_show', methods: ['GET'])]
     public function show(Contact $contact): Response
     {
-        return $this->render('contact/show.html.twig', [
-            'entity' => $contact,
+        return $this->render('customer/index.html.twig', [
+            'contact' => $contact,
         ]);
     }
 }
