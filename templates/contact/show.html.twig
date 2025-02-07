@@ -4,45 +4,52 @@
 {% endblock %}
 
 {% block body %}
-    	<div class="pagetitle d-flex justify-content-between">
-		<h1>{{ "customer.contacts"|trans }}</h1>
-		<a href="{{ path('app_customer_new') }}" class="btn btn-primary">
-			{{ "create"|trans }}
-		</a>
-	</div>
-	<section class="section">
-		<div class="card p-4">
-			<div class="card-body">
-				<table class="table bg-white divide-y divide-gray-200">
-					<thead class="bg-gray-50">
-						<tr class="table-primary">
-							<th scope="col" class="text-center">Email</th>
-							<th scope="col" class="text-center">Name</th>
-							<th scope="col" class="text-center">Position</th>
-							<th scope="col" class="text-center">Phone</th>
-							<th scope="col" class="text-center">Mobile Phone</th>
-							<th scope="col" class="text-center">Address</th>
-						</tr>
-					</thead>
-					<tbody class="bg-white divide-y divide-gray-200">
-						<tr>
-							<td class="text-center">{{ entity.email }}</td>
-							<td class="text-center">{{ entity }}</td>
-							<td class="text-center">{{ entity.position }}</td>
-							<td class="text-center">{{ entity.phone }}</td>
-							<td class="text-center">{{ entity.mobilePhone }}</td>
-							<td class="text-center">{{ entity.address }}</td>
-						</tr>
-					</tbody>
-				</table>
-                <div class="divFlexs">
-				<a class="btn btn-secondary" href="{{ path('app_contact_index') }}">{{ "button.close"|trans }}</a>
+	<section class="section profile">
+		<div class="row">
+			<div class="col-xl-4">
 
-				<a class="btn btn-primary" href="{{ path('app_contact_edit', {'id': entity.id}) }}">{{ "button.edit"|trans }}</a>
+				<div class="card">
+					<div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+						<h2>{{ entity }}</h2>
+						<h3>{{ entity.position }}</h3>
+						<div class="social-links mt-2">
+							{{ entity.email }}
+						</div>
+					</div>
+				</div>
 
-				{{ include('contact/_delete_form.html.twig') }}
-                </div>
 			</div>
+
+			<div class="col-xl-8">
+
+				<div class="card">
+					<div class="card-body pt-3">
+						<div class="pagetitle d-flex justify-content-between">
+							<h1>{{ "customer.contacts"|trans }}</h1>
+							<a href="{{ path('app_customer_new') }}" class="btn btn-primary">
+								{{ "create"|trans }}
+							</a>
+						</div>
+						<div class="tab-pane fade show active profile-overview" id="profile-overview" role="tabpanel">
+							<h5 class="card-title">Contact</h5>
+
+							<p>Téléphone fixe : {{ entity.phone }}</p>
+							<p>Téléphone mobile :{{ entity.mobilePhone }}</p>
+							<p>Adresse : {{ entity.address }}</p>
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+				<div class="divFlexs">
+					<a class="btn btn-secondary" href="{{ path('app_contact_index') }}">{{ "button.close"|trans }}</a>
+
+					<a class="btn btn-primary" href="{{ path('app_contact_edit', {'id': entity.id}) }}">{{ "button.edit"|trans }}</a>
+
+					{{ include('contact/_delete_form.html.twig') }}
+				</div>
 		</div>
-	</section>
-{% endblock %}
+	</div>
+</section>{% endblock %}
