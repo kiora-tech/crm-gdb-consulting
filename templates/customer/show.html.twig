@@ -86,13 +86,13 @@
 														<td>{{ energy.type|trans }}</td>
 														<td>{{ energy.code }}</td>
 														<td>{{ energy.contractEnd ? energy.contractEnd|date('d/m/Y') : "-" }}</td>
-														<td>
+														<td   scope="col" class="text-end buttonDisplay">
 															<a href="{{ path('app_energy_edit', {'id': energy.id, 'customer': energy.customer.id}) }}" turbo-visit-control="reload" data-turbo-frame="energies">
-																<button class="btn btn-primary btn-sm">Edit</button>
+																<button style="width:70%" class="btn btn-primary btn-sm">{{ "button.edit"|trans }}</button>
 															</a>
 															<form action="{{ path('app_energy_delete', {'id': energy.id, 'customer': energy.customer.id}) }}" method="post">
 																<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ energy.id) }}">
-																<button type="submit" class="btn btn-danger">Delete</button>
+																<button style="width:70%" type="submit" class="btn btn-danger">{{ "button.delete"|trans }}</button>
 															</form>
 
 
@@ -149,13 +149,13 @@
 														<td>
 															<a href="tel:{{ contact.mobilePhone }}" data-turbo="false">{{ contact.mobilePhone }}</a>
 														</td>
-														<td>
+														<td class="buttonDisplay">
 															<a href="{{ path('app_contact_edit', {'id': contact.id, 'customer': contact.customer.id}) }}" turbo-visit-control="reload" data-turbo-frame="contact">
-																<button class="btn btn-primary btn-sm">Edit</button>
+																<button style="width:100%" class="btn btn-primary btn-sm">{{ "button.edit"|trans }}</button>
 															</a>
 															<form action="{{ path('app_contact_delete', {'id': contact.id, 'customer': contact.customer.id}) }}" method="post">
 																<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ contact.id) }}">
-																<button type="submit" class="btn btn-danger">Delete</button>
+																<button style="width:100%" type="submit" class="btn btn-danger">{{ "button.delete"|trans }}</button>
 															</form>
 
 
