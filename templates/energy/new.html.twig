@@ -1,15 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Energy{% endblock %}
+{% block title %}New Energy
+{% endblock %}
 
 {% block body %}
-    <h1>Create new Energy</h1>
-<turbo-frame id="energies">
-    <div class="overlay" id="energies-overlay">
-	<div class="overlay-content">
-    {{ include('energy/_form.html.twig') }}
-	</div>
-</div>
+	<h1>Create new Energy</h1>
+	<turbo-frame id="energies">
+		<div class="overlay" id="energies-overlay">
+			<div class="overlay-content">
+				{{ include('energy/_form.html.twig') }}
+			</div>
+		</div>
 
-    </turbo-frame>
+	</turbo-frame>
 {% endblock %}
