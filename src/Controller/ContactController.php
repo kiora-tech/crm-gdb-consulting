@@ -17,7 +17,7 @@ final class ContactController extends CustomerInfoController
    #[Route('/{id}', name: '_show', methods: ['GET'])]
     public function show(Contact $contact): Response
     {
-        return $this->render('customer/index.html.twig', [
+        return $this->render('contact/show.html.twig', [
             'contact' => $contact,
         ]);
     }

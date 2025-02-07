@@ -26,19 +26,19 @@
 					</thead>
 					<tbody class="bg-white divide-y divide-gray-200">
 						<tr>
-							<td class="text-center">{{ entity.email }}</td>
-							<td class="text-center">{{ entity }}</td>
-							<td class="text-center">{{ entity.position }}</td>
-							<td class="text-center">{{ entity.phone }}</td>
-							<td class="text-center">{{ entity.mobilePhone }}</td>
-							<td class="text-center">{{ entity.address }}</td>
+							<td class="text-center">{{ contact.email }}</td>
+							<td class="text-center">{{ contact }}</td>
+							<td class="text-center">{{ contact.position }}</td>
+							<td class="text-center">{{ contact.phone }}</td>
+							<td class="text-center">{{ contact.mobilePhone }}</td>
+							<td class="text-center">{{ contact.address }}</td>
 						</tr>
 					</tbody>
 				</table>
                 <div class="divFlexs">
 				<a class="btn btn-secondary" href="{{ path('app_contact_index') }}">{{ "button.close"|trans }}</a>
 
-				<a class="btn btn-primary" href="{{ path('app_contact_edit', {'id': entity.id}) }}">{{ "button.edit"|trans }}</a>
+				<a class="btn btn-primary" href="{{ path('app_contact_edit', {'id': contact.id}) }}">{{ "button.edit"|trans }}</a>
 
 				{{ include('contact/_delete_form.html.twig') }}
                 </div>

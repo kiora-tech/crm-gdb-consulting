@@ -121,14 +121,19 @@ abstract class CustomerInfoController extends AbstractController
     
 
 
-    #[Route('/{id}', name: '_delete', methods: ['POST'])]
-    public function delete(Request $request, int $id): Response
+    #[Route('/{id}/{customer?}', name: '_delete', methods: ['POST'])]
+    public function delete(Request $request, int $id, ?Customer $customer = null): Response
     {
         $entity = $this->getRepository()->find($id);
-
+        if ($customer) {
+            $entity->setCustomer($customer);
+        }
         if ($this->isCsrfTokenValid('delete'.$id, $request->getPayload()->getString('_token'))) {
             $this->entityManager->remove($entity);
             $this->entityManager->flush();
+        }
+        if ($customer) {
+            return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->redirectToRoute($this->getBaseRouteName().'_index', [], Response::HTTP_SEE_OTHER);
