@@ -1,7 +1,7 @@
 {{ form_start(form, {
     'action': entity.id is not null
-        ? path('app_contact_edit', {'id': entity.id, 'customer': customer ? customer.id : null})
-        : path('app_contact_new', {'customer': customer ? customer.id : null})
+        ? path('app_energy_edit', {'id': entity.id, 'customer': customer ? customer.id : null})
+        : path('app_energy_new', {'customer': customer ? customer.id : null})
 }) }}
 
 {{ form_widget(form) }}
