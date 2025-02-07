@@ -76,6 +76,7 @@
 													<th scope="col" class="text-start">{{ "energy.type"|trans }}</th>
 													<th scope="col" class="text-start">{{ "energy.code"|trans }}</th>
 													<th scope="col" class="text-start">{{ "energy.contract_end"|trans }}</th>
+													<th scope="col" class="text-start">Actions</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -85,6 +86,17 @@
 														<td>{{ energy.type|trans }}</td>
 														<td>{{ energy.code }}</td>
 														<td>{{ energy.contractEnd ? energy.contractEnd|date('d/m/Y') : "-" }}</td>
+														<td   scope="col" class="text-end buttonDisplay">
+															<a href="{{ path('app_energy_edit', {'id': energy.id, 'customer': energy.customer.id}) }}" turbo-visit-control="reload" data-turbo-frame="energies">
+																<button style="width:70%" class="btn btn-primary btn-sm">{{ "button.edit"|trans }}</button>
+															</a>
+															<form action="{{ path('app_energy_delete', {'id': energy.id, 'customer': energy.customer.id}) }}" method="post">
+																<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ energy.id) }}">
+																<button style="width:70%" type="submit" class="btn btn-danger">{{ "button.delete"|trans }}</button>
+															</form>
+
+
+														</td>
 													</tr>
 												{% else %}
 													<tr>
@@ -120,6 +132,7 @@
 													<th scope="col" class="text-start">{{ "contact.email"|trans }}</th>
 													<th scope="col" class="text-start">{{ "contact.phone"|trans }}</th>
 													<th scope="col" class="text-start">{{ "contact.mobile_phone"|trans }}</th>
+													<th scope="col" class="text-start">Actions</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -134,12 +147,23 @@
 															<a href="tel:{{ contact.phone }}" data-turbo="false">{{ contact.phone }}</a>
 														</td>
 														<td>
-															<a href="tel:{{ contact.phone }}" data-turbo="false">{{ contact.mobilePhone }}</a>
+															<a href="tel:{{ contact.mobilePhone }}" data-turbo="false">{{ contact.mobilePhone }}</a>
+														</td>
+														<td class="buttonDisplay">
+															<a href="{{ path('app_contact_edit', {'id': contact.id, 'customer': contact.customer.id}) }}" turbo-visit-control="reload" data-turbo-frame="contact">
+																<button style="width:100%" class="btn btn-primary btn-sm">{{ "button.edit"|trans }}</button>
+															</a>
+															<form action="{{ path('app_contact_delete', {'id': contact.id, 'customer': contact.customer.id}) }}" method="post">
+																<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ contact.id) }}">
+																<button style="width:100%" type="submit" class="btn btn-danger">{{ "button.delete"|trans }}</button>
+															</form>
+
+
 														</td>
 													</tr>
 												{% else %}
 													<tr>
-														<td colspan="4" class="text-center">{{ "table.no_data"|trans }}</td>
+														<td colspan="6" class="text-center">{{ "table.no_data"|trans }}</td>
 													</tr>
 												{% endfor %}
 											</tbody>

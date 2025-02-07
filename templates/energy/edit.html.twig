@@ -1,13 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Energy{% endblock %}
+{% block title %}Edit Energy
+{% endblock %}
 
 {% block body %}
-    <h1>Edit Energy</h1>
-
-    {{ include('energy/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_energy_index') }}">back to list</a>
-
-    {{ include('energy/_delete_form.html.twig') }}
+	<h1>Edit Energy</h1>
+	<turbo-frame id="energies">
+		<div class="overlay" id="contact-overlay">
+			<div class="overlay-content">
+				{{ include('energy/_form.html.twig', {'button_label': 'Update'}) }}
+			</div>
+		</div>
+	</turbo-frame>
+	{{ include('energy/_delete_form.html.twig') }}
 {% endblock %}

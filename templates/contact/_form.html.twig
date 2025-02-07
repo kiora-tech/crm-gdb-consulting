@@ -1,9 +1,15 @@
-{{ form_start(form) }}
+{{ form_start(form, {
+    'action': entity.id is not null
+        ? path('app_contact_edit', {'id': entity.id, 'customer': customer ? customer.id : null})
+        : path('app_contact_new', {'customer': customer ? customer.id : null})
+}) }}
+
 {{ form_widget(form) }}
 <button class="btn btn-primary">{{ "button.save"|trans }}</button>
-<a href="#" class="btn btn-secondary {% if 'contact/' in app.request.uri and '/edit' in app.request.uri %}disabled{% endif %}" {% if 'contact/' in app.request.uri and '/edit' in app.request.uri %} aria-disabled="true" onclick="return false;" style="display:none" {% endif %} data-turbo-action="remove" data-turbo-frame="contact">
+<a href="#" class="btn btn-secondary {% if 'contact/' in app.request.uri and
+'/edit' in app.request.uri %}disabled{% endif %}" {% if 'contact/' in app.request.uri and '/edit' in
+app.request.uri %} aria-disabled="true" onclick="return false;" style="display:none" {% endif %} 
+data-turbo-action="remove" data-turbo-frame="contact">
 	{{ "button.close"|trans }}
 </a>
-
-
 {{ form_end(form) }}

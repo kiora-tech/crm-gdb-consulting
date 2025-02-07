@@ -58,7 +58,9 @@ abstract class CustomerInfoController extends AbstractController
     public function new(Request $request, ?Customer $customer = null): Response
     {
         $entity = new ($this->getEntityClass());
-        $entity->setCustomer($customer);
+        if ($customer) {
+            $entity->setCustomer($customer);
+        }
         $form = $this->createForm($this->getFormTypeClass(), $entity, ['customer' => $customer]);
         $form->handleRequest($request);
 
@@ -77,6 +79,7 @@ abstract class CustomerInfoController extends AbstractController
         return $this->render($this->getName().'/new.html.twig', [
             'entity' => $entity,
             'form' => $form,
+            'customer' => $customer, 
         ]);
     }
     #[Route(name: '_index', methods: ['GET'])]
@@ -87,35 +90,50 @@ abstract class CustomerInfoController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: '_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, int $id): Response
+    #[Route('/{id}/edit/{customer?}', name: '_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, int $id, ?Customer $customer = null): Response
     {
         $entity = $this->getRepository()->find($id);
-
-        $form = $this->createForm($this->getFormTypeClass(), $entity);
+        
+        if ($customer) {
+            $entity->setCustomer($customer);
+        }
+    
+        $form = $this->createForm($this->getFormTypeClass(), $entity, ['customer' => $customer]);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
             $this->entityManager->flush();
-
+            
+            if ($customer) {
+                return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()], Response::HTTP_SEE_OTHER);
+            }
+    
             return $this->redirectToRoute($this->getBaseRouteName().'_index', [], Response::HTTP_SEE_OTHER);
         }
-
+    
         return $this->render($this->getName().'/edit.html.twig', [
             'entity' => $entity,
             'form' => $form,
+            'customer' => $customer, 
         ]);
     }
+    
 
 
-    #[Route('/{id}', name: '_delete', methods: ['POST'])]
-    public function delete(Request $request, int $id): Response
+    #[Route('/{id}/{customer?}', name: '_delete', methods: ['POST'])]
+    public function delete(Request $request, int $id, ?Customer $customer = null): Response
     {
         $entity = $this->getRepository()->find($id);
-
+        if ($customer) {
+            $entity->setCustomer($customer);
+        }
         if ($this->isCsrfTokenValid('delete'.$id, $request->getPayload()->getString('_token'))) {
             $this->entityManager->remove($entity);
             $this->entityManager->flush();
+        }
+        if ($customer) {
+            return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->redirectToRoute($this->getBaseRouteName().'_index', [], Response::HTTP_SEE_OTHER);

@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Contact;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/contact', name: 'app_contact')]
 final class ContactController extends CustomerInfoController
