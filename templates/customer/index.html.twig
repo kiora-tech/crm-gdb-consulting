@@ -31,22 +31,22 @@
 							{% set newOrder = currentOrder == 'ASC' ? 'DESC' : 'ASC' %}
 
 							<th scope="col" class="text-center">
-								<a href="{{ path(app.request.attributes.get('_route'), app.request.query.all()|merge({ name: '', order: newOrder })) }}">
+								<a href="{{ path(app.request.attributes.get('_route'), app.request.query.all()|merge({ sort: 'c.name', order: newOrder })) }}">
 									{{ "name"|trans }}
 								</a>
 							</th>
 							<th scope="col" class="text-center">
-								<a href="{{ path(app.request.attributes.get('_route'), app.request.query.all()|merge({ siret: '', order: newOrder })) }}">
+								<a href="{{ path(app.request.attributes.get('_route'), app.request.query.all()|merge({ sort: 'c.siret', order: newOrder })) }}">
 									{{ "customer.siret"|trans }}
 								</a>
 							</th>
 							<th scope="col" class="text-center">
-								<a href="{{ path(app.request.attributes.get('_route'), app.request.query.all()|merge({ contactName: '', order: newOrder })) }}">
+								<a href="{{ path(app.request.attributes.get('_route'), app.request.query.all()|merge({ sort: 'co.firstName', order: newOrder })) }}">
 									{{ "contact.name"|trans }}
 								</a>
 							</th>
 							<th scope="col" class="text-center">
-								<a href="{{ path(app.request.attributes.get('_route'), app.request.query.all()|merge({ contactName: '', order: newOrder })) }}">
+								<a href="{{ path(app.request.attributes.get('_route'), app.request.query.all()|merge({ sort: 'energies.contractEnd', order: newOrder })) }}">
 									{{ "energy.contract_end"|trans }}
 								</a>
 							</th>

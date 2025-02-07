@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use Doctrine\ORM\Query;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +23,7 @@ class PaginationService
     /**
      * @return PaginationInterface<int, mixed>
      */
-    public function paginate(mixed $query, Request $request, int $defaultLimit = 10, string $pageParamName = 'page'): PaginationInterface
+    public function paginate(Query $query, Request $request, int $defaultLimit = 10, string $pageParamName = 'page'): PaginationInterface
     {
         $page = $request->query->getInt($pageParamName, 1);
         $limit = $request->query->getInt('limit', $defaultLimit);

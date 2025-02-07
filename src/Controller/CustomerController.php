@@ -26,7 +26,7 @@ class CustomerController extends AbstractController
     public function index(CustomerRepository $customerRepository, PaginationService $paginationService, Request $request): Response
     {
         $data = new CustomerSearchData();
-        $form = $this->createForm(CustomerSearchType::class, $data);
+        $form = $this->createForm(CustomerSearchType::class);
         $form->handleRequest($request);
 
         $query = $customerRepository->search($data);

@@ -6,6 +6,7 @@ use App\Data\CustomerSearchData;
 use App\Entity\ProspectStatus;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -49,7 +50,8 @@ class CustomerSearchType extends AbstractType
                 'attr' => [
                     'style' => 'display:none;'
                 ]
-            ]);
+            ])
+            ->add('sort', HiddenType::class);
 
     }
 
