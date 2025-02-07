@@ -11,15 +11,18 @@
 		<div class="card p-4">
 			<div class="card-body">
 				<turbo-frame id="contact">
-					<div class="overlay" id="contact-overlay">
-						<div class="overlay-content">
-							{{ include('contact/_form.html.twig', {'button_label': 'Update'}) }}
-
-						</turbo-frame>
-						<div class="divFlexGap">
-							{{ include('contact/_delete_form.html.twig') }}
+					{% if not (app.request.pathinfo starts with '/contact/' and app.request.pathinfo ends with '/edit') %}
+						<div class="overlay" id="contact-overlay">
+							<div class="overlay-content">
+								{{ include('contact/_form.html.twig', {'button_label': 'Update'}) }}
+							</div>
 						</div>
-					</div>
+					{% else %}
+						{{ include('contact/_form.html.twig', {'button_label': 'Update'}) }}
+					{% endif %}
+				</turbo-frame>
+				<div class="divFlexGap">
+					{{ include('contact/_delete_form.html.twig') }}
 				</div>
 			</div>
 		</div>

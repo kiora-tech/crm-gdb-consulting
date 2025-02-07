@@ -9,7 +9,8 @@
 		<div class="overlay" id="contact-overlay">
 			<div class="overlay-content">
 				{{ include('energy/_form.html.twig', {'button_label': 'Update'}) }}
-
-			</turbo-frame>
-			{{ include('energy/_delete_form.html.twig') }}
-		{% endblock %}
+			</div>
+		</div>
+	</turbo-frame>
+	{{ include('energy/_delete_form.html.twig') }}
+{% endblock %}
