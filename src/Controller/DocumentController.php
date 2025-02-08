@@ -8,6 +8,7 @@ use App\Form\DocumentType;
 use App\Form\DropzoneForm;
 use App\Repository\DocumentRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -20,10 +21,10 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\UX\Turbo\TurboBundle;
 
-#[Route('/document')]
-class DocumentController extends AbstractController
+#[Route('/document', name: 'app_document')]
+class DocumentController extends CustomerInfoController
 {
-    #[Route('/{id}/new', name: 'app_document', methods: ['POST'])]
+    #[Route('/{id}/new', name: '_new', methods: ['POST'])]
     public function uploadDocument(
         Request                $request,
         SluggerInterface       $slugger,
@@ -71,7 +72,7 @@ class DocumentController extends AbstractController
         return $this->render('document/upload_response.html.twig', compact('form', 'customer'));
     }
 
-    #[Route('/{id}/download', name: 'app_document_download', methods: ['GET'])]
+    #[Route('/{id}/download', name: '_download', methods: ['GET'])]
     public function downloadDocument(
         Document $document,
         MimeTypesInterface $mimeTypes
@@ -89,71 +90,40 @@ class DocumentController extends AbstractController
         return $response;
     }
 
-    #[Route(name: 'app_document_index', methods: ['GET'])]
-    public function index(DocumentRepository $documentRepository): Response
+    #[Route('/{id}', name: '_delete', methods: ['POST'])]
+    public function delete(Request $request, int $id, ?Customer $customer = null): Response
     {
-        return $this->render('docu/index.html.twig', [
-            'documents' => $documentRepository->findAll(),
-        ]);
-    }
-
-    #[Route('/new', name: 'app_docu_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $document = new Document();
-        $form = $this->createForm(DropzoneForm::class, $document);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($document);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_docu_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('docu/new.html.twig', [
-            'document' => $document,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_docu_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Document $document, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(DropzoneForm::class, $document);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_docu_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('docu/edit.html.twig', [
-            'document' => $document,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_document_delete', methods: ['POST'])]
-    public function delete(Request $request, Document $document, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$document->getId(), $request->getPayload()->getString('_token'))) {
-
+        if ($this->isCsrfTokenValid('delete'.$id, $request->getPayload()->getString('_token'))) {
+            $document = $this->getRepository()->find($id);
             $path = $document->getPath();
             if (file_exists($path)) {
                 unlink($path);
             }
             $customer = $document->getCustomer();
-            $entityManager->remove($document);
-            $entityManager->flush();
+            $this->entityManager->remove($document);
+            $this->entityManager->flush();
 
             if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
                 return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()], Response::HTTP_SEE_OTHER);
             }
         }
 
-
         return $this->redirectToRoute('app_document_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    protected function getEntityClass(): string
+    {
+        return Document::class;
+    }
+
+    protected function getFormTypeClass(): string
+    {
+        return DropzoneForm::class;
+    }
+
+    protected function customizeQueryBuilder(QueryBuilder $qb): void
+    {
+        $qb->leftJoin('e.customer', 'c')
+            ->leftJoin('e.type', 't');
     }
 }

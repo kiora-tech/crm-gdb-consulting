@@ -20,6 +20,7 @@ class CustomerRepository extends ServiceEntityRepository
 
     public function search(CustomerSearchData $search): Query
     {
+        dump($search);
         $query = $this->createQueryBuilder('c')
             ->addSelect('co')
             ->addSelect('energies')

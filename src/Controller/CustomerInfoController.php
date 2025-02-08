@@ -6,7 +6,9 @@ namespace App\Controller;
 
 use App\Entity\Customer;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ObjectRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,8 +18,10 @@ use function Symfony\Component\String\u;
 
 abstract class CustomerInfoController extends AbstractController
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly SluggerInterface $slugger)
-    {
+    public function __construct(
+        protected readonly EntityManagerInterface $entityManager,
+        protected readonly PaginatorInterface $paginator
+    ) {
     }
 
     /**
@@ -58,10 +62,11 @@ abstract class CustomerInfoController extends AbstractController
     public function new(Request $request, ?Customer $customer = null): Response
     {
         $entity = new ($this->getEntityClass());
-        if ($customer) {
-            $entity->setCustomer($customer);
-        }
-        $form = $this->createForm($this->getFormTypeClass(), $entity, ['customer' => $customer]);
+        $entity->setCustomer($customer);
+        $form = $this->createForm($this->getFormTypeClass(), $entity, [
+            'customer' => $customer,
+            'action' => $this->generateFormAction($entity, $customer)
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -79,14 +84,45 @@ abstract class CustomerInfoController extends AbstractController
         return $this->render($this->getName().'/new.html.twig', [
             'entity' => $entity,
             'form' => $form,
-            'customer' => $customer, 
         ]);
     }
-    #[Route(name: '_index', methods: ['GET'])]
-    public function index(): Response
+
+    /**
+     * Personnalise la QueryBuilder pour l'index
+     */
+    protected function customizeQueryBuilder(QueryBuilder $qb): void
     {
+        // À surcharger dans les contrôleurs enfants si besoin
+    }
+
+    #[Route(name: '_index', methods: ['GET'])]
+    public function index(Request $request): Response
+    {
+        $qb = $this->entityManager
+            ->getRepository($this->getEntityClass())
+            ->createQueryBuilder('e');
+
+        // Personnalisation de la query
+        $this->customizeQueryBuilder($qb);
+
+        // Gestion du tri
+        $sortField = $request->query->get('sort');
+        $sortDirection = $request->query->get('order', 'asc');
+
+        $pagination = $this->paginator->paginate(
+            $qb->getQuery(),
+            $request->query->getInt('page', 1),
+            10
+        );
+
         return $this->render($this->getName().'/index.html.twig', [
-            'entities' => $this->getRepository()->findAll(),
+            'entities' => $pagination,
+            'baseRouteName' => $this->getBaseRouteName(),
+            'entityName' => $this->getName(),
+            'currentSort' => [
+                'field' => $sortField,
+                'order' => $sortDirection
+            ],
         ]);
     }
 
@@ -98,8 +134,11 @@ abstract class CustomerInfoController extends AbstractController
         if ($customer) {
             $entity->setCustomer($customer);
         }
-    
-        $form = $this->createForm($this->getFormTypeClass(), $entity, ['customer' => $customer]);
+
+        $form = $this->createForm($this->getFormTypeClass(), $entity, [
+            'customer' => $customer,
+            'action' => $this->generateFormAction($entity, $customer)
+        ]);
         $form->handleRequest($request);
     
         if ($form->isSubmitted() && $form->isValid()) {
@@ -137,6 +176,27 @@ abstract class CustomerInfoController extends AbstractController
         }
 
         return $this->redirectToRoute($this->getBaseRouteName().'_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    /**
+     * Generate the form action URL based on the entity and customer
+     */
+    protected function generateFormAction(object $entity, ?Customer $customer): string
+    {
+        $route = method_exists($entity, 'getId') && $entity->getId()
+            ? $this->getBaseRouteName() . '_edit'
+            : $this->getBaseRouteName() . '_new';
+
+        $parameters = [];
+        if ($customer) {
+            $parameters['customer'] = $customer->getId();
+        }
+
+        if (method_exists($entity, 'getId') && $entity->getId()) {
+            $parameters['id'] = $entity->getId();
+        }
+
+        return $this->generateUrl($route, $parameters);
     }
 
 }

@@ -9,6 +9,8 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -35,7 +37,7 @@ class EnergyType extends AbstractType
             ->add('segment', EnumType::class, [
                 'class' => Segment::class,
                 'choice_label' => fn(Segment $segment) => $segment->value,
-                ])
+            ])
             ->add('peakHour')
             ->add('offPeakHour')
             ->add('horoSeason')
@@ -49,7 +51,6 @@ class EnergyType extends AbstractType
                 'class' => Customer::class
             ]);
         }
-        $builder->setAction($this->router->generate('app_energy_new', ['customer' => $options['customer']?->getId()]));
     }
 
     public function configureOptions(OptionsResolver $resolver): void

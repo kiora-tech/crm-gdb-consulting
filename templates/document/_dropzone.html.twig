@@ -1,6 +1,6 @@
 {# _dropzone.html.twig #}
 {{ form_start(form, {
-    'action': path('app_document', {'id': customer.id}),
+    'action': path('app_document_new', {'id': customer.id}),
     'attr': {'class': 'dropzone-form'}
 }) }}
     {{ form_widget(form.file, {

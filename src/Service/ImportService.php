@@ -97,7 +97,7 @@ readonly class ImportService
                         $date = \DateTime::createFromFormat('d/m/Y', $row[7]);
                         $existingEnergy->setContractEnd($date);
                     }
-                    $existingEnergy->setType($row[8]);
+                    $existingEnergy->setType(EnergyType::tryFrom($row[8]) ?? EnergyType::ELEC);
                 }
             }
         }
@@ -116,7 +116,7 @@ readonly class ImportService
             $customer = new Customer();
             $customer->setName($name);
             $customer->setLeadOrigin($leadOrigin);
-            $customer->setOrigin(ProspectOrigin::LISTING);
+            $customer->setOrigin(ProspectOrigin::ACQUISITION);
             $this->entityManager->persist($customer);
             $this->entityManager->flush();
         }

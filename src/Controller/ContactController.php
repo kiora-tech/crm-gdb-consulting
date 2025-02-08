@@ -21,4 +21,15 @@ final class ContactController extends CustomerInfoController
             'entity' => $contact,
         ]);
     }
+
+    protected function getSortableFields(): array
+    {
+        return [
+            'e.email' => 'e.email',
+            'e.firstName' => 'e.firstName',
+            'e.lastName' => 'e.lastName',
+            'e.position' => 'e.position',
+            'e.phone' => 'e.phone',
+        ];
+    }
 }

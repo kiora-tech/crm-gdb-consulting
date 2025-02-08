@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Customer;
 use App\Entity\Document;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -24,12 +25,19 @@ class DropzoneForm extends AbstractType
                 'mapped' => false,
             ])
         ;
+
+        if (!$options['customer'] instanceof Customer) {
+            $builder->add('customer', EntityType::class, [
+                'class' => Customer::class
+            ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Document::class,
+            'customer' => null,
         ]);
     }
 }

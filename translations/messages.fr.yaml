@@ -32,9 +32,13 @@ menu:
     client_document: "Document client"
     document_signature: "Signature de document"
     create_account: "Création de compte"
-    documents: Documents
+    document: Documents
     contacts: Contacts
     document_type: "Type de document"
+document:
+    name: Nom
+    type: Type
+    customer: Client
 choice:
     "yes": Oui
     "no": Non
@@ -116,6 +120,7 @@ reset_password:
 button:
         meet: 'Rendez-vous'
         reset: Réinitialiser
+        filter: Filtrer
         restore_version: 'Restaurer cette version'
         show: Voir
         show_active: 'Voir actif'
@@ -537,9 +542,10 @@ contact:
     name: Nom/Prénom de l'interlocuteur
     position: Poste
     email: Email
-    phone: Téléphone fixe
-    mobile_phone: Téléphone portable
+    phone: Tél. fixe
+    mobile_phone: Tél. portable
     address: Adresse
+    last_name: Nom
 energy:
     contract_end: Echéance du contrat
     provider: Fournisseur
@@ -592,3 +598,5 @@ File:	Fichier
 Drag and drop a file or click to browse: Glisser-déposer un fichier
 Password:	Mot de passe
 Company:	Entreprise
+ASC: ASC
+DESC: DESC

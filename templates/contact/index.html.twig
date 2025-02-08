@@ -1,57 +1,55 @@
-{% extends 'base.html.twig' %}
+{% extends 'customer_information/index.html.twig' %}
 
-{% block title %}Contact index
+{% import _self as macros %}
+
+{% block table_headers %}
+	{{ macros.sortable_header('e.email', 'contact.email', currentSort) }}
+	{{ macros.sortable_header('e.lastName', 'contact.last_name', currentSort) }}
+	{{ macros.sortable_header('e.position', 'contact.position', currentSort) }}
+	{{ macros.sortable_header('e.phone', 'contact.phone', currentSort) }}
+	{{ macros.sortable_header('e.mobilePhone', 'contact.mobile_phone', currentSort) }}
+	{{ macros.sortable_header('e.address', 'contact.address', currentSort) }}
+	<th scope="col" class="text-center">Actions</th>
 {% endblock %}
 
-{% block body %}
-	<div class="pagetitle d-flex justify-content-between">
-		<h1>{{ "menu.contacts"|trans }}</h1>
-	</div>
-	<section class="section">
-		<div class="card p-4">
-			<div class="card-body">
-				<table class="table" data-controller="table-header">
-					<thead class="bg-gray-50">
-						<tr class="table-primary">
-							<th scope="col" class="text-center" data-index="0" data-action="click->table-header#sort">{{ 'contact.email'|trans }}</th>
-							<th scope="col" class="text-center" data-index="1" data-action="click->table-header#sort">{{ "contact.name"|trans }}</th>
-							<th scope="col" class="text-center" data-index="2" data-action="click->table-header#sort">{{ 'contact.position'|trans }}</th>
-							<th scope="col" class="text-center" data-index="3" data-action="click->table-header#sort">{{ 'contact.phone'|trans }}</th>
-							<th scope="col" class="text-center" data-index="4" data-action="click->table-header#sort">{{ 'contact.mobile_phone'|trans }}</th>
-							<th scope="col" class="text-center" data-index="5" data-action="click->table-header#sort">{{ 'contact.address'|trans }}</th>
-							<th scope="col" class="text-center" data-index="6">Actions</th>
-						</tr>
-					</thead>
-					<tbody class="bg-white divide-y divide-gray-200">
-						{% for contact in entities %}
-							<tr id="contact-row-{{ contact.id }}">
-								<td class="text-center">
-									<a href="mailto:{{ contact.email }}" class="text-blue-500 hover:underline">{{ contact.email }}</a>
-								</td>
-								<td class="text-center">{{ contact.firstName }} {{ contact.lastName }}</td>
-								<td class="text-center">{{ contact.position }}</td>
-								<td class="text-center">
-									<a href="tel:{{ contact.phone }}" class="text-blue-500 hover:underline">{{ contact.phone }}</a>
-								</td>
-								<td class="text-center">
-									<a href="tel:{{ contact.mobilePhone }}" class="text-blue-500 hover:underline">{{ contact.mobilePhone }}</a>
-								</td>
-								<td class=" text-center">{{ contact.address }}</td>
-								<td class="buttonDisplay  text-right">
-									<a href="{{ path('app_contact_show', {'id': contact.id}) }}" class="btn btn-primary">{{ "button.show"|trans }}</a>
-									<a href="{{ path('app_contact_edit', {'id': contact.id}) }}" class="btn btn-primary">{{ "button.edit"|trans }}</a>
-								</td>
-							</tr>
-						{% else %}
-							<tr>
-								<td colspan="7" class=" text-center">No records found</td>
-							</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</section>
-
-	<a href="{{ path('app_contact_new') }}">Create new</a>
+{% block table_body %}
+	{% for contact in entities %}
+		<tr id="contact-row-{{ contact.id }}">
+			<td class="text-center">
+				<a href="mailto:{{ contact.email }}" data-turbo="false">{{ contact.email }}</a>
+			</td>
+			<td class="text-center">{{ contact }}</td>
+			<td class="text-center">{{ contact.position }}</td>
+			<td class="text-center">
+				<a href="tel:{{ contact.phone }}" data-turbo="false">{{ contact.phone }}</a>
+			</td>
+			<td class="text-center">
+				<a href="tel:{{ contact.mobilePhone }}" data-turbo="false">{{ contact.mobilePhone }}</a>
+			</td>
+			<td class="text-center">{{ contact.address }}</td>
+			<td class="text-end d-flex gap-2 justify-content-end">
+				<a href="{{ path('app_contact_show', {'id': contact.id}) }}"
+				   class="btn btn-sm btn-outline-primary">
+					<i class="bi bi-eye"></i>
+				</a>
+				<a href="{{ path('app_contact_edit', {'id': contact.id}) }}"
+				   class="btn btn-sm btn-outline-primary">
+					<i class="bi bi-pencil-square"></i>
+				</a>
+				<form action="{{ path('app_contact_delete', {'id': contact.id}) }}"
+					  method="post"
+					  class="d-inline"
+					  onsubmit="return confirm('{{ 'message.confirm_delete'|trans }}')">
+					<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ contact.id) }}">
+					<button type="submit" class="btn btn-sm btn-outline-danger">
+						<i class="bi bi-trash"></i>
+					</button>
+				</form>
+			</td>
+		</tr>
+	{% else %}
+		<tr>
+			<td colspan="7" class="text-center">{{ 'table.no_data'|trans }}</td>
+		</tr>
+	{% endfor %}
 {% endblock %}

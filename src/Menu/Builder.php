@@ -54,7 +54,7 @@ final readonly class Builder
             ->setExtra('safe_label', true);
 
         $menu->addChild('menu.documents', ['route' => 'app_document_index'])
-            ->setLabel((string)t('menu.documents'))
+            ->setLabel((string)t('menu.document'))
             ->setExtra('icon', 'bi bi-file-earmark-text')
             ->setExtra('safe_label', true);
 

@@ -27,8 +27,6 @@ class CommentType extends AbstractType
                 'class' => Customer::class
             ]);
         }
-        $builder->setAction($this->router->generate('app_comment_new', ['customer' => $options['customer']?->getId()]));
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% macro sortable_header(field, label, currentSort) %}
+    {% set order = field == currentSort.field and currentSort.order == 'asc' ? 'desc' : 'asc' %}
+    {% set icon_class = field == currentSort.field
+        ? (currentSort.order == 'asc' ? 'bi-sort-down' : 'bi-sort-up')
+        : 'bi-sort' %}
+
+    <th scope="col" class="text-center">
+        <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({
+            'sort': field,
+            'order': order
+        })) }}" class="text-decoration-none text-dark">
+            {{ label|trans }}
+            <i class="bi {{ icon_class }} ms-1"></i>
+        </a>
+    </th>
+{% endmacro %}
+
+{% block title %}{{ ('menu.' ~ entityName)|trans }}{% endblock %}
+
+{% block body %}
+    <div class="pagetitle d-flex justify-content-between align-items-center">
+        <h1>{{ ('menu.' ~ entityName)|trans }}</h1>
+        <a href="{{ path(baseRouteName ~ '_new') }}" class="btn btn-sm btn-primary rounded-circle">
+            <i class="bi bi-plus"></i>
+        </a>
+    </div>
+
+    <section class="section">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" data-controller="table-header">
+                        <thead>
+                        <tr class="table-primary">
+                            {% block table_headers %}
+                            {% endblock %}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% block table_body %}
+                        {% endblock %}
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex justify-content-center">
+                        {{ knp_pagination_render(entities) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'customer_information/index.html.twig' %}
+
+
+{% import _self as macros %}
+
+{% block table_headers %}
+	{{ macros.sortable_header('e.name', 'document.name', currentSort) }}
+	{{ macros.sortable_header('t.label', 'document.type', currentSort) }}
+	{{ macros.sortable_header('c.name', 'document.customer', currentSort) }}
+	<th scope="col" class="text-center">Actions</th>
+{% endblock %}
+
+{% block table_body %}
+	{% for document in entities %}
+		<tr>
+			<td class="text-center">{{ document.name }}</td>
+			<td class="text-center">{{ document.type }}</td>
+			<td class="text-center">{{ document.customer }}</td>
+			<td class="text-end d-flex gap-2 justify-content-end">
+				<a href="{{ path('app_document_download', {'id': document.id}) }}"
+				   data-turbo="false"
+				   class="btn btn-sm btn-outline-primary">
+					<i class="bi bi-download"></i>
+				</a>
+				<a href="{{ path('app_document_edit', {'id': document.id}) }}"
+				   class="btn btn-sm btn-outline-primary">
+					<i class="bi bi-pencil-square"></i>
+				</a>
+			</td>
+		</tr>
+	{% else %}
+		<tr>
+			<td colspan="4" class="text-center">{{ 'table.no_data'|trans }}</td>
+		</tr>
+	{% endfor %}
+{% endblock %}
