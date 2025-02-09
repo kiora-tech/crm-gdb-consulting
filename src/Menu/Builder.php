@@ -48,12 +48,12 @@ final readonly class Builder
             ->setExtra('icon', 'bi bi-person')
             ->setExtra('safe_label', true);
 
-        $menu->addChild('menu.contacts', ['route' => 'app_contact_index'])
-            ->setLabel((string)t('menu.contacts'))
+        $menu->addChild('menu.contact', ['route' => 'app_contact_index'])
+            ->setLabel((string)t('menu.contact'))
             ->setExtra('icon', 'bi bi-person-lines-fill')
             ->setExtra('safe_label', true);
 
-        $menu->addChild('menu.documents', ['route' => 'app_document_index'])
+        $menu->addChild('menu.document', ['route' => 'app_document_index'])
             ->setLabel((string)t('menu.document'))
             ->setExtra('icon', 'bi bi-file-earmark-text')
             ->setExtra('safe_label', true);

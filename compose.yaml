@@ -17,7 +17,7 @@ services:
     volumes:
       - database_data:/var/lib/mysql
   php:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.5.0
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.6.0
     depends_on:
       - database
     environment:
@@ -31,7 +31,7 @@ services:
     restart:
       always
   nginx:
-    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.5.0
+    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.6.0
     depends_on:
       - php
       - database
