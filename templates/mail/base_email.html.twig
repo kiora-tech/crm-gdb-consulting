@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app.request.locale|default(locale) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invitation</title>
+    <title>{% trans %}prospect_email.invitation{% endtrans %}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -80,13 +80,13 @@
         <img src="https://via.placeholder.com/150" alt="Logo">
     </div>
     <div class="card-body ">
-        <h1 class="card-title">Bonjour,</h1>
+        <h1 class="card-title">{% trans %}emails.hello{% endtrans %},</h1>
         {% block email_content %}
         {% endblock %}
-        <p></p>
+        <p>{% trans %}emails.thank{% endtrans %}.</p>
     </div>
     <div class="card-footer">
-        <p>&#xA9; 2025 Kiora. {% trans %}emails.all_rights{% endtrans %}.</p>
+        <p>&#xA9; 2024 Kiora. {% trans %}emails.all_rights{% endtrans %}.</p>
     </div>
 </div>
 </body>

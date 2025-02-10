@@ -27,7 +27,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             'password'
         ));
         $user->setCompany($this->getReference('company_1', Company::class));
-
+        $user->setRoles(['ROLE_USER', 'ROLE_ADMIN']);
         $manager->persist($user);
         $manager->flush();
 

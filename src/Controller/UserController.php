@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Company;
 use App\Entity\User;
 use App\Form\UserType;
+use App\Message\NewUser;
 use App\Notification\NewCollaboratorNotification;
 use App\Notification\UserRecipient;
 use App\Repository\UserRepository;
@@ -12,6 +13,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -40,7 +43,8 @@ class UserController extends AbstractController
     public function new(
         Request                     $request,
         EntityManagerInterface      $entityManager,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        NotifierInterface           $notifier,
     ): Response
     {
         $user = new User();
@@ -57,6 +61,7 @@ class UserController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
+            $notifier->send(new NewCollaboratorNotification, $user);
 
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }
