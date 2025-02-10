@@ -14,6 +14,7 @@ use App\Service\ImportService;
 use App\Service\PaginationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,13 +24,18 @@ use Symfony\Component\Routing\Attribute\Route;
 class CustomerController extends AbstractController
 {
     #[Route('/', name: 'app_customer_index', methods: ['GET'])]
-    public function index(CustomerRepository $customerRepository, PaginationService $paginationService, Request $request): Response
+    public function index(CustomerRepository $customerRepository, PaginationService $paginationService, Request $request, Security $security): Response
     {
         $data = new CustomerSearchData();
         $form = $this->createForm(CustomerSearchType::class, $data);
         $form->handleRequest($request);
 
-        $query = $customerRepository->search($data);
+        //if user is admin
+        if ($security->isGranted('ROLE_ADMIN')) {
+            $query = $customerRepository->search($data);
+        } else {
+            $query = $customerRepository->search($data, $this->getUser());
+        }
 
         $customers = $paginationService->paginate($query, $request);
 

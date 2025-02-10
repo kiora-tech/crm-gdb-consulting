@@ -19,9 +19,8 @@ final readonly class Builder
 {
     public function __construct(
         private FactoryInterface $factory,
-        private Security         $security,
-    )
-    {
+        private Security $security,
+    ) {
     }
 
     private function getCompany(): Company
@@ -58,20 +57,21 @@ final readonly class Builder
             ->setExtra('icon', 'bi bi-file-earmark-text')
             ->setExtra('safe_label', true);
 
-        $menu->addChild('menu.user', ['route' => 'app_user_index'])
-            ->setLabel((string)t('menu.user'))
-            ->setExtra('icon', 'bi bi-door-open')
-            ->setExtra('safe_label', true);
-
         $menu->addChild('menu.document_signature', ['route' => 'app_document_signature_index'])
             ->setLabel((string)t('menu.document_signature'))
             ->setExtra('icon', 'bi bi-file-earmark-text')
             ->setExtra('safe_label', true);
 
-        $menu->addChild('menu.document_type', ['route' => 'app_document_type_index'])
-            ->setLabel((string)t('menu.document_type'))
-            ->setExtra('icon', 'bi bi-file')
-            ->setExtra('safe_label', true);
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            $menu->addChild('menu.user', ['route' => 'app_user_index'])
+                ->setLabel((string)t('menu.user'))
+                ->setExtra('icon', 'bi bi-door-open')
+                ->setExtra('safe_label', true);
+            $menu->addChild('menu.document_type', ['route' => 'app_document_type_index'])
+                ->setLabel((string)t('menu.document_type'))
+                ->setExtra('icon', 'bi bi-file')
+                ->setExtra('safe_label', true);
+        }
 
 
         return $menu;

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Data\CustomerSearchData;
 use App\Entity\Customer;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
@@ -18,7 +19,7 @@ class CustomerRepository extends ServiceEntityRepository
         parent::__construct($registry, Customer::class);
     }
 
-    public function search(CustomerSearchData $search): Query
+    public function search(CustomerSearchData $search, ?User $user = null): Query
     {
         $query = $this->createQueryBuilder('c')
             ->addSelect('co')
@@ -98,6 +99,13 @@ class CustomerRepository extends ServiceEntityRepository
                 ->andWhere('c.siret LIKE :siret')
                 ->setParameter('siret', '%' . $search->siret . '%');
         }
+
+        if($user){
+            $query = $query
+                ->andWhere('c.user = :user OR c.user IS NULL')
+                ->setParameter('user', $user);
+        }
+
 
         return $query
             ->getQuery();

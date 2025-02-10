@@ -58,27 +58,35 @@
                     {{ form_widget(form.canalSignature, {'attr': {'class': 'form-control'}}) }}
                     {{ form_errors(form.canalSignature) }}
                 </div>
-            </div>
 
-            <div class="col-md-6 mb-3">
-                {{ form_label(form.margin, null, {'label_attr': {'class': 'form-label'}}) }}
-                {{ form_widget(form.margin, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.margin) }}
-            </div>
 
-            <div class="col-md-6 mb-3">
-                {{ form_label(form.companyGroup, null, {'label_attr': {'class': 'form-label'}}) }}
-                {{ form_widget(form.companyGroup, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.companyGroup) }}
-            </div>
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.margin, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.margin, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.margin) }}
+                </div>
 
-            <div class="col-md-6 mb-3">
-                {{ form_label(form.siret, null, {'label_attr': {'class': 'form-label'}}) }}
-                {{ form_widget(form.siret, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.siret) }}
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.companyGroup, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.companyGroup, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.companyGroup) }}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.siret, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.siret, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.siret) }}
+                </div>
+                {% if form.user is defined %}
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.user, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.user, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.user) }}
+                    </div>
+                {% endif %}
             </div>
         </div>
-       <div>
+        <div>
             <div style="display:flex;gap:5px;">
                 <button class="btn btn-primary mt-4">{{ "button.save"|trans }}</button>
                 <a class="btn btn-secondary mt-4" href="{{ path('app_customer_index') }}">{{ "button.back"|trans }}</a>
