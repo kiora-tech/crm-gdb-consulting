@@ -2,9 +2,31 @@
 
 {% block email_content %}
     <p>
-        Votre compte a été créé avec succès. Votre responsable vous a ajouté en tant que collaborateur.
+        Bonjour {{ user.firstName }} {{ user.lastName }},
     </p>
-    <p class="text-center">
 
+    <p>
+        Bienvenue chez GDB CONSULTING ! Votre compte a été créé avec succès par {{ creator.firstName }} {{ creator.lastName }}.
+    </p>
+
+    <p>
+        Vos identifiants de connexion sont :
+        <br>Email : {{ user.email }}
+    </p>
+
+    <p>
+        Vous pouvez dès maintenant vous connecter à notre CRM à l'adresse suivante :
+        <br>
+        <a href="{{ crm_url }}" class="btn-primary" style="display: inline-block; margin-top: 10px;">
+            Accéder au CRM
+        </a>
+    </p>
+
+    <p>
+        Pour des raisons de sécurité, nous vous recommandons de changer votre mot de passe lors de votre première connexion.
+    </p>
+
+    <p>
+        Si vous avez des questions, n'hésitez pas à contacter votre responsable.
     </p>
 {% endblock %}

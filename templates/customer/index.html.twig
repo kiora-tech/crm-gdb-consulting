@@ -5,10 +5,10 @@
 {% endblock %}
 
 {% block body %}
-	<div class="pagetitle d-flex justify-content-between">
+	<div class="pagetitle d-flex justify-content-between align-items-center">
 		<h1>{{ "customer.list"|trans }}</h1>
-		<a href="{{ path('app_customer_new') }}" class="btn btn-primary">
-			{{ "create"|trans }}
+		<a href="{{ path('app_customer_new') }}" class="btn btn-sm btn-primary rounded-circle">
+			<i class="bi bi-plus"></i>
 		</a>
 	</div>
 
@@ -24,68 +24,44 @@
 					</div>
 				</form>
 
-				<table class="table">
-					<thead class="bg-gray-50">
-						<tr class="table-primary">
-							{% set currentOrder = app.request.query.get('order', 'ASC') %}
-							{% set newOrder = currentOrder == 'ASC' ? 'DESC' : 'ASC' %}
+				<twig:Table
+						:paginator="customers"
+						:columns="[
+                        {field: 'name', label: 'name', sortable: true, sortAlias: 'c.name'},
+                        {field: 'siret', label: 'customer.siret', sortable: true, sortAlias: 'c.siret'},
+                        {field: 'contacts', label: 'contact.name', sortable: true, sortAlias: 'co.firstName'},
+                        {field: 'lastEnergy.contractEnd', label: 'energy.contract_end', sortable: true, sortAlias: 'e.contractEnd'}
+                    ]"
+						:options="{
+                        routes: {
+                            show: 'app_customer_show',
+                            edit: 'app_customer_edit',
+                            delete: false
+                        },
+                        tableClass: 'table',
+                        theadClass: 'table-primary',
+                        showActions: true,
+                        actions: {
+                            show: true,
+                            edit: true,
+                            delete: false
+                        }
+                    }"
+				>
+					{% block column_siret %}
+						<a href="https://www.pappers.fr/recherche?q={{ entity.siret }}" target="_blank">{{ entity.siret }}</a>
+					{% endblock %}
 
-							<th scope="col" class="text-center">
-								<a href="{{ path(app.request.attributes.get('_route'), app.request.query.all()|merge({ sort: 'c.name', order: newOrder })) }}">
-									{{ "name"|trans }}
-								</a>
-							</th>
-							<th scope="col" class="text-center">
-								<a href="{{ path(app.request.attributes.get('_route'), app.request.query.all()|merge({ sort: 'c.siret', order: newOrder })) }}">
-									{{ "customer.siret"|trans }}
-								</a>
-							</th>
-							<th scope="col" class="text-center">
-								<a href="{{ path(app.request.attributes.get('_route'), app.request.query.all()|merge({ sort: 'co.firstName', order: newOrder })) }}">
-									{{ "contact.name"|trans }}
-								</a>
-							</th>
-							<th scope="col" class="text-center">
-								<a href="{{ path(app.request.attributes.get('_route'), app.request.query.all()|merge({ sort: 'energies.contractEnd', order: newOrder })) }}">
-									{{ "energy.contract_end"|trans }}
-								</a>
-							</th>
-							<th scope="col" class="text-center">{{ "button.actions"|trans }}</th>
-						</tr>
-					</thead>
-					<tbody class="bg-white divide-y divide-gray-200">
-						{% for customer in customers %}
-							<tr>
-								<td class=" text-center">{{ customer.name }}</td>
-								<td class=" text-center">
-									<a href="https://www.pappers.fr/recherche?q={{ customer.siret }}" target="_blank">{{ customer.siret }}</a><br>
-								</td>
-								<td class="text-center">
-									{% for contact in customer.contacts %}
-
-									{{ contact }}<br>
-									{% endfor %}
-								</td>
-								<td class=" text-center">
-									{{ customer.getLastEnergy ? customer.getLastEnergy.contractEnd|date('d/m/Y') : "-" }}
-								</td>
-								<td class="buttonDisplay  text-right">
-									<a href="{{ path('app_customer_show', {'id': customer.id}) }}" class="btn btn-primary">{{ "button.show"|trans }}</a>
-									<a href="{{ path('app_customer_edit', {'id': customer.id}) }}" class="btn btn-primary">{{ "button.edit"|trans }}</a>
-								</td>
-							</tr>
-						{% else %}
-							<tr>
-								<td colspan="4" class=" text-center">{{ "no_record"|trans }}</td>
-							</tr>
+					{% block column_contacts %}
+						{% for contact in entity.contacts %}
+							{{ contact }}<br>
 						{% endfor %}
+					{% endblock %}
 
-					</tbody>
-				</table>
-
-				<div class="navigation mt-4 d-flex justify-content-center">
-					{{ knp_pagination_render(customers) }}
-				</div>
+					{% block column_lastEnergy_contractEnd %}
+						{{ entity.lastEnergy ? entity.lastEnergy.contractEnd|date('d/m/Y') : "-" }}
+					{% endblock %}
+				</twig:Table>
 			</div>
 		</div>
 	</section>

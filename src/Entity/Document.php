@@ -26,6 +26,9 @@ class Document
     #[ORM\ManyToOne(inversedBy: 'documents')]
     private ?DocumentType $type = null;
 
+    #[ORM\OneToOne(mappedBy: 'clientDocument')]
+    private ?ClientSigningDocument $clientSigningDocument = null;
+
     public function getId(): ?int
     {
         return $this->id;

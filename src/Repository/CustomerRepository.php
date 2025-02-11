@@ -23,9 +23,9 @@ class CustomerRepository extends ServiceEntityRepository
     {
         $query = $this->createQueryBuilder('c')
             ->addSelect('co')
-            ->addSelect('energies')
+            ->addSelect('e')
             ->leftJoin('c.contacts', 'co')
-            ->leftJoin('c.energies', 'energies');;
+            ->leftJoin('c.energies', 'e');;
 
 
         if (!empty($search->name)) {

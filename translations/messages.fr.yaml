@@ -553,8 +553,12 @@ energy:
     provider: Fournisseur
     type: Type d’energie
     code: PDL/PCE
-
+action:
+    show: Voir
+    edit: Modifier
+    delete: Supprimer
 table:
+    actions: Actions
     no_data: Aucune donnée disponible
 Action:	Action
 Action a mener:	Action a mener

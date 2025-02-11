@@ -1,0 +1,32 @@
+{# templates/components/Actions.html.twig #}
+<div {{ attributes.defaults({class: 'd-flex gap-2 justify-content-end'}) }}>
+    {% if this.isActionAvailable('show') %}
+        <a href="{{ path(showRoute, {'id': entity.id}) }}"
+           class="btn btn-sm btn-outline-primary"
+           title="{{ 'action.show'|trans }}">
+            <i class="bi bi-eye"></i>
+        </a>
+    {% endif %}
+
+    {% if this.isActionAvailable('edit') %}
+        <a href="{{ path(editRoute, {'id': entity.id}) }}"
+           class="btn btn-sm btn-outline-primary"
+           title="{{ 'action.edit'|trans }}">
+            <i class="bi bi-pencil-square"></i>
+        </a>
+    {% endif %}
+
+    {% if this.isActionAvailable('delete') %}
+        <form action="{{ path(deleteRoute, {'id': entity.id}) }}"
+              method="post"
+              class="d-inline"
+              onsubmit="return confirm('{{ 'message.confirm_delete'|trans }}')">
+            <input type="hidden" name="_token" value="{{ csrf_token(this.deleteToken) }}">
+            <button type="submit"
+                    class="btn btn-sm btn-outline-danger"
+                    title="{{ 'action.delete'|trans }}">
+                <i class="bi bi-trash"></i>
+            </button>
+        </form>
+    {% endif %}
+</div>

@@ -1,0 +1,80 @@
+{# templates/components/Table.html.twig #}
+<div class="card pt-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="{{ options.tableClass }}">
+                <thead>
+                <tr class="{{ options.theadClass }}">
+                    {% for column in columns %}
+                        <th scope="col" class="text-center">
+                            {% if column.sortable|default(false) and options.sortable %}
+                                <a href="{{ path(app.request.attributes.get('_route'),
+                                    app.request.query.all|merge({
+                                        'sort': this.getSortableField(column),
+                                        'order': this.getOrder(this.getSortableField(column))
+                                    })) }}"
+                                   class="text-decoration-none text-dark">
+                                    {{ column.label|trans }}
+                                    <i class="bi {{ this.getSortIcon(this.getSortableField(column)) }} ms-1"></i>
+                                </a>
+                            {% else %}
+                                {{ column.label|trans }}
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+
+                    {% if options.showActions %}
+                        <th scope="col" class="text-center">{{ 'table.actions'|trans }}</th>
+                    {% endif %}
+                </tr>
+                </thead>
+                <tbody>
+                {% if paginator|length > 0 %}
+                    {% for entity in paginator %}
+                        <tr>
+                            {% for column in columns %}
+                                <td class="text-center">
+                                    {% if block('column_' ~ column.field|replace({'.': '_'})) is defined %}
+                                        {{ block('column_' ~ column.field|replace({'.': '_'})) }}
+                                    {% else %}
+                                        {# Gestion des propriétés imbriquées (e.g., 'user.email') #}
+                                        {% set value = entity %}
+                                        {% for key in column.field|split('.') %}
+                                            {% set value = attribute(value, key) %}
+                                        {% endfor %}
+                                        {{ value }}
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+
+                            {% if options.showActions %}
+                                <td class="text-end">
+                                    <twig:Actions
+                                            :entity="entity"
+                                            :showRoute="options.routes.show"
+                                            :editRoute="options.routes.edit"
+                                            :deleteRoute="options.routes.delete"
+                                            :canShow="options.actions.show"
+                                            :canEdit="options.actions.edit"
+                                            :canDelete="options.actions.delete"
+                                    />
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="{{ columns|length + (options.showActions ? 1 : 0) }}" class="text-center">
+                            {{ 'table.no_data'|trans }}
+                        </td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-center">
+                {{ knp_pagination_render(paginator) }}
+            </div>
+        </div>
+    </div>
+</div>

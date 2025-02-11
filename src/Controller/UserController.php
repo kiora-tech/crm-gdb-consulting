@@ -18,6 +18,7 @@ use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Form\UserProfilType;
@@ -45,6 +46,7 @@ class UserController extends AbstractController
         EntityManagerInterface      $entityManager,
         UserPasswordHasherInterface $passwordHasher,
         NotifierInterface           $notifier,
+        UrlGeneratorInterface       $urlGenerator
     ): Response
     {
         $user = new User();
@@ -61,7 +63,21 @@ class UserController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            $notifier->send(new NewCollaboratorNotification, $user);
+            $creator = $this->getUser();
+            if (!$creator instanceof User) {
+                throw new \LogicException('Creator user not found');
+            }
+
+            $loginUrl = $urlGenerator->generate('app_login', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            $notifier->send(
+                new NewCollaboratorNotification(
+                    $user,
+                    $creator,
+                    $loginUrl
+                ),
+                $user
+            );
 
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }

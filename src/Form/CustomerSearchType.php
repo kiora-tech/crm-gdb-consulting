@@ -40,18 +40,7 @@ class CustomerSearchType extends AbstractType
                 'attr' => [
                     'placeholder' => 'contact.name'
                 ]
-            ])
-            ->add('order', ChoiceType::class, [
-                'choices' => [
-                    'ASC' => 'ASC',
-                    'DESC' => 'DESC',
-                ],
-                'label' => false,
-                'attr' => [
-                    'style' => 'display:none;'
-                ]
-            ])
-            ->add('sort', HiddenType::class);
+            ]);
 
     }
 
@@ -60,7 +49,8 @@ class CustomerSearchType extends AbstractType
         $resolver->setDefaults([
             'data_class' => CustomerSearchData::class,
             'method' => 'GET',
-            'csrf_protection' => false
+            'csrf_protection' => false,
+            'allow_extra_fields' => true,
         ]);
     }
 
