@@ -28,7 +28,7 @@ RUN echo 'eval "$(/var/www/website/bin/console completion bash )"\n' >> ~/.bashr
 
 RUN install-php-extensions xdebug
 
-FROM base AS prod
+FROM registry.kiora.tech/kiora/crm-gdb_php_base:0.3.0 AS prod
 
 COPY . /var/www/website
 
@@ -38,7 +38,7 @@ RUN chown -R www-data:www-data /var/www/website/var \
     && chmod -R 775 /var/www/website/var
 
 #supervisor version
-FROM prod AS supervisor
+FROM registry.kiora.tech/kiora/crm-gdb_php_base:0.3.0 AS supervisor
 
 RUN apt-get update && apt-get install -y supervisor
 

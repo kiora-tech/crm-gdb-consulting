@@ -36,5 +36,6 @@ endif
 		exit 1; \
 	fi
 	@echo "Construction de l'image Docker $(IMAGE) avec le tag $(TAG)..."
-	${DOCKER_CMD} buildx build --target build --platform linux/arm/v7,linux/arm64,linux/amd64 -t ${DOCKER_IMAGE_PREFIX}$(IMAGE)_base:$(TAG) -f docker/$(IMAGE)/Dockerfile --push .
+	${DOCKER_CMD} buildx build --target build --platform linux/arm/v7,linux/arm64,linux/amd64 -t ${DOCKER_IMAGE_PREFIX}$(IMAGE)_build:$(TAG) -f docker/$(IMAGE)/Dockerfile --push .
+	${DOCKER_CMD} buildx build --target base --platform linux/arm/v7,linux/arm64,linux/amd64 -t ${DOCKER_IMAGE_PREFIX}$(IMAGE)_base:$(TAG) -f docker/$(IMAGE)/Dockerfile --push .
 	@echo "Image Docker $(IMAGE) publiée avec succès."

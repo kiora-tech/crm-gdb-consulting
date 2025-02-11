@@ -17,14 +17,14 @@ endif
 		-e APP_ENV=prod \
 		-e COMPOSER_MEMORY_LIMIT=-1 \
 		-u $(shell id -u):$(shell id -g) \
-		$(DOCKER_IMAGE_PREFIX)php_base:0.2.0 composer install --no-dev --optimize-autoloader
+		$(DOCKER_IMAGE_PREFIX)php_build:0.3.0 composer install --no-dev --optimize-autoloader
 
 	${DOCKER_CMD} run --rm \
 		-v $(shell pwd):/app \
 		-w /app \
 		-e APP_ENV=prod \
 		-u $(shell id -u):$(shell id -g) \
-		$(DOCKER_IMAGE_PREFIX)php_base:0.2.0 bin/console asset-map:compile
+		$(DOCKER_IMAGE_PREFIX)php_base:0.3.0 bin/console asset-map:compile
 
 	# Étape 4: Construire l'image Docker de l'application avec un tag incrémental et push directement vers le registre
 	${DOCKER_CMD} buildx build --platform linux/arm/v7,linux/arm64,linux/amd64 --target prod -f docker/php/Dockerfile -t $(DOCKER_IMAGE_PREFIX)php:$(TAG) --push .
