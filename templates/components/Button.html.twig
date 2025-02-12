@@ -1,0 +1,10 @@
+{# templates/components/Button.html.twig #}
+{% set tag = link ? 'a' : 'button' %}
+{% set specificAttributes = link ? {'href': link} : {'type': type} %}
+
+<{{ tag }} {{ this.getAttributes()|raw }} {% for attr, value in specificAttributes %}{{ attr }}="{{ value }}"{% endfor %}>
+{% if icon %}
+    <i class="bi bi-{{ icon }}{% if label %} me-1{% endif %}"></i>
+{% endif %}
+    {{ label|trans }}
+</{{ tag }}>

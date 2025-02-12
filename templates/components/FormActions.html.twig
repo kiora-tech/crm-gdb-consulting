@@ -1,0 +1,23 @@
+<div class="d-flex gap-2 mt-3">
+    <twig:Button
+            type="submit"
+            theme="primary"
+            label="button.save"
+            icon="save"
+    />
+
+    <twig:Button
+            link="{{ path(backRoute, backRouteParams) }}"
+            theme="secondary"
+            label="button.back"
+            icon="arrow-left"
+    />
+
+    {% if showDelete and isAdmin and deleteRoute %}
+        <twig:DeleteButton
+                :deleteRoute="deleteRoute"
+                :deleteRouteParams="deleteRouteParams"
+                :entityId="entityId"
+        />
+    {% endif %}
+</div>

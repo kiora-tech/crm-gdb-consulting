@@ -7,7 +7,14 @@
 {% block body %}
 	<div class="pagetitle" style="display: flex;justify-content:space-between;">
 		<h1>{{ customer.name }}</h1>
-		<a href="{{ path('app_customer_edit', {'id': customer.id}) }}" class="btn btn-primary">{{ "button.edit"|trans }}</a>
+		<twig:Button
+				link="{{ path('app_customer_edit', {'id': customer.id}) }}"
+				theme="primary"
+				size="sm"
+				:outline="true"
+				icon="pencil-square"
+				:attributes="{'title': 'action.edit'|trans}"
+		/>
 	</div>
 
 	<section class="section dashboard">
@@ -66,9 +73,14 @@
 								<turbo-frame id="energies">
 									<div class="d-flex justify-content-between align-items-center">
 										<h5 class="card-title mb-0">{{ "customer.contract_energies"|trans }}</h5>
-										<a href="{{ path('app_energy_new', {'customer': customer.id}) }}" class="btn btn-sm btn-primary rounded-circle">
-											<i class="bi bi-plus"></i>
-										</a>
+										<twig:Button
+												link="{{ path('app_energy_new', {'customer': customer.id}) }}"
+												theme="primary"
+												size="sm"
+												:outline="true"
+												icon="plus"
+												:attributes="{'title': 'action.edit'|trans}"
+										/>
 									</div>
 									<div class="table-responsive">
 										<table class="table table-hover mb-0">
@@ -125,9 +137,14 @@
 								<turbo-frame id="contact">
 									<div class="d-flex justify-content-between align-items-center">
 										<h5 class="card-title mb-0">{{ "customer.contacts"|trans }}</h5>
-										<a href="{{ path('app_contact_new', {'customer': customer.id}) }}" class="btn btn-sm btn-primary rounded-circle">
-											<i class="bi bi-plus"></i>
-										</a>
+										<twig:Button
+												link="{{ path('app_contact_new', {'customer': customer.id}) }}"
+												theme="primary"
+												size="sm"
+												:outline="true"
+												icon="plus"
+												:attributes="{'title': 'action.edit'|trans}"
+										/>
 									</div>
 
 									<div class="table-responsive">
@@ -197,9 +214,14 @@
 								<div class="d-flex justify-content-between align-items-center">
 
 									<h5 class="card-title mb-0">{{ "comment"|trans }}</h5>
-									<a href="{{ path('app_comment_new', {'customer': customer.id}) }}" class="btn btn-sm btn-primary rounded-circle">
-										<i class="bi bi-plus"></i>
-									</a>
+									<twig:Button
+											link="{{ path('app_comment_new', {'customer': customer.id}) }}"
+											theme="primary"
+											size="sm"
+											:outline="true"
+											icon="plus"
+											:attributes="{'title': 'action.edit'|trans}"
+									/>
 								</div>
 
 								<div class="frameHeight">

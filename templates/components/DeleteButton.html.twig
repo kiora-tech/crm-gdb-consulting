@@ -1,0 +1,16 @@
+<form method="post"
+      action="{{ path(deleteRoute, deleteRouteParams) }}"
+      class="d-inline"
+      data-controller="delete-confirmation"
+      data-action="submit->delete-confirmation#confirm"
+      data-delete-confirmation-message="{{ confirmationMessage|trans }}">
+
+    <input type="hidden" name="_token" value="{{ csrf_token(this.deleteToken) }}">
+
+    <twig:Button
+            type="submit"
+            theme="danger"
+            label="button.delete"
+            icon="trash"
+    />
+</form>

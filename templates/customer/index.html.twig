@@ -7,9 +7,11 @@
 {% block body %}
 	<div class="pagetitle d-flex justify-content-between align-items-center">
 		<h1>{{ "customer.list"|trans }}</h1>
-		<a href="{{ path('app_customer_new') }}" class="btn btn-sm btn-primary rounded-circle">
-			<i class="bi bi-plus"></i>
-		</a>
+		<twig:Button
+				link="{{ path('app_customer_new') }}"
+				theme="primary"
+				icon="plus"
+		/>
 	</div>
 
 	{% include 'customer/_filter.html.twig' %}
@@ -20,7 +22,12 @@
 				<form action="{{ path('app_customer_upload') }}" method="post" enctype="multipart/form-data" class="mb-4">
 					<div class="input-group">
 						<input type="file" name="file" class="form-control" required>
-						<button type="submit" class="btn btn-success">{{ "upload_file"|trans }}</button>
+						<twig:Button
+								theme="success"
+								label="button.upload_file"
+								icon="upload"
+								type="submit"
+						/>
 					</div>
 				</form>
 

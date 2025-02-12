@@ -46,9 +46,6 @@ class ClientSigningDocumentRepository extends ServiceEntityRepository
             ->join('csd.clientDocument', 'cd')
             ->join('cd.customer', 'c')
             ->join('c.user', 'u')
-            ->join('c.company', 'co')
-            ->where('co = :company')
-            ->setParameter('company', $company)
             ->getQuery()
             ->getResult();
 

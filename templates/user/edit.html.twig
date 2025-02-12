@@ -1,3 +1,4 @@
+{# edit.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}{{ "button.update"|trans }}{% endblock %}
@@ -10,9 +11,18 @@
         <div class="row">
             <div class="card p-4">
                 <div class="card-body">
-                    {{ include('user/_form.html.twig', {'button_label': "button.updateAll"|trans}) }}
-                    <a class="btn btn-secondary mt-3" href="{{ path('app_user_index') }}">{{ "button.back"|trans }}</a>
-                    {{ include('user/_delete_form.html.twig') }}
+                    {{ form_start(form) }}
+                    {{ form_widget(form) }}
+
+                    <twig:FormActions
+                            backRoute="app_user_index"
+                            :showDelete="true"
+                            deleteRoute="app_user_delete"
+                            :deleteRouteParams="{'id': user.id}"
+                            :entityId="user.id"
+                            :isAdmin="is_granted('ROLE_ADMIN')"
+                    />
+                    {{ form_end(form) }}
                 </div>
             </div>
         </div>

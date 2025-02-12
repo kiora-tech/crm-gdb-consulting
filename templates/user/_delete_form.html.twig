@@ -1,4 +1,0 @@
-<form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" data-controller="delete-confirmation" data-action="submit->delete-confirmation#confirm" data-delete-confirmation-message="{{ 'delete_confirmation.message'|trans }}">
-    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-    <button class="btn btn-danger mt-3">{{ "button.delete"|trans }}</button>
-</form>

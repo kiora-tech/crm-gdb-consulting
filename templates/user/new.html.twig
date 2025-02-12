@@ -1,19 +1,23 @@
+{# new.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}
-    {{ "button.newAddUser"|trans }}
-{% endblock %}
+{% block title %}{{ "button.new"|trans }}{% endblock %}
 
 {% block body %}
     <div class="pagetitle">
-        <h1>{{ "button.newUser"|trans }}</h1>
+        <h1>{{ "button.new"|trans }}</h1>
     </div>
     <section class="section">
         <div class="row">
             <div class="card p-4">
                 <div class="card-body">
-                    {{ include('user/_form.html.twig') }}
-                    <a class="btn btn-secondary mt-4" href="{{ path('app_user_index') }}">{{ "button.back"|trans }}</a>
+                    {{ form_start(form) }}
+                    {{ form_widget(form) }}
+
+                    <twig:FormActions
+                            backRoute="app_user_index"
+                    />
+                    {{ form_end(form) }}
                 </div>
             </div>
         </div>

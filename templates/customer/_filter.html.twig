@@ -48,12 +48,18 @@
         </div>
 
         <div class="text-center">
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-search"></i> {{ 'button.filter'|trans }}
-            </button>
-            <a href="{{ path('app_customer_index') }}" class="btn btn-secondary">
-                <i class="bi bi-x-circle"></i> {{ 'button.reset'|trans }}
-            </a>
+            <twig:Button
+                    theme="primary"
+                    label="button.filter"
+                    icon="search"
+                    type="submit"
+            />
+            <twig:Button
+                    link="{{ path('app_customer_index') }}"
+                    theme="secondary"
+                    label="button.reset"
+                    icon="x-circle"
+            />
         </div>
     </div>
 </div>

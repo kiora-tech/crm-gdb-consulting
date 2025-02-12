@@ -28,15 +28,14 @@
                         </tr>
                         </tbody>
                     </table>
-                    <div class="d-flex justify-content-center gap-4">
-                        <a class="btn btn-secondary mt-3"
-                           href="{{ path('app_user_index') }}">{{ "button.back"|trans }}</a>
-
-                        <a class="btn btn-primary mt-3"
-                           href="{{ path('app_user_edit', {'id': user.id}) }}">{{ "button.update"|trans }}</a>
-
-                        {{ include('user/_delete_form.html.twig') }}
-                    </div>
+                    <twig:FormActions
+                            backRoute="app_user_index"
+                            :showDelete="true"
+                            deleteRoute="app_user_delete"
+                            :deleteRouteParams="{'id': user.id}"
+                            :entityId="user.id"
+                            :isAdmin="is_granted('ROLE_ADMIN')"
+                    />
                 </div>
             </div>
         </div>

@@ -10,6 +10,7 @@ use App\Notification\NewCollaboratorNotification;
 use App\Notification\UserRecipient;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,10 +34,16 @@ class UserController extends AbstractController
     }
 
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
+    public function index(UserRepository $userRepository, PaginatorInterface $paginator, Request $request): Response
     {
+        $pagination = $paginator->paginate(
+            $userRepository->createQueryBuilder('e'),
+            $request->query->getInt('page', 1),
+            10
+        );
+
         return $this->render('user/index.html.twig', [
-            'users' => $userRepository->findAll(),
+            'users' => $pagination,
         ]);
     }
 

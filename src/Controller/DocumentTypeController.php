@@ -6,6 +6,7 @@ use App\Entity\DocumentType;
 use App\Form\DocumentTypeType;
 use App\Repository\DocumentTypeRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,16 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DocumentTypeController extends AbstractController
 {
     #[Route(name: 'app_document_type_index', methods: ['GET'])]
-    public function index(DocumentTypeRepository $documentTypeRepository): Response
+    public function index(DocumentTypeRepository $documentTypeRepository, PaginatorInterface $paginator, Request $request): Response
     {
+        $pagination = $paginator->paginate(
+            $documentTypeRepository->createQueryBuilder('e'),
+            $request->query->getInt('page', 1),
+            10
+        );
+
         return $this->render('document_type/index.html.twig', [
-            'document_types' => $documentTypeRepository->findAll(),
+            'document_types' => $pagination,
         ]);
     }
 
