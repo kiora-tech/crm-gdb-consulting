@@ -120,7 +120,7 @@ abstract class CustomerInfoController extends AbstractController
             return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
         }
 
-        return $this->render('contact/_modal_form.html.twig', [
+        return $this->render('crud/_modal_form.html.twig', [
             'form' => $form->createView(),
             'customer' => $customer,
             'entity' => $entity
@@ -137,7 +137,7 @@ abstract class CustomerInfoController extends AbstractController
             'action' => $this->generateFormAction($entity, $customer)
         ]);
 
-        return $this->render('contact/_modal_form.html.twig', [
+        return $this->render('crud/_modal_form.html.twig', [
             'form' => $form->createView(),
             'customer' => $customer
         ]);

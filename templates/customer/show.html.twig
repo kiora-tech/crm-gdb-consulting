@@ -19,8 +19,7 @@
 	</div>
 
 	<section class="section dashboard">
-		<div
-			class="row">
+		<div class="row">
 			<!-- Section Centrale avec les informations principales -->
 
 			<div class="col-lg-8">
@@ -71,17 +70,17 @@
 					<div class="col-12">
 						<div class="card recent-sales">
 							<div class="card-body frameHeight">
-								<turbo-frame id="energies">
 									<div class="d-flex justify-content-between align-items-center">
 										<h5 class="card-title mb-0">{{ "customer.contract_energies"|trans }}</h5>
-										<twig:Button
-												link="{{ path('app_energy_new', {'customer': customer.id}) }}"
-												theme="primary"
-												size="sm"
-												:outline="true"
-												icon="plus"
-												:attributes="{'title': 'action.edit'|trans}"
-										/>
+										{{ component('Button', {
+											theme: 'primary',
+											icon: 'plus',
+											outline: true,
+											attributes: {
+												'data-action': 'modal#open',
+												'data-modal-url-value': path('app_energy_modal_new', {'customer': customer.id})
+											}
+										}) }}
 									</div>
 									<div class="table-responsive">
 										<table class="table table-hover mb-0">
@@ -102,12 +101,20 @@
 													<td>{{ energy.code }}</td>
 													<td>{{ energy.contractEnd ? energy.contractEnd|date('d/m/Y') : "-" }}</td>
 													<td class="text-end d-flex gap-2 justify-content-end">
-														<a href="{{ path('app_energy_edit', {'id': energy.id, 'customer': energy.customer.id}) }}"
-														   turbo-visit-control="reload"
-														   data-turbo-frame="energies"
-														   class="btn btn-sm btn-outline-primary">
-															<i class="bi bi-pencil-square"></i>
-														</a>
+														{{ component('Button', {
+															theme: 'primary',
+															icon: 'pencil-square',
+															size: 'sm',
+															outline: true,
+															attributes: {
+																'data-action': 'modal#open',
+																'data-modal-url-value': path('app_energy_modal_edit', {
+																	'id': energy.id,
+																	'customer': customer.id
+																}),
+																'title': 'action.edit'|trans
+															}
+														}) }}
 														<form action="{{ path('app_energy_delete', {'id': energy.id, 'customer': energy.customer.id}) }}"
 															  method="post"
 															  class="d-inline">
@@ -126,7 +133,6 @@
 											</tbody>
 										</table>
 									</div>
-								</turbo-frame>
 							</div>
 						</div>
 					</div>
@@ -135,14 +141,13 @@
 					<div class="col-12">
 						<div class="card recent-sales">
 							<div class="card-body frameHeight">
-								<turbo-frame id="contact">
 									<div class="d-flex justify-content-between align-items-center">
 										<h5 class="card-title mb-0">{{ "customer.contacts"|trans }}</h5>
 										{# Ajout d'un data-turbo="false" pour éviter les conflits potentiels avec Turbo #}
 										{{ component('Button', {
 											theme: 'primary',
 											icon: 'plus',
-											label: 'contact.new.title'|trans,
+											outline: true,
 											attributes: {
 												'data-action': 'modal#open',
 												'data-modal-url-value': path('app_contact_modal_new', {'customer': customer.id})
@@ -177,10 +182,6 @@
 														<a href="tel:{{ contact.mobilePhone }}" data-turbo="false">{{ contact.mobilePhone }}</a>
 													</td>
 													<td class="text-end d-flex gap-2 justify-content-end">
-
-
-
-														{# Dans la boucle des contacts #}
 														{{ component('Button', {
 															theme: 'primary',
 															icon: 'pencil-square',
@@ -214,7 +215,6 @@
 											</tbody>
 										</table>
 									</div>
-								</turbo-frame>
 							</div>
 						</div>
 					</div>
@@ -226,18 +226,17 @@
 				<div>
 					<div class="row card">
 						<div class="card-body">
-							<turbo-frame id="comment">
 								<div class="d-flex justify-content-between align-items-center">
-
 									<h5 class="card-title mb-0">{{ "comment"|trans }}</h5>
-									<twig:Button
-											link="{{ path('app_comment_new', {'customer': customer.id}) }}"
-											theme="primary"
-											size="sm"
-											:outline="true"
-											icon="plus"
-											:attributes="{'title': 'action.edit'|trans}"
-									/>
+									{{ component('Button', {
+										theme: 'primary',
+										icon: 'plus',
+										outline: true,
+										attributes: {
+											'data-action': 'modal#open',
+											'data-modal-url-value': path('app_comment_modal_new', {'customer': customer.id})
+										}
+									}) }}
 								</div>
 
 								<div class="frameHeight">
@@ -256,7 +255,6 @@
 										</div>
 									</div>
 								</div>
-							</turbo-frame>
 						</div>
 					</div>
 				</div>
@@ -301,13 +299,13 @@
 
 	{# Debug info dans la modal #}
 	<div class="modal fade"
-		 id="contactModal"
+		 id="modal"
 		 tabindex="-1"
 		 data-modal-target="modal">
 		<div class="modal-dialog">
 			<div class="modal-content" data-modal-target="content">
 				<div class="modal-loading">
-					{{ 'loading'|trans }}
+					{{ 'modal.loading'|trans }}
 				</div>
 			</div>
 		</div>

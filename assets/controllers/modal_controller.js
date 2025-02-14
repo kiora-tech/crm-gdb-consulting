@@ -1,7 +1,6 @@
 // assets/controllers/modal_controller.js
 import { Controller } from '@hotwired/stimulus'
-import { Modal } from 'bootstrap'  // Ajout de l'import de Bootstrap
-
+import { Modal } from 'bootstrap'
 export default class extends Controller {
     static targets = ['modal', 'content']
     static values = {
@@ -14,7 +13,6 @@ export default class extends Controller {
 
     async open(event) {
         event.preventDefault()
-        console.log('Open modal triggered', event.currentTarget)
 
         const url = event.currentTarget.dataset.modalUrlValue
         console.log('Loading content from:', url)

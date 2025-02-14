@@ -2,9 +2,9 @@
 <div class="modal-header">
     <h5 class="modal-title">
         {% if entity is defined and entity.id %}
-            {{ 'contact.edit.title'|trans }}
+            {{ 'edit.title'|trans }}
         {% else %}
-            {{ 'contact.new.title'|trans }}
+            {{ 'new.title'|trans }}
         {% endif %}
     </h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -18,14 +18,6 @@
             theme: 'primary',
             label: 'button.save',
             icon: 'save'
-        }) }}
-        {{ component('Button', {
-            theme: 'secondary',
-            label: 'button.cancel',
-            icon: 'x',
-            attributes: {
-                'data-bs-dismiss': 'modal'
-            }
         }) }}
     </div>
     {{ form_end(form) }}
