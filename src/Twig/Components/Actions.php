@@ -14,17 +14,24 @@ class Actions
     public bool $canShow = true;
     public bool $canEdit = true;
     public bool $canDelete = true;
+    public array $deleteRouteParams = [];
 
     /**
      * Get the CSRF token for deletion
      */
-    public function getDeleteToken(): string
+    /**
+     * Get delete route parameters
+     */
+    public function getDeleteRouteParams(): array
     {
         if (!$this->entity || !method_exists($this->entity, 'getId')) {
-            return '';
+            return [];
         }
 
-        return $this->entity->getId() ? 'delete' . $this->entity->getId() : '';
+        return array_merge(
+            ['id' => $this->entity->getId()],
+            $this->deleteRouteParams
+        );
     }
 
     /**
@@ -33,6 +40,6 @@ class Actions
     public function isActionAvailable(string $action): bool
     {
         $route = $action . 'Route';
-        return $this->$route !== null && $this->{'can' . ucfirst($action)};
+        return $this->$route && $this->{'can' . ucfirst($action)};
     }
 }

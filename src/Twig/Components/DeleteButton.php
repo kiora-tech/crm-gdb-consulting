@@ -13,6 +13,9 @@ class DeleteButton
     public array $deleteRouteParams = [];
     public ?string $entityId = null;
     public ?string $confirmationMessage = null;
+    public bool $showLabel = false;
+    public string $size = '';
+    public bool $outline = false;
 
     #[PreMount]
     public function preMount(array $data): array
@@ -29,13 +32,21 @@ class DeleteButton
 
         $resolver->setDefaults([
             'deleteRouteParams' => [],
-            'confirmationMessage' => 'delete_confirmation.message'
+            'confirmationMessage' => 'delete_confirmation.message',
+            'showLabel' => false,
+            'size' => '',
+            'outline' => false
         ]);
 
         $resolver->setAllowedTypes('deleteRoute', 'string');
         $resolver->setAllowedTypes('deleteRouteParams', 'array');
         $resolver->setAllowedTypes('entityId', ['string', 'int']);
         $resolver->setAllowedTypes('confirmationMessage', ['string', 'null']);
+        $resolver->setAllowedTypes('showLabel', 'bool');
+        $resolver->setAllowedTypes('size', 'string');
+        $resolver->setAllowedTypes('outline', 'bool');
+
+        $resolver->setAllowedValues('size', ['', 'sm', 'lg']);
     }
 
     public function getDeleteToken(): string

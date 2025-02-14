@@ -1,0 +1,13 @@
+{# templates/crud/_form.html.twig #}
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+
+    {{ component('FormActions', {
+        backRoute: back_route,
+        showDelete: entity is defined and entity.id is not null,
+        deleteRoute: delete_route|default(null),
+        deleteRouteParams: entity is defined ? {'id': entity.id} : {},
+        entityId: entity is defined ? entity.id : null,
+        isAdmin: is_granted('ROLE_ADMIN')
+    }) }}
+{{ form_end(form) }}

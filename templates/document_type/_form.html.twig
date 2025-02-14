@@ -1,4 +1,6 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+{# templates/document_type/_form.html.twig #}
+{% extends 'crud/_form.html.twig' %}
+
+{# Variables spécifiques pour Document Type #}
+{% set back_route = 'app_document_type_index' %}
+{% set delete_route = 'app_document_type_delete' %}

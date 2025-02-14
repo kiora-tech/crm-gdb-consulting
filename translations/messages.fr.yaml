@@ -100,6 +100,21 @@ button:
     add_contact: Ajouter un contact
     add_comment: Ajouter un commentaire
     upload_file: Téléverser
+    search: Chercher
+input:
+    search: Chercher
+
+document_type:
+    label: Label
+    title: Type de document
+
+document_signature:
+    status: Status
+    signers: Signataire
+    title: E-sign
+
+delete_confirmation:
+    message: 'Êtes-vous sûr de vouloir supprimer cet élement?'
 
 no_record: "Pas d'enregistrement"
 
@@ -195,3 +210,8 @@ Password:	Mot de passe
 Company:	Entreprise
 ASC: ASC
 DESC: DESC
+
+header:
+    profile:
+        my_profile: Mon Profile
+        sign_out: Lougout

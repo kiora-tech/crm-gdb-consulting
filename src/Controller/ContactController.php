@@ -9,12 +9,12 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/contact', name: 'app_contact')]
 final class ContactController extends CustomerInfoController
 {
-   public function getEntityClass(): string
-   {
-       return Contact::class;
-   }
+    public function getEntityClass(): string
+    {
+        return Contact::class;
+    }
 
-   #[Route('/{id}', name: '_show', methods: ['GET'])]
+    #[Route('/{id}', name: '_show', methods: ['GET'])]
     public function show(Contact $contact): Response
     {
         return $this->render('contact/show.html.twig', [
@@ -22,14 +22,23 @@ final class ContactController extends CustomerInfoController
         ]);
     }
 
-    protected function getSortableFields(): array
+    protected function getIndexVars($pagination, array $columns = []): array
     {
-        return [
-            'e.email' => 'e.email',
-            'e.firstName' => 'e.firstName',
-            'e.lastName' => 'e.lastName',
-            'e.position' => 'e.position',
-            'e.phone' => 'e.phone',
-        ];
+        return $this->getIndexVarsTrait($pagination, [
+            ['field' => 'email', 'label' => 'contact.email', 'sortable' => true],
+            ['field' => 'lastName', 'label' => 'contact.last_name', 'sortable' => true],
+            ['field' => 'position', 'label' => 'contact.position'],
+            ['field' => 'phone', 'label' => 'contact.phone'],
+            ['field' => 'mobilePhone', 'label' => 'contact.mobile_phone'],
+        ]);
     }
+
+    protected function getRoute(): array
+    {
+        $route = parent::getRoute();
+        $route['show'] = 'app_contact_show';
+
+        return $route;
+    }
+
 }

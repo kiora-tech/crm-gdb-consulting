@@ -23,19 +23,12 @@
     {% endif %}
 
     {% if this.isActionAvailable('delete') %}
-        <form action="{{ path(deleteRoute, {'id': entity.id}) }}"
-              method="post"
-              class="d-inline"
-              onsubmit="return confirm('{{ 'message.confirm_delete'|trans }}')">
-            <input type="hidden" name="_token" value="{{ csrf_token(this.deleteToken) }}">
-            <twig:Button
-                    type="submit"
-                    theme="danger"
-                    size="sm"
-                    :outline="true"
-                    icon="trash"
-                    :attributes="{'title': 'action.delete'|trans}"
-            />
-        </form>
+        <twig:DeleteButton
+                :deleteRoute="deleteRoute"
+                :deleteRouteParams="this.getDeleteRouteParams()"
+                :entityId="entity.id"
+                size="sm"
+                :outline="true"
+        />
     {% endif %}
 </div>

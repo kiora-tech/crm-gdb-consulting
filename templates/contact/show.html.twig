@@ -26,9 +26,6 @@
 					<div class="card-body pt-3">
 						<div class="pagetitle d-flex justify-content-between">
 							<h1>{{ "customer.contacts"|trans }}</h1>
-							<a href="{{ path('app_customer_new') }}" class="btn btn-primary">
-								{{ "create"|trans }}
-							</a>
 						</div>
 						<div class="tab-pane fade show active profile-overview" id="profile-overview" role="tabpanel">
 							<h5 class="card-title">Contact</h5>
@@ -44,12 +41,26 @@
 
 			</div>
 				<div class="divFlexs">
-					<a class="btn btn-secondary" href="{{ path('app_contact_index') }}">{{ "button.close"|trans }}</a>
+					<twig:Button
+							link="{{ path('app_contact_index') }}"
+							theme="secondary"
+							label="button.back"
+							icon="arrow-left"
+					/>
+					<twig:Button
+							link="{{ path('app_contact_edit', {'id': entity.id}) }}"
+							theme="primary"
+							icon="pencil-square"
+							label="button.edit"
+					/>
+					{{ component('DeleteButton', {
+						deleteRoute: "app_contact_delete",
+						deleteRouteParams: {id: entity.id},
+						entityId: entity.id,
+						showLabel: true
+					}) }}
 
-					<a class="btn btn-primary" href="{{ path('app_contact_edit', {'id': entity.id}) }}">{{ "button.edit"|trans }}</a>
 
-					{{ include('contact/_delete_form.html.twig') }}
-				</div>
 		</div>
 	</div>
 </section>{% endblock %}

@@ -34,7 +34,7 @@
 				<twig:Table
 						:paginator="customers"
 						:columns="[
-                        {field: 'name', label: 'name', sortable: true, sortAlias: 'c.name'},
+                        {field: 'name', label: 'customer.name', sortable: true, sortAlias: 'c.name'},
                         {field: 'siret', label: 'customer.siret', sortable: true, sortAlias: 'c.siret'},
                         {field: 'contacts', label: 'contact.name', sortable: true, sortAlias: 'co.firstName'},
                         {field: 'lastEnergy.contractEnd', label: 'energy.contract_end', sortable: true, sortAlias: 'e.contractEnd'}

@@ -1,3 +1,4 @@
+{# templates/components/DeleteButton.html.twig #}
 <form method="post"
       action="{{ path(deleteRoute, deleteRouteParams) }}"
       class="d-inline"
@@ -7,10 +8,13 @@
 
     <input type="hidden" name="_token" value="{{ csrf_token(this.deleteToken) }}">
 
-    <twig:Button
-            type="submit"
-            theme="danger"
-            label="button.delete"
-            icon="trash"
-    />
+    {{ component('Button', {
+        type: 'submit',
+        theme: 'danger',
+        label: showLabel ? 'button.delete'|trans : '',
+        icon: 'trash',
+        size: size,
+        outline: outline,
+        attributes: showLabel ? {} : {'title': 'button.delete'|trans}
+    }) }}
 </form>

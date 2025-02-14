@@ -1,11 +1,6 @@
-{{ form_start(form, { 'attr': { 'data-controller': 'contact' } }) }}
+{# templates/document_type/_form.html.twig #}
+{% extends 'crud/_form.html.twig' %}
 
-{{ form_widget(form) }}
-<button class="btn btn-primary">{{ "button.save"|trans }}</button>
-<a href="#" class="btn btn-secondary {% if 'contact/' in app.request.uri and
-'/edit' in app.request.uri %}disabled{% endif %}" {% if 'contact/' in app.request.uri and '/edit' in
-app.request.uri %} aria-disabled="true" onclick="return false;" style="display:none" {% endif %} 
-data-turbo-action="remove" data-turbo-frame="contact">
-	{{ "button.close"|trans }}
-</a>
-{{ form_end(form) }}
+{# Variables spécifiques pour Document Type #}
+{% set back_route = 'app_contact_index' %}
+{% set delete_route = 'app_contact_delete' %}

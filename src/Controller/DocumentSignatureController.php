@@ -31,6 +31,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class DocumentSignatureController extends AbstractController
 {
     use ClientVoterTrait;
+    use CrudTrait;
 
     /**
      * @throws ExceptionInterface
@@ -52,7 +53,7 @@ class DocumentSignatureController extends AbstractController
 
         $this->addFlash('success', $tr->trans('document_signature.asked.success_message'));
 
-        return $this->redirectToRoute('app_client_document_show', ['id' => $id]);
+        return $this->redirectToRoute('app_document_show', ['id' => $id]);
     }
 
     /**
@@ -73,11 +74,20 @@ class DocumentSignatureController extends AbstractController
                             ?? throw new \LogicException('The company is not valid.'))
             : $repository->findByUser($user);
 
-        $documents = $paginationService->paginate($query, $request);
+        $pagination = $paginationService->paginate($query, $request);
 
-        return $this->render('document_signature/index.html.twig', [
-            'documents' => $documents,
-        ]);
+        return $this->render('crud/index.html.twig', $this->getIndexVars(
+            $pagination,
+            [
+                ['field' => 'clientSigningDocumentSigners', 'label' => 'document_signature.signers'],
+                ['field' => 'signatureRequestStatus', 'label' => 'document_signature.status']
+            ]
+        ));
+    }
+
+    protected function getNewRoute(): false|string
+    {
+        return false;
     }
 
     #[Route('/{id}', name: 'document_status', requirements: ['id' => Requirement::UUID], methods: ['GET'])]

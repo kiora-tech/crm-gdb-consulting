@@ -1,0 +1,32 @@
+{# templates/contact/_modal_form.html.twig #}
+<div class="modal-header">
+    <h5 class="modal-title">
+        {% if entity is defined and entity.id %}
+            {{ 'contact.edit.title'|trans }}
+        {% else %}
+            {{ 'contact.new.title'|trans }}
+        {% endif %}
+    </h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    {{ form_start(form, {'attr': {'data-turbo-frame': '_top'}}) }}
+    {{ form_widget(form) }}
+    <div class="d-flex gap-2 mt-3">
+        {{ component('Button', {
+            type: 'submit',
+            theme: 'primary',
+            label: 'button.save',
+            icon: 'save'
+        }) }}
+        {{ component('Button', {
+            theme: 'secondary',
+            label: 'button.cancel',
+            icon: 'x',
+            attributes: {
+                'data-bs-dismiss': 'modal'
+            }
+        }) }}
+    </div>
+    {{ form_end(form) }}
+</div>

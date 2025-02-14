@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Customer;
+use App\Repository\DocumentTypeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ObjectRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -18,6 +20,10 @@ use function Symfony\Component\String\u;
 
 abstract class CustomerInfoController extends AbstractController
 {
+    use CrudTrait {
+        getIndexVars as protected getIndexVarsTrait;
+    }
+
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
         protected readonly PaginatorInterface $paginator
@@ -58,7 +64,7 @@ abstract class CustomerInfoController extends AbstractController
         return $this->entityManager->getRepository($this->getEntityClass());
     }
 
-    #[Route('/new/{customer?}', name: '_new', methods: ['GET', 'POST'])]
+    #[Route('/new/{customer?}', name: '_new', methods: ['GET', 'POST'], priority: 1)]
     public function new(Request $request, ?Customer $customer = null): Response
     {
         $entity = new ($this->getEntityClass());
@@ -81,9 +87,59 @@ abstract class CustomerInfoController extends AbstractController
             return $this->redirectToRoute($this->getBaseRouteName().'_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render($this->getName().'/new.html.twig', [
-            'entity' => $entity,
-            'form' => $form,
+        return $this->render('crud/form.html.twig', $this->getFormVars($form, $entity));
+    }
+
+    #[Route('/modal/{id}/edit/{customer}', name: '_modal_edit', methods: ['GET', 'POST'])]
+    public function modalEdit(Request $request, int $id, ?Customer $customer = null): Response
+    {
+        $entity = $this->getRepository()->find($id);
+
+        if ($customer) {
+            $entity->setCustomer($customer);
+        }
+
+        $form = $this->createForm($this->getFormTypeClass(), $entity, [
+            'customer' => $customer,
+            'action' => $this->generateFormAction($entity, $customer)
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+
+            // Retourner une réponse qui fermera la modal et rafraîchira la page
+            if ($request->isXmlHttpRequest()) {
+                return new JsonResponse([
+                    'success' => true,
+                    'redirect' => $this->generateUrl('app_customer_show', ['id' => $customer->getId()])
+                ]);
+            }
+
+            return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
+        }
+
+        return $this->render('contact/_modal_form.html.twig', [
+            'form' => $form->createView(),
+            'customer' => $customer,
+            'entity' => $entity
+        ]);
+    }
+
+    #[Route('/modal/new/{customer}', name: '_modal_new', methods: ['GET', 'POST'])]
+    public function modalNew(Customer $customer): Response
+    {
+        $entity = new ($this->getEntityClass());
+        $entity->setCustomer($customer);
+        $form = $this->createForm($this->getFormTypeClass(), $entity, [
+            'customer' => $customer,
+            'action' => $this->generateFormAction($entity, $customer)
+        ]);
+
+        return $this->render('contact/_modal_form.html.twig', [
+            'form' => $form->createView(),
+            'customer' => $customer
         ]);
     }
 
@@ -102,28 +158,35 @@ abstract class CustomerInfoController extends AbstractController
             ->getRepository($this->getEntityClass())
             ->createQueryBuilder('e');
 
-        // Personnalisation de la query
         $this->customizeQueryBuilder($qb);
 
-        // Gestion du tri
-        $sortField = $request->query->get('sort');
-        $sortDirection = $request->query->get('order', 'asc');
-
         $pagination = $this->paginator->paginate(
-            $qb->getQuery(),
-            $request->query->getInt('page', 1),
-            10
+            $qb,
+            $request->query->getInt('page', 1)
         );
 
-        return $this->render($this->getName().'/index.html.twig', [
-            'entities' => $pagination,
-            'baseRouteName' => $this->getBaseRouteName(),
-            'entityName' => $this->getName(),
-            'currentSort' => [
-                'field' => $sortField,
-                'order' => $sortDirection
-            ],
-        ]);
+        return $this->render('crud/index.html.twig', $this->getIndexVars(
+            $pagination,
+            $this->getColumns()
+        ));
+    }
+
+    protected function getColumns(): array
+    {
+        return [
+            ['field' => 'id', 'label' => 'id', 'sortable' => false]
+        ];
+    }
+
+    protected function getRoute(): array
+    {
+        $routePrefix = $this->getRoutePrefix();
+
+        return [
+            'edit' => $routePrefix . '_edit',
+            'delete' => $routePrefix . '_delete',
+            'show' => false
+        ];
     }
 
     #[Route('/{id}/edit/{customer?}', name: '_edit', methods: ['GET', 'POST'])]
@@ -150,14 +213,10 @@ abstract class CustomerInfoController extends AbstractController
     
             return $this->redirectToRoute($this->getBaseRouteName().'_index', [], Response::HTTP_SEE_OTHER);
         }
-    
-        return $this->render($this->getName().'/edit.html.twig', [
-            'entity' => $entity,
-            'form' => $form,
-            'customer' => $customer, 
-        ]);
+
+
+        return $this->render('crud/form.html.twig', $this->getFormVars($form, $entity));
     }
-    
 
 
     #[Route('/{id}/{customer?}', name: '_delete', methods: ['POST'])]

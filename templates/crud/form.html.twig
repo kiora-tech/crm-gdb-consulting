@@ -1,0 +1,32 @@
+{# templates/crud/form.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {% if entity is defined and entity.id %}
+        {{ (page_prefix ~ '.edit.title')|trans }}
+    {% else %}
+        {{ (page_prefix ~ '.new.title')|trans }}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <div class="pagetitle d-flex justify-content-between align-items-center">
+        <h1>
+            {% if entity is defined and entity.id %}
+                {{ (page_prefix ~ '.edit.title')|trans }}
+            {% else %}
+                {{ (page_prefix ~ '.new.title')|trans }}
+            {% endif %}
+        </h1>
+    </div>
+
+    <section class="section">
+        <div class="card">
+            <div class="card-body p-4">
+                {% block form %}
+                    {{ include(template_path|default('crud/_form.html.twig')) }}
+                {% endblock %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

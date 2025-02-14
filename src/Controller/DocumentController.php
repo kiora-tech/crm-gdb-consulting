@@ -24,18 +24,19 @@ use Symfony\UX\Turbo\TurboBundle;
 #[Route('/document', name: 'app_document')]
 class DocumentController extends CustomerInfoController
 {
-    #[Route('/{id}/new', name: '_new', methods: ['POST'])]
+    #[Route('/new/{customer?}', name: '_new', methods: ['GET', 'POST'], priority: 999)]
     public function uploadDocument(
         Request                $request,
         SluggerInterface       $slugger,
-        Customer               $customer,
         LoggerInterface        $logger,
         EntityManagerInterface $entityManager,
         #[Autowire('%kernel.project_dir%/public/uploads/documents')]
         string                 $uploadDirectory,
+        ?Customer              $customer = null,
     ): Response
     {
         $document = new Document();
+        $document->setCustomer($customer);
         $form = $this->createForm(DropzoneForm::class, $document);
         $form->handleRequest($request);
 
@@ -55,12 +56,16 @@ class DocumentController extends CustomerInfoController
 
                     $document->setName($originalFilename);
                     $document->setPath($uploadDirectory . '/' . $newFilename);
-                    $document->setCustomer($customer);
 
                     $entityManager->persist($document);
                     $entityManager->flush();
 
-                    return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
+                    if($customer) {
+                        return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
+                    } else {
+                        return $this->redirectToRoute('app_document_index');
+                    }
+
                 } catch (FileException $e) {
                     $logger->error('There was an issue with the file upload: ' . $e->getMessage());
                     $this->addFlash('error', 'There was an issue with the file upload. Please try again.');
@@ -68,8 +73,32 @@ class DocumentController extends CustomerInfoController
             }
         }
 
+        return $this->render('crud/form.html.twig', $this->getFormVars($form, $document));
+    }
 
-        return $this->render('document/upload_response.html.twig', compact('form', 'customer'));
+    #[Route('/new/{customer?}', name: '_new_override', methods: ['GET', 'POST'], priority: 1)]
+    public function new(Request $request, ?Customer $customer = null): Response
+    {
+        return parent::new($request, $customer);
+    }
+
+    protected function getColumns(): array
+    {
+        return [
+            ['field' => 'name', 'label' => 'document.name', 'sortable' => true],
+            ['field' => 'type', 'label' => 'document.type', 'sortable' => true],
+        ];
+    }
+
+    protected function getRoute(): array
+    {
+        $routePrefix = $this->getRoutePrefix();
+
+        return [
+            'edit' => false,
+            'delete' => $routePrefix . '_delete',
+            'show' => $routePrefix . '_download',
+        ];
     }
 
     #[Route('/{id}/download', name: '_download', methods: ['GET'])]
@@ -80,12 +109,16 @@ class DocumentController extends CustomerInfoController
     {
         $response = new Response();
 
+        if (!file_exists($filePath = $document->getPath())) {
+            throw $this->createNotFoundException('Le fichier demandé n\'existe pas');
+        }
+
         //gettype
-        $typeMime = $mimeTypes->guessMimeType($document->getPath());
-        $baseName = basename($document->getPath());
+        $typeMime = $mimeTypes->guessMimeType($filePath);
+        $baseName = basename($filePath);
         $response->headers->set('Content-Type', $typeMime);
         $response->headers->set('Content-Disposition', 'attachment; filename="' . $baseName . '"');
-        $response->setContent(file_get_contents($document->getPath()));
+        $response->setContent(file_get_contents($filePath));
 
         return $response;
     }
