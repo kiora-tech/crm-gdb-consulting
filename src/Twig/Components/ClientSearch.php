@@ -8,7 +8,7 @@ use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 
-#[AsLiveComponent('client_search')]
+#[AsLiveComponent]
 class ClientSearch
 {
     use DefaultActionTrait;
@@ -36,17 +36,16 @@ class ClientSearch
         $result = $this->entityManager->getRepository(Customer::class)->createQueryBuilder('c')
             ->where(
                 'c.name LIKE :query OR 
-                be.siret LIKE :query OR 
                 e.type LIKE :query OR 
                 e.code LIKE :query OR 
                 e.provider LIKE :query OR
-                co.name LIKE :query OR
+                co.lastName LIKE :query OR
+                co.firstName LIKE :query OR
                 co.email LIKE :query OR
                 co.phone LIKE :query OR
                 co.position LIKE :query
                 '
             )
-            ->leftJoin('c.businessEntities', 'be')
             ->leftJoin('c.energies', 'e')
             ->leftJoin('c.contacts', 'co')
             ->setParameter('query', '%'.$this->query.'%')

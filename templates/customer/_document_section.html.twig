@@ -1,0 +1,42 @@
+<div class="row card"
+     data-controller="dropzone"
+     data-dropzone-target="dropZone"
+     data-action="dragover->dropzone#dragOver dragleave->dropzone#dragLeave drop->dropzone#drop">
+    <div class="card-body">
+        <h5 class="card-title">{{ "documentDoc"|trans }}</h5>
+
+        <div class="document-list">
+            {% include 'document/_document_list.html.twig' with {'documents': customer.documents} %}
+        </div>
+
+        <!-- Indicateur de drop overlay -->
+        <div class="drop-overlay d-none" data-dropzone-target="overlay">
+            <div class="drop-message">
+                <i class="bi bi-cloud-upload fs-2"></i>
+                <p>{{ "dropzone.drop_here"|trans }}</p>
+            </div>
+        </div>
+
+        <!-- Modal pour le type de document -->
+        <div class="modal fade" id="documentTypeModal" data-dropzone-target="modal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ "document.select_type"|trans }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        {{ form_start(formDocument, {
+                            'action': path('app_document_new', {'customer': customer.id}),
+                            'attr': {'data-dropzone-target': 'form'}
+                        }) }}
+                        {{ form_row(formDocument.type) }}
+                        {{ form_widget(formDocument.file, {'attr': {'class': 'd-none'}}) }}
+                        <button type="submit" class="btn btn-primary">{{ "button.save"|trans }}</button>
+                        {{ form_end(formDocument) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

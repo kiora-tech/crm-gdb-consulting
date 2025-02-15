@@ -1,0 +1,69 @@
+<div class="col-12">
+    <div class="card recent-sales">
+        <div class="card-body frameHeight">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">{{ "customer.contract_energies"|trans }}</h5>
+                {{ component('Button', {
+                    theme: 'primary',
+                    icon: 'plus',
+                    outline: true,
+                    attributes: {
+                        'data-action': 'modal#open',
+                        'data-modal-url-value': path('app_energy_modal_new', {'customer': customer.id})
+                    }
+                }) }}
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                    <tr class="table-primary">
+                        <th scope="col" class="text-start">{{ "energy.provider"|trans }}</th>
+                        <th scope="col" class="text-start">{{ "energy.type"|trans }}</th>
+                        <th scope="col" class="text-start">{{ "energy.code"|trans }}</th>
+                        <th scope="col" class="text-start">{{ "energy.contract_end"|trans }}</th>
+                        <th scope="col" class="text-start">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for energy in customer.energies %}
+                        <tr>
+                            <td>{{ energy.provider }}</td>
+                            <td>{{ energy.type|trans }}</td>
+                            <td>{{ energy.code }}</td>
+                            <td>{{ energy.contractEnd ? energy.contractEnd|date('d/m/Y') : "-" }}</td>
+                            <td class="text-end d-flex gap-2 justify-content-end">
+                                {{ component('Button', {
+                                    theme: 'primary',
+                                    icon: 'pencil-square',
+                                    size: 'sm',
+                                    outline: true,
+                                    attributes: {
+                                        'data-action': 'modal#open',
+                                        'data-modal-url-value': path('app_energy_modal_edit', {
+                                            'id': energy.id,
+                                            'customer': customer.id
+                                        }),
+                                        'title': 'action.edit'|trans
+                                    }
+                                }) }}
+                                <form action="{{ path('app_energy_delete', {'id': energy.id, 'customer': energy.customer.id}) }}"
+                                      method="post"
+                                      class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ energy.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center">{{ "table.no_data"|trans }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

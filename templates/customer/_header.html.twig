@@ -1,0 +1,11 @@
+<div class="pagetitle" style="display: flex;justify-content:space-between;">
+    <h1>{{ customer.name }}</h1>
+    <twig:Button
+            link="{{ path('app_customer_edit', {'id': customer.id}) }}"
+            theme="primary"
+            size="sm"
+            :outline="true"
+            icon="pencil-square"
+            :attributes="{'title': 'action.edit'|trans}"
+    />
+</div>

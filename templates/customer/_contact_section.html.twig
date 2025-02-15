@@ -1,0 +1,80 @@
+<div class="col-12">
+    <div class="card recent-sales">
+        <div class="card-body frameHeight">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">{{ "customer.contacts"|trans }}</h5>
+                {# Ajout d'un data-turbo="false" pour éviter les conflits potentiels avec Turbo #}
+                {{ component('Button', {
+                    theme: 'primary',
+                    icon: 'plus',
+                    outline: true,
+                    attributes: {
+                        'data-action': 'modal#open',
+                        'data-modal-url-value': path('app_contact_modal_new', {'customer': customer.id})
+                    }
+                }) }}
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                    <tr class="table-primary">
+                        <th scope="col" class="text-start">{{ "contact.name"|trans }}</th>
+                        <th scope="col" class="text-start">{{ "contact.position"|trans }}</th>
+                        <th scope="col" class="text-start">{{ "contact.email"|trans }}</th>
+                        <th scope="col" class="text-start">{{ "contact.phone"|trans }}</th>
+                        <th scope="col" class="text-start">{{ "contact.mobile_phone"|trans }}</th>
+                        <th scope="col" class="text-start">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for contact in customer.contacts %}
+                        <tr>
+                            <td>{{ contact }}</td>
+                            <td>{{ contact.position }}</td>
+                            <td>
+                                <a href="mailto:{{ contact.email }}" data-turbo="false">{{ contact.email }}</a>
+                            </td>
+                            <td>
+                                <a href="tel:{{ contact.phone }}" data-turbo="false">{{ contact.phone }}</a>
+                            </td>
+                            <td>
+                                <a href="tel:{{ contact.mobilePhone }}" data-turbo="false">{{ contact.mobilePhone }}</a>
+                            </td>
+                            <td class="text-end d-flex gap-2 justify-content-end">
+                                {{ component('Button', {
+                                    theme: 'primary',
+                                    icon: 'pencil-square',
+                                    size: 'sm',
+                                    outline: true,
+                                    attributes: {
+                                        'data-action': 'modal#open',
+                                        'data-modal-url-value': path('app_contact_modal_edit', {
+                                            'id': contact.id,
+                                            'customer': customer.id
+                                        }),
+                                        'title': 'action.edit'|trans
+                                    }
+                                }) }}
+
+                                <form action="{{ path('app_contact_delete', {'id': contact.id, 'customer': contact.customer.id}) }}"
+                                      method="post"
+                                      class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ contact.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">{{ "table.no_data"|trans }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

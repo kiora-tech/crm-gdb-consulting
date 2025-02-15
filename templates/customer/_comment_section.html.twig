@@ -1,0 +1,33 @@
+<div class="row card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">{{ "comment"|trans }}</h5>
+            {{ component('Button', {
+                theme: 'primary',
+                icon: 'plus',
+                outline: true,
+                attributes: {
+                    'data-action': 'modal#open',
+                    'data-modal-url-value': path('app_comment_modal_new', {'customer': customer.id})
+                }
+            }) }}
+        </div>
+
+        <div class="frameHeight">
+            <div class="flex-grow-1">
+                <div class="d-flex align-items-center">
+                    <div class="ps-3">
+                        {% for comment in customer.comments %}
+                            <div class="mb-2">
+                                {{ comment.createdAt|date('d/m/Y') }} -
+                                {{ comment.note }}
+                            </div>
+                        {% else %}
+                            <p>{{ "NoComments"|trans }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
