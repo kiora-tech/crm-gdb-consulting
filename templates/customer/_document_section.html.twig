@@ -3,9 +3,23 @@
      data-dropzone-target="dropZone"
      data-action="dragover->dropzone#dragOver dragleave->dropzone#dragLeave drop->dropzone#drop">
     <div class="card-body">
-        <h5 class="card-title">{{ "documentDoc"|trans }}</h5>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title mb-0">{{ "documentDoc"|trans }}</h5>
 
-        <div class="document-list">
+            {{ component('Button', {
+                theme: 'primary',
+                size: 'sm',
+                icon: 'plus',
+                outline: true,
+                attributes: {
+                    'data-action': 'click->dropzone#openModal',
+                    'title': 'document.add'|trans
+                }
+            }) }}
+        </div>
+
+        {# Ajout d'un wrapper avec data-dropzone-target="documentList" #}
+        <div class="document-list" data-dropzone-target="documentList">
             {% include 'document/_document_list.html.twig' with {'documents': customer.documents} %}
         </div>
 
@@ -25,13 +39,19 @@
                         <h5 class="modal-title">{{ "document.select_type"|trans }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body" data-dropzone-target="modalContent">
                         {{ form_start(formDocument, {
                             'action': path('app_document_new', {'customer': customer.id}),
-                            'attr': {'data-dropzone-target': 'form'}
+                            'attr': {
+                                'data-dropzone-target': 'form',
+                                'data-action': 'submit->dropzone#submitForm'
+                            }
                         }) }}
                         {{ form_row(formDocument.type) }}
-                        {{ form_widget(formDocument.file, {'attr': {'class': 'd-none'}}) }}
+                        <div data-dropzone-target="fileContainer" class="mb-3">
+                            {{ form_widget(formDocument.file) }}
+                            {{ form_errors(formDocument.file) }}
+                        </div>
                         <button type="submit" class="btn btn-primary">{{ "button.save"|trans }}</button>
                         {{ form_end(formDocument) }}
                     </div>

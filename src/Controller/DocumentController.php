@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\MimeTypesInterface;
@@ -26,13 +27,13 @@ class DocumentController extends CustomerInfoController
 {
     #[Route('/new/{customer?}', name: '_new', methods: ['GET', 'POST'], priority: 999)]
     public function uploadDocument(
-        Request                $request,
-        SluggerInterface       $slugger,
-        LoggerInterface        $logger,
+        Request $request,
+        SluggerInterface $slugger,
+        LoggerInterface $logger,
         EntityManagerInterface $entityManager,
         #[Autowire('%kernel.project_dir%/public/uploads/documents')]
-        string                 $uploadDirectory,
-        ?Customer              $customer = null,
+        string $uploadDirectory,
+        ?Customer $customer = null,
     ): Response
     {
         $document = new Document();
@@ -40,37 +41,65 @@ class DocumentController extends CustomerInfoController
         $form = $this->createForm(DropzoneForm::class, $document);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $documentFile */
-            $documentFile = $form->get('file')->getData();
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                /** @var UploadedFile $documentFile */
+                $documentFile = $form->get('file')->getData();
 
-            if ($documentFile) {
-                $originalFilename = pathinfo($documentFile->getClientOriginalName(), PATHINFO_FILENAME);
-                // this is needed to safely include the file name as part of the URL
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename . '-' . uniqid() . '.' . $documentFile->guessExtension();
+                if ($documentFile) {
+                    $originalFilename = pathinfo($documentFile->getClientOriginalName(), PATHINFO_FILENAME);
+                    $safeFilename = $slugger->slug($originalFilename);
+                    $newFilename = $safeFilename . '-' . uniqid() . '.' . $documentFile->guessExtension();
 
-                // Move the file to the directory where brochures are stored
-                try {
-                    $documentFile->move($uploadDirectory, $newFilename);
+                    try {
+                        $documentFile->move($uploadDirectory, $newFilename);
+                        $document->setName($originalFilename);
+                        $document->setPath($uploadDirectory . '/' . $newFilename);
 
-                    $document->setName($originalFilename);
-                    $document->setPath($uploadDirectory . '/' . $newFilename);
+                        $entityManager->persist($document);
+                        $entityManager->flush();
 
-                    $entityManager->persist($document);
-                    $entityManager->flush();
+                        if ($request->isXmlHttpRequest()) {
+                            return new JsonResponse([
+                                'success' => true,
+                                'html' => $this->renderView('document/_document_list.html.twig', [
+                                    'documents' => $customer->getDocuments()
+                                ])
+                            ]);
+                        }
 
-                    if($customer) {
                         return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
-                    } else {
-                        return $this->redirectToRoute('app_document_index');
+                    } catch (FileException $e) {
+                        $logger->error('Upload error: ' . $e->getMessage());
+                        if ($request->isXmlHttpRequest()) {
+                            return new JsonResponse([
+                                'success' => false,
+                                'error' => 'Could not upload file'
+                            ], Response::HTTP_BAD_REQUEST);
+                        }
                     }
-
-                } catch (FileException $e) {
-                    $logger->error('There was an issue with the file upload: ' . $e->getMessage());
-                    $this->addFlash('error', 'There was an issue with the file upload. Please try again.');
+                }
+            } else {
+                if ($request->isXmlHttpRequest()) {
+                    return new JsonResponse([
+                        'success' => false,
+                        'html' => $this->renderView('document/_form_modal_content.html.twig', [
+                            'form' => $form->createView(),
+                            'customer' => $customer
+                        ])
+                    ]);
                 }
             }
+        }
+
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse([
+                'success' => false,
+                'html' => $this->renderView('document/_form_modal_content.html.twig', [
+                    'form' => $form->createView(),
+                    'customer' => $customer
+                ])
+            ]);
         }
 
         return $this->render('crud/form.html.twig', $this->getFormVars($form, $document));
