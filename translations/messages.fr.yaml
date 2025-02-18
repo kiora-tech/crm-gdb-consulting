@@ -39,8 +39,28 @@ document:
     name: Nom
     type: Type
     customer: Client
+    title: Documents
+    select_type: Quel type de document?
+    dropzone: Dépot de fichier
+    add: Ajout
+
+comment:
+    no_comment: Pas de commentaire
+    title: Commentaire
+
+modal:
+    loading: Chargement de la modal
+    edit:
+        title: Edit
+    new:
+        title: Nouveau
 message:
     confirm_delete: "Êtes-vous sûr de vouloir supprimer cet élément ?"
+login:
+    title: Login
+    subtitle: ''
+dashboard:
+    hello: Bonjour
 
 common:
     date_format: "H:i:s d/m/Y"

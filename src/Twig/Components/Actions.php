@@ -16,9 +16,12 @@ class Actions
     public bool $canDelete = true;
     public array $deleteRouteParams = [];
 
-    /**
-     * Get the CSRF token for deletion
-     */
+    public array $actionAttributes = [
+        'show' => [],
+        'edit' => [],
+        'delete' => []
+    ];
+
     /**
      * Get delete route parameters
      */
@@ -41,5 +44,10 @@ class Actions
     {
         $route = $action . 'Route';
         return $this->$route && $this->{'can' . ucfirst($action)};
+    }
+
+    public function getActionAttributes(string $action): array
+    {
+        return $this->actionAttributes[$action] ?? [];
     }
 }

@@ -51,6 +51,11 @@ class Table
                 'edit' => true,
                 'delete' => true,
             ],
+            'actionAttributes' => [
+                'show' => [],
+                'edit' => [],
+                'delete' => []
+            ],
             'sortable' => true,
         ]);
 

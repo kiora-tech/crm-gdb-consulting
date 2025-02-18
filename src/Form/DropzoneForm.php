@@ -9,7 +9,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\UX\Dropzone\Form\DropzoneType;
 
 class DropzoneForm extends AbstractType
 {
@@ -18,6 +17,7 @@ class DropzoneForm extends AbstractType
         $builder
             ->add('type', EntityType::class, [
                 'class' => \App\Entity\DocumentType::class,
+                'label' => 'document.type'
             ])
             ->add('file', FileType::class, [
                 'label' => 'document.file',

@@ -1,4 +1,4 @@
-{# templates/components/Actions.html.twig #}
+{# Actions.html.twig #}
 <div {{ attributes.defaults({class: 'd-flex gap-2 justify-content-end'}) }}>
     {% if this.isActionAvailable('show') %}
         <twig:Button
@@ -7,7 +7,7 @@
                 size="sm"
                 :outline="true"
                 icon="eye"
-                :attributes="{'title': 'action.show'|trans}"
+                :attributes="{'title': 'action.show'|trans}|merge(this.getActionAttributes('show'))"
         />
     {% endif %}
 
@@ -18,7 +18,7 @@
                 size="sm"
                 :outline="true"
                 icon="pencil-square"
-                :attributes="{'title': 'action.edit'|trans}"
+                :attributes="{'title': 'action.edit'|trans}|merge(this.getActionAttributes('edit'))"
         />
     {% endif %}
 
@@ -29,6 +29,7 @@
                 :entityId="entity.id"
                 size="sm"
                 :outline="true"
+                :attributes="this.getActionAttributes('delete')"
         />
     {% endif %}
 </div>

@@ -35,7 +35,8 @@ class DeleteButton
             'confirmationMessage' => 'delete_confirmation.message',
             'showLabel' => false,
             'size' => '',
-            'outline' => false
+            'outline' => false,
+            'attributes' => []
         ]);
 
         $resolver->setAllowedTypes('deleteRoute', 'string');

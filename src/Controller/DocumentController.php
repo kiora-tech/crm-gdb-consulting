@@ -37,7 +37,7 @@ class DocumentController extends CustomerInfoController
     ): Response
     {
         $document = new Document();
-        $document->setCustomer($customer);
+
         $form = $this->createForm(DropzoneForm::class, $document);
         $form->handleRequest($request);
 
@@ -55,12 +55,14 @@ class DocumentController extends CustomerInfoController
                         $documentFile->move($uploadDirectory, $newFilename);
                         $document->setName($originalFilename);
                         $document->setPath($uploadDirectory . '/' . $newFilename);
-
+                        if($customer) {
+                            $document->setCustomer($customer);
+                        }
                         $entityManager->persist($document);
                         $entityManager->flush();
 
                         if ($request->isXmlHttpRequest()) {
-                            return new JsonResponse([
+                            return $this->json([
                                 'success' => true,
                                 'html' => $this->renderView('document/_document_list.html.twig', [
                                     'documents' => $customer->getDocuments()
@@ -68,11 +70,11 @@ class DocumentController extends CustomerInfoController
                             ]);
                         }
 
-                        return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
+                        return $this->redirectToRoute('app_document_index');
                     } catch (FileException $e) {
                         $logger->error('Upload error: ' . $e->getMessage());
                         if ($request->isXmlHttpRequest()) {
-                            return new JsonResponse([
+                            return $this->json([
                                 'success' => false,
                                 'error' => 'Could not upload file'
                             ], Response::HTTP_BAD_REQUEST);
@@ -81,7 +83,7 @@ class DocumentController extends CustomerInfoController
                 }
             } else {
                 if ($request->isXmlHttpRequest()) {
-                    return new JsonResponse([
+                    return $this->json([
                         'success' => false,
                         'html' => $this->renderView('document/_form_modal_content.html.twig', [
                             'form' => $form->createView(),
@@ -93,7 +95,7 @@ class DocumentController extends CustomerInfoController
         }
 
         if ($request->isXmlHttpRequest()) {
-            return new JsonResponse([
+            return $this->json([
                 'success' => false,
                 'html' => $this->renderView('document/_form_modal_content.html.twig', [
                     'form' => $form->createView(),
@@ -127,6 +129,9 @@ class DocumentController extends CustomerInfoController
             'edit' => false,
             'delete' => $routePrefix . '_delete',
             'show' => $routePrefix . '_download',
+            'actionAttributes' => [
+                'show' => ['data-turbo' => 'false']
+            ]
         ];
     }
 
