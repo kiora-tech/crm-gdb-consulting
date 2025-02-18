@@ -1,0 +1,15 @@
+{# templates/document/_form_modal_content.html.twig #}
+{{ form_start(form, {
+    'action': path('app_document_new', {'customer': customer.id}),
+    'attr': {
+        'data-dropzone-target': 'form',
+        'data-action': 'submit->dropzone#submitForm'
+    }
+}) }}
+    {{ form_row(form.type) }}
+<div data-dropzone-target="fileContainer" class="mb-3">
+    {{ form_widget(form.file) }}
+    {{ form_errors(form.file) }}
+</div>
+<button type="submit" class="btn btn-primary">{{ "button.save"|trans }}</button>
+{{ form_end(form) }}

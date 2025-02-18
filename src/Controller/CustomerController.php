@@ -100,7 +100,8 @@ class CustomerController extends AbstractController
     public function show(Customer $customer): Response
     {
         $document = new Document();
-        $formDocument = $this->createForm(DropzoneForm::class, $document);
+        $document->setCustomer($customer);
+        $formDocument = $this->createForm(DropzoneForm::class, $document, ['customer' => $customer]);
 
         return $this->render('customer/show.html.twig', [
             'customer' => $customer,

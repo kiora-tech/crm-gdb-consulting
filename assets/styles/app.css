@@ -287,3 +287,44 @@ a form {
 .frameHeight {
     height: 300px;
 }
+
+.drop-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(13, 110, 253, 0.1);
+    border: 2px dashed #0d6efd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.drop-message {
+    text-align: center;
+    color: #0d6efd;
+}
+
+.card {
+    position: relative;
+}
+
+/* Style pour le nom du fichier */
+.file-display {
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border-radius: 0.25rem;
+}
+
+.alert-danger {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.25rem;
+}
+
+.invalid-feedback {
+    display: block;
+    margin-top: 0.25rem;
+}
