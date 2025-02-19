@@ -235,3 +235,5 @@ header:
     profile:
         my_profile: Mon Profile
         sign_out: Lougout
+
+email: Email
