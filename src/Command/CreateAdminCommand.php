@@ -55,6 +55,7 @@ class CreateAdminCommand extends Command
             throw new \RuntimeException('Invalid email');
         }
         $user->setEmail($email);
+        $user->setRoles(['ROLE_ADMIN']);
         $password = $io->askHidden('Password');
         if (!is_string($password)) {
             throw new \RuntimeException('Invalid password');
