@@ -120,11 +120,19 @@ abstract class CustomerInfoController extends AbstractController
             return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
         }
 
-        return $this->render('crud/_modal_form.html.twig', [
+        $vars = [
             'form' => $form->createView(),
             'customer' => $customer,
-            'entity' => $entity
-        ]);
+            'entity' => $entity,
+            'page_prefix' => $this->getPagePrefix()
+        ];
+
+        // Permettre aux contrôleurs enfants de personnaliser le template
+        if (method_exists($this, 'getModalFormVars')) {
+            $vars = array_merge($vars, $this->getModalFormVars($form, $entity));
+        }
+
+        return $this->render('crud/_modal_form.html.twig', $vars);
     }
 
     #[Route('/modal/new/{customer}', name: '_modal_new', methods: ['GET', 'POST'])]
@@ -137,10 +145,23 @@ abstract class CustomerInfoController extends AbstractController
             'action' => $this->generateFormAction($entity, $customer)
         ]);
 
-        return $this->render('crud/_modal_form.html.twig', [
+        // Ajout des variables pour le template spécifique
+        $vars = [
             'form' => $form->createView(),
-            'customer' => $customer
-        ]);
+            'customer' => $customer,
+            'page_prefix' => $this->getPagePrefix()
+        ];
+
+
+        $vars = array_merge($vars, $this->getModalFormVars($form, $entity));
+
+
+        return $this->render('crud/_modal_form.html.twig', $vars);
+    }
+
+    protected function getModalFormVars($form, ?object $entity = null): array
+    {
+        return [];
     }
 
     /**

@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}FTA{% endblock %}
+
+{% block body %}
+    <h1>FTA</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ fta.id }}</td>
+            </tr>
+            <tr>
+                <th>Label</th>
+                <td>{{ fta.label }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_fta_index') }}">back to list</a>
+
+    <a href="{{ path('app_fta_edit', {'id': fta.id}) }}">edit</a>
+
+    {{ include('fta/_delete_form.html.twig') }}
+{% endblock %}

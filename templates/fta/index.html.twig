@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}FTA index{% endblock %}
+
+{% block body %}
+    <h1>FTA index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Label</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for fta in ftas %}
+            <tr>
+                <td>{{ fta.id }}</td>
+                <td>{{ fta.label }}</td>
+                <td>
+                    <a href="{{ path('app_fta_show', {'id': fta.id}) }}">show</a>
+                    <a href="{{ path('app_fta_edit', {'id': fta.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_fta_new') }}">Create new</a>
+{% endblock %}
