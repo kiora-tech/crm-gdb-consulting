@@ -16,13 +16,13 @@ class Energy
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'energies')]
-    private ?customer $customer = null;
+    private ?Customer $customer = null;
 
-    #[ORM\Column(type: Types::STRING, nullable: true, enumType: EnergyType::class)]
+    #[ORM\Column(type: Types::STRING, enumType: EnergyType::class)]
     private ?EnergyType $type = null;
 
-    #[ORM\Column(type: Types::BIGINT, nullable: true)]
-    private ?int $code = null;
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    private ?string $code = null;  // PDL pour ELEC, PCE pour GAZ
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $provider = null;
@@ -30,38 +30,49 @@ class Energy
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $contractEnd = null;
 
-     #[ORM\Column(nullable: true)]
-    private ?int $power = null;
+    // Champs spécifiques à l'électricité
+    #[ORM\Column(nullable: true)]
+    private ?int $powerKva = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $basePrice = null;
+    #[ORM\ManyToOne(targetEntity: Fta::class)]
+    private ?Fta $fta = null;
 
-    #[ORM\Column(type: Types::STRING, nullable: true, enumType: Segment::class, options: ['default' => 'C1'])]
+    #[ORM\Column(type: Types::STRING, enumType: Segment::class, nullable: true)]
     private ?Segment $segment = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $peakConsumption = null;  // Conso pointe
+
+    #[ORM\Column(nullable: true)]
+    private ?float $hphConsumption = null;   // Conso HPH
+
+    #[ORM\Column(nullable: true)]
+    private ?float $hchConsumption = null;   // Conso HCH
+
+    #[ORM\Column(nullable: true)]
+    private ?float $hpeConsumption = null;   // Conso HPE
+
+    #[ORM\Column(nullable: true)]
+    private ?float $hceConsumption = null;   // Conso HCE
+
+    #[ORM\Column(nullable: true)]
+    private ?float $baseConsumption = null;  // Conso BASE
+
+    #[ORM\Column(nullable: true)]
+    private ?float $hpConsumption = null;    // Conso HP
+
+    #[ORM\Column(nullable: true)]
+    private ?float $hcConsumption = null;    // Conso HC
+
+    // Champs spécifiques au gaz
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $peakHour = null;
+    private ?string $profile = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $offPeakHour = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $horoSeason = null;
+    #[ORM\Column(type: Types::STRING, enumType: GasTransportRate::class, nullable: true)]
+    private ?GasTransportRate $transportRate = null;  // Tarif acheminement
 
     #[ORM\Column(nullable: true)]
-    private ?int $peakHourWinter = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?int $peakHourSummer = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?int $offPeakHourWinter = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?int $offPeakHourSummer = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?int $total = null;
+    private ?float $totalConsumption = null;  // Conso TOTAL
 
     public function getId(): ?int
     {
@@ -248,15 +259,146 @@ class Energy
         return $this;
     }
 
-    public function getTotal(): ?string
+    public function getPowerKva(): ?int
     {
-        return $this->total;
+        return $this->powerKva;
     }
 
-    public function setTotal(?string $total): static
+    public function setPowerKva(?int $powerKva): Energy
     {
-        $this->total = $total;
+        $this->powerKva = $powerKva;
+        return $this;
+    }
 
+    public function getFta(): ?Fta
+    {
+        return $this->fta;
+    }
+
+    public function setFta(?Fta $fta): Energy
+    {
+        $this->fta = $fta;
+        return $this;
+    }
+
+    public function getPeakConsumption(): ?float
+    {
+        return $this->peakConsumption;
+    }
+
+    public function setPeakConsumption(?float $peakConsumption): Energy
+    {
+        $this->peakConsumption = $peakConsumption;
+        return $this;
+    }
+
+    public function getHphConsumption(): ?float
+    {
+        return $this->hphConsumption;
+    }
+
+    public function setHphConsumption(?float $hphConsumption): Energy
+    {
+        $this->hphConsumption = $hphConsumption;
+        return $this;
+    }
+
+    public function getHchConsumption(): ?float
+    {
+        return $this->hchConsumption;
+    }
+
+    public function setHchConsumption(?float $hchConsumption): Energy
+    {
+        $this->hchConsumption = $hchConsumption;
+        return $this;
+    }
+
+    public function getHpeConsumption(): ?float
+    {
+        return $this->hpeConsumption;
+    }
+
+    public function setHpeConsumption(?float $hpeConsumption): Energy
+    {
+        $this->hpeConsumption = $hpeConsumption;
+        return $this;
+    }
+
+    public function getHceConsumption(): ?float
+    {
+        return $this->hceConsumption;
+    }
+
+    public function setHceConsumption(?float $hceConsumption): Energy
+    {
+        $this->hceConsumption = $hceConsumption;
+        return $this;
+    }
+
+    public function getBaseConsumption(): ?float
+    {
+        return $this->baseConsumption;
+    }
+
+    public function setBaseConsumption(?float $baseConsumption): Energy
+    {
+        $this->baseConsumption = $baseConsumption;
+        return $this;
+    }
+
+    public function getHpConsumption(): ?float
+    {
+        return $this->hpConsumption;
+    }
+
+    public function setHpConsumption(?float $hpConsumption): Energy
+    {
+        $this->hpConsumption = $hpConsumption;
+        return $this;
+    }
+
+    public function getHcConsumption(): ?float
+    {
+        return $this->hcConsumption;
+    }
+
+    public function setHcConsumption(?float $hcConsumption): Energy
+    {
+        $this->hcConsumption = $hcConsumption;
+        return $this;
+    }
+
+    public function getProfile(): ?string
+    {
+        return $this->profile;
+    }
+
+    public function setProfile(?string $profile): Energy
+    {
+        $this->profile = $profile;
+        return $this;
+    }
+
+    public function getTransportRate(): ?GasTransportRate
+    {
+        return $this->transportRate;
+    }
+
+    public function setTransportRate(?GasTransportRate $transportRate): Energy
+    {
+        $this->transportRate = $transportRate;
+        return $this;
+    }
+
+    public function getTotalConsumption(): ?float
+    {
+        return $this->totalConsumption;
+    }
+
+    public function setTotalConsumption(?float $totalConsumption): Energy
+    {
+        $this->totalConsumption = $totalConsumption;
         return $this;
     }
 }

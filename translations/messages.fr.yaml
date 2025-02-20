@@ -56,6 +56,10 @@ modal:
         title: Nouveau
 message:
     confirm_delete: "Êtes-vous sûr de vouloir supprimer cet élément ?"
+    energy:
+        created: Énergie créée avec succès
+        updated: Énergie mise à jour avec succès
+        deleted: Énergie supprimée avec succès
 login:
     title: Login
     subtitle: ''
@@ -174,10 +178,39 @@ contact:
     address: Adresse
     last_name: Nom
 energy:
-    contract_end: Echéance du contrat
-    provider: Fournisseur
-    type: Type d’energie
     code: PDL/PCE
+    title: Énergies
+    new:
+        title: Nouvelle énergie
+    edit:
+        title: Modifier l'énergie
+
+    # Champs communs
+    type: Type d'énergie
+    provider: Fournisseur
+    contract_end: Échéance du contrat
+    customer: Client
+    total_consumption: Conso totale
+
+    # Champs électricité
+    pdl: PDL
+    power_kva: Puissance (kVA)
+    fta: FTA
+    segment: Segment
+    peak_consumption: Conso pointe
+    hph_consumption: Conso HPH
+    hch_consumption: Conso HCH
+    hpe_consumption: Conso HPE
+    hce_consumption: Conso HCE
+    base_consumption: Conso base
+    hp_consumption: Conso HP
+    hc_consumption: Conso HC
+
+    # Champs gaz
+    pce: PCE
+    profile: Profil
+    transport_rate: Tarif acheminement
+
 action:
     show: Voir
     edit: Modifier
@@ -207,14 +240,6 @@ Company group:	"Groupement d'entreprises"
 Mobile phone:	Téléphone mobile
 Address:	Adresse
 Power:	Puissance
-Base price:	Prix de base
-Peak hour:	Heure de point
-Off peak hour:	Heure creuse
-Peak hour summer:	Heure de pointe été
-Off peak hour winter:	Heure creuse hiver
-Off peak hour summer:	Heure creuse été
-Peak hour winter:	Heure de pointe hiver
-Horo season:	Horo season
 Segment:	Segment
 C1:	C1
 C2:	C2
@@ -225,7 +250,6 @@ Total:	Total
 Note:	Note
 documentDoc:	Document
 File:	Fichier
-Drag and drop a file or click to browse: Glisser-déposer un fichier
 Password:	Mot de passe
 Company:	Entreprise
 ASC: ASC
@@ -237,3 +261,17 @@ header:
         sign_out: Lougout
 
 email: Email
+
+# Tarifs d'acheminement gaz
+T1: T1
+T2: T2
+T3: T3
+T4: T4
+
+# Placeholders
+placeholder:
+    choose_option: Choisir une option...
+
+# Unités et aide
+help:
+    consumption: MWh/an

@@ -1,12 +1,111 @@
-{{ form_start(form, { 'attr': { 'data-controller': 'energy' } }) }}
+{# templates/energy/_form.html.twig #}
+{{ form_start(form, {
+    'attr': {
+        'data-controller': 'energy-form',
+        'data-energy-form-target': 'form',
+        'data-turbo-frame': '_top'
+    }
+}) }}
 
-{{ form_widget(form) }}
-<button class="btn btn-primary">{{ "button.save"|trans }}</button>
-<a href="#" 
-   class="btn btn-secondary {% if 'energy/' in app.request.uri and '/edit' in app.request.uri %}disabled{% endif %}" 
-   {% if 'energy/' in app.request.uri and '/edit' in app.request.uri %}aria-disabled="true" onclick="return false;"style="display:none"{% endif %}
-   data-turbo-action="remove" 
-   data-turbo-frame="energies">
-    {{ "button.close"|trans }}
-</a>
+<div class="row">
+    <div class="col-md-6">
+        {{ form_row(form.type, {
+            'attr': {
+                'data-energy-form-target': 'type',
+                'data-action': 'change->energy-form#typeChange'
+            }
+        }) }}
+    </div>
+    <div class="col-md-6">
+        {{ form_row(form.code) }}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        {{ form_row(form.provider) }}
+    </div>
+    <div class="col-md-6">
+        {{ form_row(form.contractEnd) }}
+    </div>
+</div>
+
+{# Les champs dynamiques seront affichés ici #}
+{% if form.powerKva is defined %}
+    {# Champs spécifiques à l'électricité #}
+    <div class="row">
+        <div class="col-md-4">
+            {{ form_row(form.powerKva) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.fta) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.segment) }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            {{ form_row(form.peakConsumption) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.hphConsumption) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.hchConsumption) }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            {{ form_row(form.hpeConsumption) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.hceConsumption) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.baseConsumption) }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            {{ form_row(form.hpConsumption) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.hcConsumption) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.totalConsumption) }}
+        </div>
+    </div>
+{% endif %}
+
+{% if form.profile is defined %}
+    {# Champs spécifiques au gaz #}
+    <div class="row">
+        <div class="col-md-4">
+            {{ form_row(form.profile) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.transportRate) }}
+        </div>
+        <div class="col-md-4">
+            {{ form_row(form.totalConsumption) }}
+        </div>
+    </div>
+{% endif %}
+
+{{ form_rest(form) }}
+
+<div class="d-flex gap-2 mt-3">
+    {{ component('Button', {
+        type: 'submit',
+        theme: 'primary',
+        label: 'button.save',
+        icon: 'save'
+    }) }}
+</div>
+
 {{ form_end(form) }}
