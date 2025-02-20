@@ -34,8 +34,8 @@ class Energy
     #[ORM\Column(nullable: true)]
     private ?int $powerKva = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $fta = null;
+    #[ORM\ManyToOne(targetEntity: Fta::class)]
+    private ?Fta $fta = null;
 
     #[ORM\Column(type: Types::STRING, enumType: Segment::class, nullable: true)]
     private ?Segment $segment = null;
@@ -270,12 +270,12 @@ class Energy
         return $this;
     }
 
-    public function getFta(): ?string
+    public function getFta(): ?Fta
     {
         return $this->fta;
     }
 
-    public function setFta(?string $fta): Energy
+    public function setFta(?Fta $fta): Energy
     {
         $this->fta = $fta;
         return $this;

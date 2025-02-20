@@ -111,6 +111,7 @@ class EnergyType extends AbstractType
             ])
             ->add('fta', EntityType::class, [
                 'class' => Fta::class,
+                'choice_label' => 'label',
                 'label' => 'energy.fta',
                 'required' => false,
             ])

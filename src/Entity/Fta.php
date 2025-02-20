@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\FTARepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FTARepository::class)]
@@ -48,6 +50,14 @@ class Fta
 
     #[ORM\Column]
     private ?float $consumptionHCE = null;
+
+    #[ORM\OneToMany(targetEntity: Energy::class, mappedBy: 'fta')]
+    private Collection $energies;
+
+    public function __construct()
+    {
+        $this->energies = new ArrayCollection();
+    }
 
     // Getters and setters
     public function getId(): ?int
@@ -190,5 +200,37 @@ class Fta
     public function __toString(): string
     {
         return $this->label;
+    }
+
+    public function getEnergies(): Collection
+    {
+        return $this->energies;
+    }
+
+    public function addEnergy(Energy $energy): static
+    {
+        if (!$this->energies->contains($energy)) {
+            $this->energies[] = $energy;
+            $energy->setFta($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEnergy(Energy $energy): static
+    {
+        if ($this->energies->removeElement($energy)) {
+            if ($energy->getFta() === $this) {
+                $energy->setFta(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function setEnergies(Collection $energies): static
+    {
+        $this->energies = $energies;
+        return $this;
     }
 }
