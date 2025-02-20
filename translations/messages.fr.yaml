@@ -169,6 +169,23 @@ customer:
     status: Statut
     information: Informations
     comments: Comment
+
+    company_information: Information entreprise
+    commercial_information: Information commerciale
+    commercial: Commercial
+    margin: Marge
+    worth: Valeur
+    commission: Commission
+    action: Action
+    canal_signature: Signature Canal
+    origin: Origine
+    placeholder:
+        action: Action a mener
+        worth: Valeur du contrat
+        commission: Commission du commercial
+        lead_origin: Origine du lead
+        name: Nom du client
+
 contact:
     name: Nom/Prénom de l'interlocuteur
     position: Poste

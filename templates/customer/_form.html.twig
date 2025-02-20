@@ -1,81 +1,115 @@
-<div class="card-body">
-    <!-- Début du formulaire -->
+<!-- Début du formulaire -->
 
-    <div class="row">
-        <!-- Champ pour le nom -->
-        <div class="col-md-6 mb-3">
-            {{ form_label(form.name, null, {'label_attr': {'class': 'form-label'}}) }}
-            {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Enter customer name'}}) }}
-            {{ form_errors(form.name) }}
-        </div>
+<!-- Erreurs globales -->
+<div class="row mb-4">
+    <div class="col-12">
+        {{ form_errors(form) }}
+    </div>
+</div>
 
-        <!-- Champ pour L'origine du lead -->
-        <div class="col-md-6 mb-3">
-            {{ form_label(form.leadOrigin, null, {'label_attr': {'class': 'form-label'}}) }}
-            {{ form_widget(form.leadOrigin, {'attr': {'class': 'form-control', 'placeholder': 'Enter lead origin'}}) }}
-            {{ form_errors(form.leadOrigin) }}
-        </div>
-
-        <div class="col-md-6 mb-3">
-            {{ form_label(form.action, null, {'label_attr': {'class': 'form-label'}}) }}
-            {{ form_widget(form.action, {'attr': {'class': 'form-control', 'placeholder': 'Action a mener'}}) }}
-            {{ form_errors(form.action) }}
-        </div>
-
-        <!-- Champ pour L'origine du lead -->
-        <div class="col-md-6 mb-3">
-            {{ form_label(form.worth, null, {'label_attr': {'class': 'form-label'}}) }}
-            {{ form_widget(form.worth, {'attr': {'class': 'form-control', 'placeholder': 'Valeur du contrat'}}) }}
-            {{ form_errors(form.worth) }}
-        </div>
-
-        <div class="col-md-6 mb-3">
-            {{ form_label(form.commision, null, {'label_attr': {'class': 'form-label'}}) }}
-            {{ form_widget(form.commision, {'attr': {'class': 'form-control', 'placeholder': 'Commission du commercial'}}) }}
-            {{ form_errors(form.commision) }}
-        </div>
-
-        <div class="col-md-3 mb-3">
-            {{ form_label(form.origin, null, {'label_attr': {'class': 'form-label'}}) }}
-            {{ form_widget(form.origin, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.origin) }}
-        </div>
-        <div class="col-md-3 mb-3">
-            {{ form_label(form.status, null, {'label_attr': {'class': 'form-label'}}) }}
-            {{ form_widget(form.status, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.status) }}
-        </div>
-
-        <div class="col-md-3 mb-3">
-            {{ form_label(form.canalSignature, null, {'label_attr': {'class': 'form-label'}}) }}
-            {{ form_widget(form.canalSignature, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.canalSignature) }}
-        </div>
-
-
-        <div class="col-md-6 mb-3">
-            {{ form_label(form.margin, null, {'label_attr': {'class': 'form-label'}}) }}
-            {{ form_widget(form.margin, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.margin) }}
-        </div>
-
-        <div class="col-md-6 mb-3">
-            {{ form_label(form.companyGroup, null, {'label_attr': {'class': 'form-label'}}) }}
-            {{ form_widget(form.companyGroup, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.companyGroup) }}
-        </div>
-
-        <div class="col-md-6 mb-3">
-            {{ form_label(form.siret, null, {'label_attr': {'class': 'form-label'}}) }}
-            {{ form_widget(form.siret, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.siret) }}
-        </div>
-        {% if form.user is defined %}
-            <div class="col-md-6 mb-3">
-                {{ form_label(form.user, null, {'label_attr': {'class': 'form-label'}}) }}
-                {{ form_widget(form.user, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.user) }}
+<div class="row">
+    <!-- Informations Société -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">{{ 'customer.company_information'|trans }}</h5>
             </div>
-        {% endif %}
+            <div class="card-body">
+                <!-- Nom -->
+                <div class="mb-3">
+                    {{ form_label(form.name, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'customer.placeholder.name'}}) }}
+                    {{ form_errors(form.name) }}
+                </div>
+
+                <!-- SIRET -->
+                <div class="mb-3">
+                    {{ form_label(form.siret, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.siret, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.siret) }}
+                </div>
+
+                <!-- Groupe -->
+                <div class="mb-3">
+                    {{ form_label(form.companyGroup, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.companyGroup, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.companyGroup) }}
+                </div>
+
+                <!-- Origine du Lead -->
+                <div class="mb-3">
+                    {{ form_label(form.leadOrigin, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.leadOrigin, {'attr': {'class': 'form-control', 'placeholder': 'customer.placeholder.lead_origin'}}) }}
+                    {{ form_errors(form.leadOrigin) }}
+                </div>
+
+                <!-- Origin -->
+                <div class="mb-3">
+                    {{ form_label(form.origin, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.origin, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.origin) }}
+                </div>
+
+                {% if form.user is defined %}
+                    <div class="mb-3">
+                        {{ form_label(form.user, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.user, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.user) }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Informations Commerciales -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">{{ 'customer.commercial_information'|trans }}</h5>
+            </div>
+            <div class="card-body">
+                <!-- Status -->
+                <div class="mb-3">
+                    {{ form_label(form.status, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.status, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.status) }}
+                </div>
+
+                <!-- Canal Signature -->
+                <div class="mb-3">
+                    {{ form_label(form.canalSignature, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.canalSignature, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.canalSignature) }}
+                </div>
+
+                <!-- Action -->
+                <div class="mb-3">
+                    {{ form_label(form.action, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.action, {'attr': {'class': 'form-control', 'placeholder': 'customer.placeholder.action'}}) }}
+                    {{ form_errors(form.action) }}
+                </div>
+
+                <!-- Valeur -->
+                <div class="mb-3">
+                    {{ form_label(form.worth, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.worth, {'attr': {'class': 'form-control', 'placeholder': 'customer.placeholder.worth'}}) }}
+                    {{ form_errors(form.worth) }}
+                </div>
+
+                <!-- Commission -->
+                <div class="mb-3">
+                    {{ form_label(form.commision, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.commision, {'attr': {'class': 'form-control', 'placeholder': 'customer.placeholder.commission'}}) }}
+                    {{ form_errors(form.commision) }}
+                </div>
+
+                <!-- Marge -->
+                <div class="mb-3">
+                    {{ form_label(form.margin, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.margin, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.margin) }}
+                </div>
+            </div>
+        </div>
     </div>
 </div>

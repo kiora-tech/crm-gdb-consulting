@@ -6,17 +6,20 @@ use App\Entity\Comment;
 use App\Entity\Customer;
 use App\Entity\Energy;
 use App\Entity\EnergyType;
-use App\Entity\Prospect;
 use App\Entity\Contact;
-use App\Entity\BusinessEntity;
 use App\Entity\ProspectOrigin;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Psr\Log\LoggerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 
 readonly class ImportService
 {
-    public function __construct(private EntityManagerInterface $entityManager, private LoggerInterface $logger)
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private LoggerInterface $logger,
+        private Security $security
+    )
     {
     }
 
@@ -120,6 +123,8 @@ readonly class ImportService
             $this->entityManager->persist($customer);
             $this->entityManager->flush();
         }
+
+        $customer->setUser($this->security->getUser());
 
         return $customer;
     }
