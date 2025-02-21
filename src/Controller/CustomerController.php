@@ -6,25 +6,29 @@ use App\Data\CustomerSearchData;
 use App\Entity\Customer;
 use App\Entity\Document;
 use App\Entity\ProspectStatus;
+use App\Entity\Template;
 use App\Form\CustomerSearchType;
 use App\Form\CustomerType;
 use App\Form\DropzoneForm;
 use App\Repository\CustomerRepository;
 use App\Service\ImportService;
 use App\Service\PaginationService;
+use App\Service\Template\TemplateProcessor;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
-#[Route('/customer')]
+#[Route('/customer', name: 'app_customer')]
 class CustomerController extends AbstractController
 {
-    #[Route('/', name: 'app_customer_index', methods: ['GET'])]
+    #[Route('/', name: '_index', methods: ['GET'])]
     public function index(CustomerRepository $customerRepository, PaginationService $paginationService, Request $request, Security $security): Response
     {
         $data = new CustomerSearchData();
@@ -55,6 +59,7 @@ class CustomerController extends AbstractController
             'importErrorFiles' => $errorFiles,
         ]);
     }
+
 
     #[Route('/import-error-file', name: 'app_customer_import_error_file', methods: ['GET'])]
     public function downloadImportErrorFile(Request $request): Response
@@ -107,7 +112,7 @@ class CustomerController extends AbstractController
 
         return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
     }
-    #[Route('/new', name: 'app_customer_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: '_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $customer = new Customer();
@@ -127,7 +132,7 @@ class CustomerController extends AbstractController
         ]);
     }
 
-    #[Route('/upload', name: 'app_customer_upload', methods: ['GET', 'POST'])]
+    #[Route('/upload', name: '_upload', methods: ['GET', 'POST'])]
     public function upload(Request $request, ImportService $importService): Response
     {
         if ($request->isMethod('POST')) {
@@ -148,21 +153,23 @@ class CustomerController extends AbstractController
         return $this->render('customer/upload.html.twig');
     }
 
-    #[Route('/{id}', name: 'app_customer_show', methods: ['GET'])]
-    public function show(Customer $customer): Response
+    #[Route('/{id}', name: '_show', methods: ['GET'])]
+    public function show(Customer $customer, EntityManagerInterface $entityManager): Response
     {
         $document = new Document();
         $document->setCustomer($customer);
         $formDocument = $this->createForm(DropzoneForm::class, $document, ['customer' => $customer]);
+        $templates = $entityManager->getRepository(Template::class)->findAll();
 
         return $this->render('customer/show.html.twig', [
             'customer' => $customer,
             'formDocument' => $formDocument->createView(),
+            'templates' => $templates
         ]);
     }
 
 
-    #[Route('/{id}/edit', name: 'app_customer_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: '_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Customer $customer, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(CustomerType::class, $customer);
@@ -180,7 +187,7 @@ class CustomerController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_customer_delete', methods: ['POST'])]
+    #[Route('/{id}', name: '_delete', methods: ['POST'])]
     public function delete(Request $request, Customer $customer, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete' . $customer->getId(), $request->getPayload()->get('_token'))) {

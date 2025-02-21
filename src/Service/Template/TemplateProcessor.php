@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use App\Entity\Template;
 use Doctrine\Common\Collections\Collection;
 use PhpOffice\PhpWord\TemplateProcessor as TemplateProcessorVendor;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
@@ -16,7 +17,8 @@ class TemplateProcessor
 
     public function __construct(
         #[Autowire('%kernel.project_dir%/public')]
-        private readonly string $publicDir
+        private readonly string $publicDir,
+        private readonly LoggerInterface $logger,
     ) {
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
@@ -25,14 +27,15 @@ class TemplateProcessor
     {
         // Charge le template avec le chemin complet
         $templatePath = $this->publicDir . '/' . ltrim($template->getPath(), '/');
-        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor($templatePath);
+        $templateProcessor = new TemplateProcessorVendor($templatePath);
 
         // Récupère toutes les variables du template
         $variables = $this->extractVariables($templateProcessor);
-
+dump($variables);
         // Remplace chaque variable
         foreach ($variables as $variable) {
             $value = $this->resolveValue($customer, $variable);
+            dump($value);
             $templateProcessor->setValue($variable, $this->formatValue($value));
         }
 
@@ -68,14 +71,21 @@ class TemplateProcessor
     private function resolveValue(object $object, string $path): mixed
     {
         try {
-            // Convertit le format du template (customer.contacts[0].firstname)
-            // en format PropertyAccessor ([customer][contacts][0][firstname])
+            // Si c'est une propriété simple (sans point), on l'utilise directement
+            if (!str_contains($path, '.')) {
+                return $this->propertyAccessor->getValue($object, $path);
+            }
+
+            // Pour les chemins complexes, on convertit en notation tableau
             $path = str_replace('.', '][', $path);
             $path = "[$path]";
 
             return $this->propertyAccessor->getValue($object, $path);
         } catch (\Exception $e) {
-            // En cas d'erreur, retourne une chaîne vide
+            $this->logger->error('Error resolving template variable: ' . $e->getMessage(), [
+                'path' => $path,
+                'object_class' => get_class($object)
+            ]);
             return '';
         }
     }
