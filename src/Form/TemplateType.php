@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Template;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -32,6 +33,10 @@ class TemplateType extends AbstractType
                         'mimeTypesMessage' => 'template.invalid_mime_type',
                     ])
                 ],
+            ])
+            ->add('documentType', EntityType::class, [
+                'label' => 'template.documentType',
+                'class' => \App\Entity\DocumentType::class
             ])
         ;
     }

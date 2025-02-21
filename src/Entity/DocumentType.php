@@ -24,9 +24,16 @@ class DocumentType
     #[ORM\OneToMany(targetEntity: Document::class, mappedBy: 'type')]
     private Collection $documents;
 
+    /**
+     * @var Collection<int, Template>
+     */
+    #[ORM\OneToMany(targetEntity: Document::class, mappedBy: 'documentType', orphanRemoval: true)]
+    private Collection $templates;
+
     public function __construct()
     {
         $this->documents = new ArrayCollection();
+        $this->templates = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -73,6 +80,29 @@ class DocumentType
             }
         }
 
+        return $this;
+    }
+
+    public function getTemplates(): Collection
+    {
+        return $this->templates;
+    }
+
+    public function addTemplate(Template $template): static
+    {
+        if (!$this->templates->contains($template)) {
+            $this->templates->add($template);
+        }
+        return $this;
+    }
+
+    public function removeTemplate(Template $template): static
+    {
+        if ($this->templates->removeElement($template)) {
+            if ($template->getType() === $this) {
+                $template->setType(null);
+            }
+        }
         return $this;
     }
 

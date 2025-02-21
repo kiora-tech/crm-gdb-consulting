@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Customer;
 use App\Entity\Document;
+use App\Entity\Template;
 use App\Form\DocumentType;
 use App\Form\DropzoneForm;
 use App\Repository\DocumentRepository;
+use App\Service\Template\TemplateProcessor;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Psr\Log\LoggerInterface;
@@ -176,6 +178,55 @@ class DocumentController extends CustomerInfoController
         }
 
         return $this->redirectToRoute('app_document_index', [], Response::HTTP_SEE_OTHER);
+    }
+    #[Route('/generate/{template}/{customer}', name: '_generate_from_template', methods: ['GET'])]
+    public function generateFromTemplate(
+        Template $template,
+        Customer $customer,
+        TemplateProcessor $templateProcessor,
+        #[Autowire('%kernel.project_dir%/public/uploads/documents')]
+        string $uploadDirectory,
+        SluggerInterface $slugger,
+        EntityManagerInterface $entityManager
+    ): Response {
+        try {
+            // Génère le document à partir du template
+            $tempFile = $templateProcessor->processTemplate($template, $customer);
+
+            // Crée le nouveau nom de fichier
+            $originalFilename = pathinfo($template->getOriginalFilename(), PATHINFO_FILENAME);
+            $extension = pathinfo($template->getOriginalFilename(), PATHINFO_EXTENSION);
+            $safeFilename = $slugger->slug($originalFilename . '_' . $customer->getName());
+            $newFilename = $safeFilename . '-' . uniqid() . '.' . $extension;
+
+            // Déplace le fichier dans le répertoire uploads
+            rename($tempFile, $uploadDirectory . '/' . $newFilename);
+
+            // Crée une nouvelle entité Document
+            $document = new Document();
+            $document->setCustomer($customer);
+            $document->setName($originalFilename . ' - ' . $customer->getName());
+            $document->setPath('uploads/documents/' . $newFilename);
+            $document->setType($template->getDocumentType());
+
+            // Persiste le nouveau document
+            $entityManager->persist($document);
+            $entityManager->flush();
+
+            // Retourne le fichier
+            $response = new Response(file_get_contents($uploadDirectory . '/' . $newFilename));
+            $response->headers->set('Content-Type', $template->getMimeType());
+            $response->headers->set(
+                'Content-Disposition',
+                'attachment; filename="' . $newFilename . '"'
+            );
+
+            return $response;
+
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Une erreur est survenue lors de la génération du document : ' . $e->getMessage());
+            return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
+        }
     }
 
     protected function getEntityClass(): string

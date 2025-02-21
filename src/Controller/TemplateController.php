@@ -117,7 +117,6 @@ class TemplateController extends BaseCrudController
 
                     $template->setPath('templates/' . $newFilename);
                     $template->setOriginalFilename($file->getClientOriginalName());
-                    $template->setMimeType($file->getMimeType());
 
                     $this->entityManager->flush();
 

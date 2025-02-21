@@ -31,6 +31,9 @@ class Template
     #[ORM\Column(length: 255)]
     private ?string $mimeType = null;
 
+    #[ORM\ManyToOne(inversedBy: 'templates')]
+    private ?DocumentType $documentType = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -63,7 +66,7 @@ class Template
         return $this->type;
     }
 
-    public function setType(TemplateType $type): static
+    public function setType(?TemplateType $type): static
     {
         $this->type = $type;
         return $this;
@@ -88,6 +91,17 @@ class Template
     public function setMimeType(string $mimeType): static
     {
         $this->mimeType = $mimeType;
+        return $this;
+    }
+
+    public function getDocumentType(): ?DocumentType
+    {
+        return $this->documentType;
+    }
+
+    public function setDocumentType(DocumentType $documentType): static
+    {
+        $this->documentType = $documentType;
         return $this;
     }
 }
