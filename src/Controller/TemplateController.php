@@ -31,7 +31,7 @@ class TemplateController extends BaseCrudController
             $request->query->getInt('page', 1)
         );
 
-        return $this->render('crud/index.html.twig', [
+        return $this->render('template/index.html.twig', [
             'pagination' => $pagination,
             'columns' => $this->getColumns(),
             'page_prefix' => $this->getPagePrefix(),

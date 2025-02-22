@@ -1,0 +1,31 @@
+{# templates/components/TemplateVariablesHelper.html.twig #}
+<div {{ attributes }}>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Variables disponibles</h5>
+            <p class="text-muted mb-4">
+                Pour les listes (contacts, énergies, etc.), utilisez [0], [1], [2]... pour accéder aux différents éléments.
+            </p>
+
+            {% for section, vars in this.variables %}
+                <h6 class="mt-4 mb-3">{{ section }}</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <tbody>
+                        {% for var in vars %}
+                            <tr>
+                                <td style="width: 40%">
+                                    <code class="bg-light px-2 py-1 rounded">{{ var.var }}</code>
+                                </td>
+                                <td class="text-muted">
+                                    {{ var.desc }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
