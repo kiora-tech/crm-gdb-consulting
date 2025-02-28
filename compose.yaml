@@ -17,7 +17,7 @@ services:
     volumes:
       - database_data:/var/lib/mysql
   php:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.7.0
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.7.1
     depends_on:
       - database
     environment:
@@ -31,7 +31,7 @@ services:
     restart:
       always
   nginx:
-    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.7.0
+    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.7.1
     depends_on:
       - php
       - database
@@ -41,39 +41,19 @@ services:
     restart:
       always
   supervisor:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.7.0-supervisor
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.7.1-supervisor
     volumes:
       - uploads:/var/www/website/public/uploads
     depends_on:
       - php
       - database
     environment:
-      - COMPOSER_MEMORY_LIMIT=-1
       - APP_ENV=prod
-      - DATABASE_URL=${DATABASE_URL:-mysql://symfony:symfony@database:3306/symfony_docker?serverVersion=8.0.31&charset=utf8mb4}
+      - DATABASE_URL=${DATABASE_URL:-mysql://symfony:symfony@database:3306/symfony_docker?serverVersion=8.0.40&charset=utf8mb4}
       - MAILER_DSN=${MAILER_DSN:-smtp://mailer:1025}
-      - MERCURE_URL=${MERCURE_URL:-http://mercure/.well-known/mercure}
-      - MERCURE_PUBLIC_URL=${MERCURE_PUBLIC_URL:-http://localhost/.well-known/mercure}
-      - MERCURE_JWT_SECRET=${MERCURE_JWT_SECRET:-ChangeThisMercureHubJWTSecretKey}
-      - GEONAME_USERNAME=${GEONAME_USERNAME:-kiora}
-      - YOUSIGN_BASE_URL=${YOUSIGN_BASE_URL:-https://api-sandbox.yousign.app/v3/}
-      - YOUSIGN_API_KEY=${YOUSIGN_API_KEY}
-      - YOUSIGN_WEBHOOK_SECRET_TOKEN=${YOUSIGN_WEBHOOK_SECRET_TOKEN}
-      - YOUSIGN_WEBHOOK_SECRET_KEY=${YOUSIGN_WEBHOOK_SECRET_KEY}
-      - POWENS_WEBVIEW_URL=${POWENS_WEBVIEW_URL:-https://webview.powens.com}
-      - POWENS_MAX_CONNECTIONS=${POWENS_MAX_CONNECTIONS:-10}
-      - POWENS_DOMAIN=${POWENS_DOMAIN:-kioracrm-sandbox}
-      - POWENS_DOMAIN_FULL=${POWENS_DOMAIN_FULL:-kioracrm-sandbox.biapi.pro}
-      - POWENS_BASE_URL=${POWENS_BASE_URL:-https://kioracrm-sandbox.biapi.pro/2.0/}
-      - POWENS_REDIRECT_URI=${POWENS_REDIRECT_URI:-https://crm.finoptia.fr/client-access/powens/callback}
-      - POWENS_CLIENT_ID=${POWENS_CLIENT_ID}
-      - POWENS_CLIENT_SECRET=${POWENS_CLIENT_SECRET}
-      - PDF_SERVICE_URL=${PDF_SERVICE_URL:-https://pdf-services.adobe.io}
-      - PDF_SERVICE_CLIENT_ID=${PDF_SERVICE_CLIENT_ID}
-      - PDF_SERVICE_CLIENT_SECRET=${PDF_SERVICE_CLIENT_SECRET}
-      - SENTRY_DSN=${SENTRY_DSN}
+      - SYMFONY_TRUSTED_PROXIES=${SYMFONY_TRUSTED_PROXIES:-127.0.0.1}
     networks:
-      - kiora_internal_net
+      - gdb_internal_network
     restart:
       always
 volumes:
