@@ -292,3 +292,16 @@ placeholder:
 # Unités et aide
 help:
     consumption: MWh/an
+template:
+    label: Label
+    filename: Nom du fichier
+    title: Template
+    fichier: Fichier
+    invalid_mime_type: "Type de fichier invalide"
+    upload:
+        error: "Erreur lors du téléchargement du fichier"
+    available_variables: Variables disponibles
+    variables_help: Utilisez ces variables dans vos templates Word en les copiant exactement comme indiqué.
+    variable: Variable
+    type: Type
+    description: Description
