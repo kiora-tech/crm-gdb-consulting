@@ -28,6 +28,7 @@ endif
 
 	# Étape 4: Construire l'image Docker de l'application avec un tag incrémental et push directement vers le registre
 	${DOCKER_CMD} buildx build --platform linux/arm/v7,linux/arm64,linux/amd64 --target prod -f docker/php/Dockerfile -t $(DOCKER_IMAGE_PREFIX)php:$(TAG) --push .
+	${DOCKER_CMD} buildx build --platform linux/arm/v7,linux/arm64,linux/amd64 --target supervisor -f docker/php/Dockerfile -t $(DOCKER_IMAGE_PREFIX)php:$(TAG)-supervisor --push .
 	${DOCKER_CMD} buildx build --platform linux/arm/v7,linux/arm64,linux/amd64 --target prod -f docker/nginx/Dockerfile -t $(DOCKER_IMAGE_PREFIX)nginx:$(TAG) --push .
 
 	#ajouter du tag dans le fichier compose.yaml pour php et nginx

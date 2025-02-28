@@ -14,6 +14,48 @@
 		/>
 	</div>
 
+	{# Affichage des fichiers d'erreur d'import #}
+	{% set errorFiles = importErrorFiles is defined ? importErrorFiles : [] %}
+	{% if errorFiles|length > 0 %}
+		<div class="card mt-3">
+			<div class="card-header">
+				<h5 class="card-title">Fichiers d'erreur d'import</h5>
+			</div>
+			<div class="card-body">
+				<table class="table">
+					<thead>
+					<tr>
+						<th>Nom du fichier</th>
+						<th>Actions</th>
+					</tr>
+					</thead>
+					<tbody>
+					{% for file in errorFiles %}
+						<tr>
+							<td>{{ file }}</td>
+							<td>
+								<div class="d-flex gap-2">
+									<a href="{{ path('app_customer_import_error_file', {filename: file}) }}"
+									   class="btn btn-sm btn-primary" data-turbo="false">
+										<i class="bi bi-download"></i> Télécharger
+									</a>
+									<form action="{{ path('app_customer_delete_import_error_file') }}" method="post" class="d-inline">
+										<input type="hidden" name="filename" value="{{ file }}">
+										<button type="submit" class="btn btn-sm btn-danger"
+												onclick="return confirm('Voulez-vous vraiment supprimer ce fichier ?');">
+											<i class="bi bi-trash"></i> Supprimer
+										</button>
+									</form>
+								</div>
+							</td>
+						</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	{% endif %}
+
 	{% include 'customer/_filter.html.twig' %}
 
 	<section class="section">

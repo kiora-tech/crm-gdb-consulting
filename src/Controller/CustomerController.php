@@ -13,6 +13,7 @@ use App\Repository\CustomerRepository;
 use App\Service\ImportService;
 use App\Service\PaginationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -39,13 +40,65 @@ class CustomerController extends AbstractController
 
         $customers = $paginationService->paginate($query, $request);
 
+        $importErrorDirectory = $this->getParameter('kernel.project_dir') . '/var/import/errors';
+        $errorFiles = [];
+        if (is_dir($importErrorDirectory)) {
+            $errorFiles = array_filter(
+                scandir($importErrorDirectory),
+                fn($file) => $file !== '.' && $file !== '..' && pathinfo($file, PATHINFO_EXTENSION) === 'xlsx'
+            );
+        }
+
         return $this->render('customer/index.html.twig', [
             'customers' => $customers,
             'form' => $form,
+            'importErrorFiles' => $errorFiles,
         ]);
     }
 
-    #[Route('/customer/{id}/status/{status}', name: 'app_customer_status')]
+    #[Route('/import-error-file', name: 'app_customer_import_error_file', methods: ['GET'])]
+    public function downloadImportErrorFile(Request $request): Response
+    {
+        $filename = $request->query->get('filename');
+        $importErrorDirectory = $this->getParameter('kernel.project_dir') . '/var/import/errors';
+        $filePath = $importErrorDirectory . '/' . $filename;
+
+        if (!file_exists($filePath)) {
+            throw $this->createNotFoundException('Le fichier d\'erreur n\'existe pas.');
+        }
+
+        // Supprimer le fichier après le téléchargement
+        $response = $this->file($filePath, $filename);
+
+        // Ajoutez un listener pour supprimer le fichier après le téléchargement
+        $response->deleteFileAfterSend(true);
+
+        return $response;
+    }
+
+    #[Route('/delete-import-error-file', name: 'app_customer_delete_import_error_file', methods: ['POST'])]
+    public function deleteImportErrorFile(Request $request, LoggerInterface $logger): Response
+    {
+        $filename = $request->request->get('filename');
+        $importErrorDirectory = $this->getParameter('kernel.project_dir') . '/var/import/errors';
+        $filePath = $importErrorDirectory . '/' . $filename;
+
+        if (file_exists($filePath)) {
+            try {
+                unlink($filePath);
+                $this->addFlash('success', 'Fichier d\'erreur supprimé avec succès.');
+            } catch (\Exception $e) {
+                $logger->error('Impossible de supprimer le fichier d\'erreur : ' . $e->getMessage());
+                $this->addFlash('error', 'Impossible de supprimer le fichier d\'erreur.');
+            }
+        } else {
+            $this->addFlash('warning', 'Le fichier d\'erreur n\'existe pas.');
+        }
+
+        return $this->redirectToRoute('app_customer_index');
+    }
+
+    #[Route('/{id}/status/{status}', name: 'app_customer_status')]
     public function updateStatus(Customer $customer, string $status, EntityManagerInterface $entityManager): Response
     {
         $newStatus = ProspectStatus::from($status);
@@ -82,10 +135,9 @@ class CustomerController extends AbstractController
             $file = $request->files->get('file');
 
             if ($file && $file->isValid()) {
-                $filePath = $file->getPathname();
-                $importService->importFromExcel($filePath);
+                $importService->importFromUpload($file);
 
-                $this->addFlash('success', 'File uploaded and data imported successfully.');
+                $this->addFlash('success', 'File uploaded and import data started.');
 
                 return $this->redirectToRoute('app_customer_index');
             }
