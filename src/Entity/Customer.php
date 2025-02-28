@@ -42,7 +42,6 @@ class Customer
     private ProspectOrigin $origin;
 
     #[ORM\Column(type:  Types::STRING, nullable: true, enumType: ProspectStatus::class)]
-    #[Assert\NotBlank]
     private ?ProspectStatus $status = null;
 
     /**

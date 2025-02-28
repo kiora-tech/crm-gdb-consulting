@@ -2,130 +2,105 @@
 
 namespace App\Service;
 
-use App\Entity\Comment;
-use App\Entity\Customer;
-use App\Entity\Energy;
-use App\Entity\EnergyType;
-use App\Entity\Contact;
-use App\Entity\ProspectOrigin;
-use Doctrine\ORM\EntityManagerInterface;
-use PhpOffice\PhpSpreadsheet\IOFactory;
+use App\Message\StartImportMessage;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 readonly class ImportService
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
+        private MessageBusInterface $messageBus,
         private LoggerInterface $logger,
-        private Security $security
-    )
-    {
+        private SluggerInterface $slugger,
+        #[Autowire('%kernel.project_dir%/var/import')]
+        private string $importDirectory
+    ) {
     }
 
-    public function importFromExcel(string $filePath): void
+    /**
+     * Initie l'importation d'un fichier Excel
+     */
+    public function importFromUpload(UploadedFile $file): string
     {
-        $spreadsheet = IOFactory::load($filePath);
-        $sheet = $spreadsheet->getActiveSheet();
-        $rows = $sheet->toArray();
+        // Valider que c'est bien un fichier Excel
+        $this->validateExcelFile($file);
 
-        foreach ($rows as $index => $row) {
-            if ($index === 0) { // Skip header row
-                continue;
-            }
+        // Sauvegarder le fichier localement avec un nom unique
+        $filePath = $this->saveUploadedFile($file);
 
-            if (empty($row[1])) { // Ensure customer information is valid
-                $this->logger->error('Customer name is missing', ['row' => $index]);
-                continue;
-            }
-            $customer = $this->getOrCreateCustomer($row[1], $row[5]);
-            $customer->setSiret((string) $row[0]);
+        // Démarrer le processus d'importation asynchrone
+        $this->startImportProcess($filePath, $file->getClientOriginalName());
 
-            // Creating or updating Contact entity
-            $existingContact = $this->entityManager->getRepository(Contact::class)
-                ->findOneBy(['email' => $row[3]]);
-
-            if (!$existingContact) {
-                $contact = new Contact();
-                $names = explode(' ',(string)$row[2], 2);
-
-                $contact->setFirstName($names[0]);
-                $contact->setLastName($names[1]??'');
-                $contact->setEmail((string)$row[3]); // MAIL
-                $contact->setPhone((string)$row[4]); // NUMERO
-                $contact->setCustomer($customer);
-                $this->entityManager->persist($contact);
-            }
-
-            if (!empty($row[15]) || !empty($row[14])) {
-                // Creating or updating Prospect entity
-                $comment = $this->entityManager->getRepository(Comment::class)
-                    ->findOneBy(['customer' => $customer]);
-
-                if (!$comment) {
-                    $comment = new Comment();
-                    $comment->setCustomer($customer);
-                    $comment->setNote($row[15] === '' ? null : $row[15]); // COMMENTAIRES
-                    $this->entityManager->persist($comment);
-                } else {
-                    $comment->setNote($row[15] === '' ? null : $row[15]);
-                }
-            }
-
-            // Creating or updating Energy entity if applicable
-            if ($row[9]) { // Check if PDL / PCE is provided
-                $existingEnergy = $this->entityManager->getRepository(Energy::class)
-                    ->findOneBy(['code' => $row[9], 'customer' => $customer]);
-
-                if (!$existingEnergy) {
-                    $energy = new Energy();
-                    if ($row[6]) {
-                        $energy->setProvider($row[6]); // FOURNISSEUR
-                    }
-                    if (!empty($row[7])) {
-                        $date = \DateTime::createFromFormat('d/m/Y', $row[7]);
-                        $energy->setContractEnd($date); // ECHEANCE
-                    }
-                    $energy->setType(EnergyType::tryFrom($row[8]) ?? EnergyType::ELEC); // ELEC / GAZ
-                    if($row[9]) {
-                        $energy->setCode((int)$row[9]); // PDL / PCE
-                    }
-                    $energy->setCustomer($customer);
-                    $this->entityManager->persist($energy);
-                } else {
-                    if ($row[6]) {
-                        $existingEnergy->setProvider($row[6]);
-                    }
-                    if (!empty($row[7])) {
-                        $date = \DateTime::createFromFormat('d/m/Y', $row[7]);
-                        $existingEnergy->setContractEnd($date);
-                    }
-                    $existingEnergy->setType(EnergyType::tryFrom($row[8]) ?? EnergyType::ELEC);
-                }
-            }
-        }
-
-        // Flush to save all entities
-        $this->entityManager->flush();
+        return $filePath;
     }
 
-
-    private function getOrCreateCustomer(string $name, string $leadOrigin): Customer
+    /**
+     * Démarre l'importation à partir d'un chemin de fichier existant
+     */
+    public function importFromExcel(string $filePath, string $originalFilename = ''): void
     {
-        $customer = $this->entityManager->getRepository(Customer::class)
-            ->findOneBy(['name' => $name]);
+        $this->startImportProcess($filePath, $originalFilename ?: basename($filePath));
+    }
 
-        if (!$customer) {
-            $customer = new Customer();
-            $customer->setName($name);
-            $customer->setLeadOrigin($leadOrigin);
-            $customer->setOrigin(ProspectOrigin::ACQUISITION);
-            $this->entityManager->persist($customer);
-            $this->entityManager->flush();
+    /**
+     * Valide que le fichier est bien un Excel
+     */
+    private function validateExcelFile(UploadedFile $file): void
+    {
+        $allowedMimeTypes = [
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.oasis.opendocument.spreadsheet',
+        ];
+
+        if (!in_array($file->getMimeType(), $allowedMimeTypes)) {
+            throw new \InvalidArgumentException(
+                'Le fichier doit être au format Excel (.xls, .xlsx ou .ods)'
+            );
+        }
+    }
+
+    /**
+     * Sauvegarde le fichier téléchargé dans un répertoire temporaire
+     */
+    private function saveUploadedFile(UploadedFile $file): string
+    {
+        // Créer le répertoire s'il n'existe pas
+        if (!is_dir($this->importDirectory)) {
+            mkdir($this->importDirectory, 0777, true);
         }
 
-        $customer->setUser($this->security->getUser());
+        // Générer un nom de fichier unique
+        $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeFilename = $this->slugger->slug($originalFilename);
+        $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
 
-        return $customer;
+        // Déplacer le fichier
+        $filePath = $this->importDirectory . '/' . $newFilename;
+        $file->move($this->importDirectory, $newFilename);
+
+        $this->logger->info('Fichier importé sauvegardé', [
+            'original_name' => $file->getClientOriginalName(),
+            'path' => $filePath
+        ]);
+
+        return $filePath;
+    }
+
+    /**
+     * Démarre le processus d'importation via le message bus
+     */
+    private function startImportProcess(string $filePath, string $originalFilename): void
+    {
+        $message = new StartImportMessage($filePath, $originalFilename);
+        $this->messageBus->dispatch($message);
+
+        $this->logger->info('Processus d\'importation démarré', [
+            'file' => $originalFilename,
+            'path' => $filePath
+        ]);
     }
 }
