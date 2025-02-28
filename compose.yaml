@@ -17,7 +17,7 @@ services:
     volumes:
       - database_data:/var/lib/mysql
   php:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.7.1
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.7.2
     depends_on:
       - database
     environment:
@@ -27,11 +27,14 @@ services:
       - SYMFONY_TRUSTED_PROXIES=${SYMFONY_TRUSTED_PROXIES:-127.0.0.1}
     networks:
       - gdb_internal_network
+    volumes:
+      - uploads:/var/www/website/public/uploads
+      - import:/var/www/website/var/import
     entrypoint: [ "sh", "/var/www/website/entrypoint.sh" ]
     restart:
       always
   nginx:
-    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.7.1
+    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.7.2
     depends_on:
       - php
       - database
@@ -41,9 +44,10 @@ services:
     restart:
       always
   supervisor:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.7.1-supervisor
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.7.2-supervisor
     volumes:
       - uploads:/var/www/website/public/uploads
+      - import:/var/www/website/var/import
     depends_on:
       - php
       - database
@@ -59,6 +63,7 @@ services:
 volumes:
   database_data: { }
   uploads: { }
+  import: { }
 
 networks:
   kiora_network:
