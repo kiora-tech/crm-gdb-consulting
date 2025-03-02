@@ -12,8 +12,6 @@ services:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       timeout: 2s
       retries: 30
-    networks:
-      - gdb_internal_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -29,8 +27,6 @@ services:
       - DATABASE_URL=${DATABASE_URL:-mysql://symfony:symfony@database:3306/symfony_docker?serverVersion=8.0.40&charset=utf8mb4}
       - MAILER_DSN=${MAILER_DSN:-smtp://mailer:1025}
       - SYMFONY_TRUSTED_PROXIES=${SYMFONY_TRUSTED_PROXIES:-127.0.0.1}
-    networks:
-      - gdb_internal_network
     volumes:
       - uploads:/var/www/website/public/uploads
       - import:/var/www/website/var/import
@@ -46,9 +42,7 @@ services:
       - php
       - database
     ports:
-      - "81:80" 
-    networks:
-      - gdb_internal_network
+      - "81:80"
     deploy:
       restart_policy:
         condition: on-failure
@@ -68,8 +62,6 @@ services:
       - DATABASE_URL=${DATABASE_URL:-mysql://symfony:symfony@database:3306/symfony_docker?serverVersion=8.0.40&charset=utf8mb4}
       - MAILER_DSN=${MAILER_DSN:-smtp://mailer:1025}
       - SYMFONY_TRUSTED_PROXIES=${SYMFONY_TRUSTED_PROXIES:-127.0.0.1}
-    networks:
-      - gdb_internal_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -80,7 +72,3 @@ volumes:
   database_data: {}
   uploads: {}
   import: {}
-
-networks:
-  gdb_internal_network:
-    driver: overlay
