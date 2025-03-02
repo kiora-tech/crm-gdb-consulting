@@ -45,8 +45,9 @@ services:
     depends_on:
       - php
       - database
+    ports:
+      - "81:80" 
     networks:
-      - kiora_network
       - gdb_internal_network
     deploy:
       restart_policy:
@@ -81,7 +82,5 @@ volumes:
   import: {}
 
 networks:
-  kiora_network:
-    external: true
   gdb_internal_network:
     driver: overlay
