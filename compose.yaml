@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   database:
     image: mysql:8.0.40
@@ -13,11 +12,15 @@ services:
       timeout: 2s
       retries: 30
     deploy:
+      placement:
+        constraints:
+          - node.hostname == raspberrypinas
       restart_policy:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-
+    volumes:
+      - /srv/swarm-data/${ENV:-prod}/crm-gdb/mysql:/var/lib/mysql
   php:
     image: registry.kiora.tech/kiora/crm-gdb_php:0.7.2
     depends_on:
@@ -28,14 +31,16 @@ services:
       - MAILER_DSN=${MAILER_DSN:-smtp://mailer:1025}
       - SYMFONY_TRUSTED_PROXIES=${SYMFONY_TRUSTED_PROXIES:-127.0.0.1}
     volumes:
-      - uploads:/var/www/website/public/uploads
-      - import:/var/www/website/var/import
+      - /srv/swarm-data/${ENV:-prod}/crm-gdb/uploads:/var/www/website/public/uploads
+      - /srv/swarm-data/${ENV:-prod}/crm-gdb/import:/var/www/website/var/import
     deploy:
+      placement:
+        constraints:
+          - node.labels.memory >= 2G
       restart_policy:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-
   nginx:
     image: registry.kiora.tech/kiora/crm-gdb_nginx:0.7.2
     depends_on:
@@ -48,12 +53,11 @@ services:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-
   supervisor:
     image: registry.kiora.tech/kiora/crm-gdb_php:0.7.2-supervisor
     volumes:
-      - uploads:/var/www/website/public/uploads
-      - import:/var/www/website/var/import
+      - /srv/swarm-data/${ENV:-prod}/crm-gdb/uploads:/var/www/website/public/uploads
+      - /srv/swarm-data/${ENV:-prod}/crm-gdb/import:/var/www/website/var/import
     depends_on:
       - php
       - database
@@ -63,12 +67,10 @@ services:
       - MAILER_DSN=${MAILER_DSN:-smtp://mailer:1025}
       - SYMFONY_TRUSTED_PROXIES=${SYMFONY_TRUSTED_PROXIES:-127.0.0.1}
     deploy:
+      placement:
+        constraints:
+          - node.labels.memory >= 2G
       restart_policy:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-
-volumes:
-  database_data: {}
-  uploads: {}
-  import: {}
