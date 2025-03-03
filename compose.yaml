@@ -14,7 +14,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == raspberrypinas
+          - node.labels.db == true
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -36,7 +36,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.labels.memory >= 2G
+          - node.labels.memory == 2G
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -69,7 +69,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.labels.memory >= 2G
+          - node.labels.memory == 2G
       restart_policy:
         condition: on-failure
         delay: 5s
