@@ -37,6 +37,7 @@ services:
       placement:
         constraints:
           - node.labels.memory == 2G
+          - node.labels.db == true
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -70,6 +71,7 @@ services:
       placement:
         constraints:
           - node.labels.memory == 2G
+          - node.labels.db == true
       restart_policy:
         condition: on-failure
         delay: 5s
