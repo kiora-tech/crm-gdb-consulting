@@ -61,7 +61,7 @@ class CustomerController extends AbstractController
     }
 
 
-    #[Route('/import-error-file', name: 'app_customer_import_error_file', methods: ['GET'])]
+    #[Route('/import-error-file', name: '_import_error_file', methods: ['GET'])]
     public function downloadImportErrorFile(Request $request): Response
     {
         $filename = $request->query->get('filename');
@@ -81,7 +81,7 @@ class CustomerController extends AbstractController
         return $response;
     }
 
-    #[Route('/delete-import-error-file', name: 'app_customer_delete_import_error_file', methods: ['POST'])]
+    #[Route('/delete-import-error-file', name: '_delete_import_error_file', methods: ['POST'])]
     public function deleteImportErrorFile(Request $request, LoggerInterface $logger): Response
     {
         $filename = $request->request->get('filename');
@@ -103,7 +103,7 @@ class CustomerController extends AbstractController
         return $this->redirectToRoute('app_customer_index');
     }
 
-    #[Route('/{id}/status/{status}', name: 'app_customer_status')]
+    #[Route('/{id}/status/{status}', name: '_status')]
     public function updateStatus(Customer $customer, string $status, EntityManagerInterface $entityManager): Response
     {
         $newStatus = ProspectStatus::from($status);
