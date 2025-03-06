@@ -7,12 +7,9 @@
 			{% endblock %}
 			- GDB consulting
 		</title>
-		<link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}"> {% block stylesheets %}{% endblock %}
+		<link rel="icon" type="image/png" href="{{ asset('img/logo.ico') }}"> {% block stylesheets %}{% endblock %}
 		<meta
 		name="viewport" content="width=device-width, initial-scale=1.0">
-		{#	{% if getCompanyIdentity().cssPath != constant('\\App\\Entity\\CompanyIdentity::TO_BE_GENERATED') -%}
-							<link rel="stylesheet" href="{{ asset(getCompanyIdentity().cssPath) }}">
-						{%- endif %}#}
 
 		{% block javascripts %}{% endblock %}
 
@@ -26,7 +23,7 @@
 				<header class="header fixed-top d-flex align-items-center" id="menu-overlay">
 					<div class="d-flex align-items-center justify-content-between">
 						<a href="/" class="logo d-flex align-items-center">
-							<span class="d-none d-lg-block">GDB consulting</span>
+							<img src="{{ asset('img/logo.svg') }}" alt="GDB consulting" class="logo-img">
 						</a>
 						{% block inner_header %}{% endblock %}
 					</div>

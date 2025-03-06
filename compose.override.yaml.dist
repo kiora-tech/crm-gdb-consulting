@@ -5,6 +5,8 @@ services:
     ports:
       - '3306:3306'
     restart: unless-stopped
+    volumes:
+      - database_data:/var/lib/mysql
   php:
     image: !reset null
     build:
@@ -37,11 +39,7 @@ services:
     ports:
       - '8025:8025'
       - '1025:1025'
-    networks:
-      - kiora_network
-      - gdb_internal_network
     restart: unless-stopped
 
-networks:
-  kiora_network:
-    external: false
+volumes:
+  database_data: { }
