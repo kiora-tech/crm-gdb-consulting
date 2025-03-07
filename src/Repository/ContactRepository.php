@@ -40,6 +40,6 @@ class ContactRepository extends ServiceEntityRepository
             ->setParameter('email', $email)
             ->setParameter('number', $number);
 
-        return $qb->getQuery()->getOneOrNullResult();
+        return $qb->getQuery()->setMaxResults(1)->getOneOrNullResult();
     }
 }

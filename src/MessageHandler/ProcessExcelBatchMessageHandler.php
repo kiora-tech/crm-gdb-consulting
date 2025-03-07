@@ -153,7 +153,6 @@ class ProcessExcelBatchMessageHandler
      */
     private function processBatch(array $rows): void
     {
-        $hasErrors = false;
 
         try {
             // Pour chaque groupe de lignes
@@ -172,7 +171,6 @@ class ProcessExcelBatchMessageHandler
                     // Flush après chaque ligne réussie pour éviter de perdre le travail déjà fait
                     $entityManager->flush();
                 } catch (\Exception $e) {
-                    $hasErrors = true;
 
                     // Log et tracking de l'erreur
                     $this->logger->error('Error processing row: ' . $e->getMessage(), [
@@ -360,6 +358,7 @@ class ProcessExcelBatchMessageHandler
             'fournisseur' => 'provider',
             'echeance' => 'contract_end',
             'contract_end' => 'contract_end',
+            'date_chance_elec' => 'contract_end',
             'pdl' => 'pce_pdl',
             'pce' => 'pce_pdl',
             'pce_pdl' => 'pce_pdl',
@@ -485,17 +484,6 @@ class ProcessExcelBatchMessageHandler
                 $energy->setProvider($rowData['provider']);
             }
 
-            // Gérer la date d'échéance
-            if (!empty($rowData['contract_end']) && $rowData['contract_end'] instanceof \DateTime) {
-                $energy->setContractEnd($rowData['contract_end']);
-            } elseif (!empty($rowData['contract_end'])) {
-                // Si c'est une chaîne, essayer de la parser
-                $date = $this->parseDate($rowData['contract_end']);
-                if ($date) {
-                    $energy->setContractEnd($date);
-                }
-            }
-
             // Déterminer le type d'énergie
             $energyType = EnergyType::ELEC; // Valeur par défaut
             if (!empty($rowData['energy_type'])) {
@@ -515,14 +503,14 @@ class ProcessExcelBatchMessageHandler
             if (!empty($rowData['provider'])) {
                 $existingEnergy->setProvider($rowData['provider']);
             }
+        }
 
-            if (!empty($rowData['contract_end']) && $rowData['contract_end'] instanceof \DateTime) {
-                $existingEnergy->setContractEnd($rowData['contract_end']);
-            } elseif (!empty($rowData['contract_end']) && !$existingEnergy->getContractEnd()) {
-                $date = $this->parseDate($rowData['contract_end']);
-                if ($date) {
-                    $existingEnergy->setContractEnd($date);
-                }
+        if (!empty($rowData['contract_end']) && $rowData['contract_end'] instanceof \DateTime) {
+            $existingEnergy->setContractEnd($rowData['contract_end']);
+        } elseif (!empty($rowData['contract_end']) && !$existingEnergy->getContractEnd()) {
+            $date = $this->parseDate($rowData['contract_end']);
+            if ($date) {
+                $existingEnergy->setContractEnd($date);
             }
         }
     }
