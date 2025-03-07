@@ -20,23 +20,52 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use App\Entity\EnergyType as EnergyTypeEnum;
+use Symfony\Component\Form\FormError;
 
 class EnergyType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // Capture l'entité originale pour une vérification ultérieure
+        $originalEnergy = $options['data'] ?? null;
+        $originalType = $originalEnergy && $originalEnergy->getId() ? $originalEnergy->getType() : null;
+
         $builder
             ->add('type', EnumType::class, [
                 'class' => EnergyTypeEnum::class,
                 'choice_label' => fn(EnergyTypeEnum $type) => $type->value,
                 'label' => 'energy.type',
                 'placeholder' => 'placeholder.choose_option',
+                // Rendre le champ en lecture seule si on édite une entité existante
+                'disabled' => $originalEnergy && $originalEnergy->getId() !== null,
+                // Ajouter une classe CSS pour mettre en évidence le statut en lecture seule
+                'attr' => [
+                    'class' => $originalEnergy && $originalEnergy->getId() ? 'bg-light' : ''
+                ],
+                'help' => $originalEnergy && $originalEnergy->getId() ? 'Le type d\'énergie ne peut pas être modifié après création' : null,
             ]);
 
+        // Protection supplémentaire : vérifier que le type n'a pas été modifié après soumission du formulaire
+        $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($originalType) {
+            $energy = $event->getData();
+            $form = $event->getForm();
+
+            // Si l'entité existait déjà et que le type a été modifié, ajout d'une erreur
+            if ($originalType !== null && $energy->getType() !== $originalType) {
+                $form->get('type')->addError(new FormError('Le type d\'énergie ne peut pas être modifié après création.'));
+            }
+        });
+
         // Utilisation de FormEvents::PRE_SUBMIT pour gérer la dynamique du formulaire
-        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($originalType) {
             $data = $event->getData();
             $form = $event->getForm();
+
+            // Si on édite une entité existante, forcer le type original dans les données
+            if ($originalType !== null) {
+                $data['type'] = $originalType->value;
+                $event->setData($data);
+            }
 
             // Champs communs
             $form
@@ -54,10 +83,12 @@ class EnergyType extends AbstractType
                     'required' => false,
                 ]);
 
-            if (isset($data['type'])) {
-                if ($data['type'] === 'ELEC') {
+            $typeToUse = $originalType ? $originalType->value : ($data['type'] ?? null);
+
+            if ($typeToUse) {
+                if ($typeToUse === 'ELEC') {
                     $this->addElectricityFields($form);
-                } elseif ($data['type'] === 'GAZ') {
+                } elseif ($typeToUse === 'GAZ') {
                     $this->addGasFields($form);
                 }
             }

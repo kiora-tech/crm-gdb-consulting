@@ -29,11 +29,10 @@
         {{ form_row(form.contractEnd) }}
     </div>
 </div>
-
+<div class="row">
 {# Les champs dynamiques seront affichés ici #}
 {% if form.powerKva is defined %}
     {# Champs spécifiques à l'électricité #}
-    <div class="row">
         <div class="col-md-4">
             {{ form_row(form.powerKva) }}
         </div>
@@ -76,27 +75,23 @@
         <div class="col-md-4">
             {{ form_row(form.hcConsumption) }}
         </div>
-        <div class="col-md-4">
-            {{ form_row(form.totalConsumption) }}
-        </div>
-    </div>
 {% endif %}
 
 {% if form.profile is defined %}
     {# Champs spécifiques au gaz #}
-    <div class="row">
         <div class="col-md-4">
             {{ form_row(form.profile) }}
         </div>
         <div class="col-md-4">
             {{ form_row(form.transportRate) }}
         </div>
+{% endif %}
+        {% if form.totalConsumption is defined %}
         <div class="col-md-4">
             {{ form_row(form.totalConsumption) }}
         </div>
+        {% endif %}
     </div>
-{% endif %}
-
 {{ form_rest(form) }}
 
 <div class="d-flex gap-2 mt-3">

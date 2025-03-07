@@ -3,13 +3,6 @@ import { Controller } from '@hotwired/stimulus';
 export default class extends Controller {
     static targets = ['type', 'form']
 
-    connect() {
-        // Si un type est déjà sélectionné (ex: modification d'une énergie existante)
-        if (this.hasTypeTarget && this.typeTarget.value) {
-            this.updateFormFields(this.typeTarget.value);
-        }
-    }
-
     typeChange(event) {
         if (event.target.value) {
             this.updateFormFields(event.target.value);
@@ -27,10 +20,15 @@ export default class extends Controller {
             method: 'POST',
             body: formData,
             headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+                'X-Requested-With': 'XMLHttpRequest',
             }
         })
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.text();
+            })
             .then(html => {
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = html;
@@ -46,6 +44,9 @@ export default class extends Controller {
                         typeSelect.value = type;
                     }
                 }
+            })
+            .catch(error => {
+                console.error('Error updating form:', error);
             });
     }
 }
