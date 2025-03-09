@@ -25,6 +25,7 @@ class Energy
     private ?string $code = null;  // PDL pour ELEC, PCE pour GAZ
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Assert\NotBlank]
     private ?string $provider = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]

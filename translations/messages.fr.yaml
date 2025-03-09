@@ -43,6 +43,7 @@ document:
     select_type: Quel type de document?
     dropzone: Dépot de fichier
     add: Ajout
+    generate: Générer
 
 comment:
     no_comment: Pas de commentaire
@@ -65,6 +66,37 @@ login:
     subtitle: ''
 dashboard:
     hello: Bonjour
+    title: Tableau de bord
+    actions: Actions
+    view_all: Voir tout
+    add_new: Ajouter
+    view_details: Voir détails
+    client_won: clients gagnés
+    client_monthly: nouveaux clients ce mois
+    to_renew: à renouveler prochainement
+    clients: Clients
+    revenue: Chiffre d'affaires
+    expiring_contracts: Contrats expirants
+    client_distribution: Répartition des clients
+    client_status: Statut des clients
+    in_progress: En cours
+    won: Gagnés
+    lost: Perdus
+    recent_clients: Clients récents
+    name: Nom
+    status: Statut
+    worth: Valeur
+    contracts_to_renew: Contrats à renouveler
+    no_expiring_contracts: Aucun contrat expirant prochainement
+    recent_documents: Documents récents
+    no_recent_documents: Aucun document récent
+    stats: Statistiques
+    total_clients: Total clients
+    clients_in_progress: Clients en cours
+    clients_won: Clients gagnés
+    clients_lost: Clients perdus
+    view_all_clients: Voir tous les clients
+    no_recent_clients: Aucun client récent
 
 common:
     date_format: "H:i:s d/m/Y"
@@ -131,6 +163,10 @@ input:
 document_type:
     label: Label
     title: Type de document
+    edit:
+        title: Modifier le type de document
+    new:
+        title: Nouveau type de document
 
 document_signature:
     status: Status
@@ -187,6 +223,7 @@ customer:
         name: Nom du client
 
 contact:
+    title: Contacts
     name: Nom/Prénom de l'interlocuteur
     position: Poste
     email: Email
@@ -194,6 +231,10 @@ contact:
     mobile_phone: Tél. portable
     address: Adresse
     last_name: Nom
+    edit:
+        title: Modifier le contact
+    new:
+        title: Nouveau contact
 energy:
     code: PDL/PCE
     title: Énergies
@@ -305,3 +346,8 @@ template:
     variable: Variable
     type: Type
     description: Description
+    no_templates: "Aucun template disponible"
+    edit:
+        title: Modifier le template
+    new:
+        title: Nouveau template

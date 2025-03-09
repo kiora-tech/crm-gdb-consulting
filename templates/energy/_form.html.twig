@@ -29,10 +29,12 @@
         {{ form_row(form.contractEnd) }}
     </div>
 </div>
-<div class="row">
-{# Les champs dynamiques seront affichés ici #}
-{% if form.powerKva is defined %}
-    {# Champs spécifiques à l'électricité #}
+
+{# Champs spécifiques à l'électricité ou au gaz #}
+{% set energyType = form.vars.value.type ? form.vars.value.type.value : null %}
+
+{% if energyType == 'ELEC' or form.powerKva is defined %}
+    <div class="row electricity-fields">
         <div class="col-md-4">
             {{ form_row(form.powerKva) }}
         </div>
@@ -68,39 +70,41 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-4">
-            {{ form_row(form.hpConsumption) }}
-        </div>
-        <div class="col-md-4">
-            {{ form_row(form.hcConsumption) }}
-        </div>
-{% endif %}
+<div class="row">
+    <div class="col-md-4">
+        {{ form_row(form.hpConsumption) }}
+    </div>
+    <div class="col-md-4">
+        {{ form_row(form.hcConsumption) }}
+    </div>
+    {% endif %}
 
-{% if form.profile is defined %}
-    {# Champs spécifiques au gaz #}
+    {% if energyType == 'GAZ' or form.profile is defined %}
+    <div class="row gas-fields">
         <div class="col-md-4">
             {{ form_row(form.profile) }}
         </div>
         <div class="col-md-4">
             {{ form_row(form.transportRate) }}
         </div>
-{% endif %}
+        {% endif %}
+
         {% if form.totalConsumption is defined %}
         <div class="col-md-4">
             {{ form_row(form.totalConsumption) }}
         </div>
-        {% endif %}
     </div>
-{{ form_rest(form) }}
+    {% endif %}
 
-<div class="d-flex gap-2 mt-3">
-    {{ component('Button', {
-        type: 'submit',
-        theme: 'primary',
-        label: 'button.save',
-        icon: 'save'
-    }) }}
-</div>
+    {{ form_rest(form) }}
+
+    <div class="d-flex gap-2 mt-3">
+        {{ component('Button', {
+            type: 'submit',
+            theme: 'primary',
+            label: 'button.save',
+            icon: 'save'
+        }) }}
+    </div>
 
 {{ form_end(form) }}

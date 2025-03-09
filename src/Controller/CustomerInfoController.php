@@ -80,11 +80,10 @@ abstract class CustomerInfoController extends AbstractController
             $this->entityManager->flush();
 
             if ($customer) {
-                return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()],
-                    Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
             }
 
-            return $this->redirectToRoute($this->getBaseRouteName().'_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute($this->getBaseRouteName().'_index');
         }
 
         return $this->render('crud/form.html.twig', $this->getFormVars($form, $entity));
@@ -136,7 +135,7 @@ abstract class CustomerInfoController extends AbstractController
     }
 
     #[Route('/modal/new/{customer}', name: '_modal_new', methods: ['GET', 'POST'])]
-    public function modalNew(Customer $customer): Response
+    public function modalNew(Request $request, Customer $customer): Response
     {
         $entity = new ($this->getEntityClass());
         $entity->setCustomer($customer);

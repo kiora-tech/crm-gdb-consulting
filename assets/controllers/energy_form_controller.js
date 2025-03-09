@@ -11,14 +11,14 @@ export default class extends Controller {
 
     updateFormFields(type) {
         const form = this.formTarget;
-        const formData = new FormData(form);
+        const url = new URL(form.action);
 
-        // Conserver la valeur du type sélectionné pour le réappliquer après le rechargement
-        formData.set('energy[type]', type);
+        // Ajouter un paramètre pour indiquer le type d'énergie
+        url.searchParams.append('energyType', type);
 
-        fetch(form.action, {
-            method: 'POST',
-            body: formData,
+        // Faire une requête GET pour récupérer le formulaire actualisé
+        fetch(url.toString(), {
+            method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
             }
@@ -33,15 +33,37 @@ export default class extends Controller {
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = html;
 
-                // Ne remplacer que le contenu du formulaire, pas tout le formulaire
-                const newForm = tempDiv.querySelector('form');
-                if (newForm) {
-                    form.innerHTML = newForm.innerHTML;
+                // Remplacer le contenu du formulaire
+                const newFormContent = tempDiv.querySelector('form');
+                if (newFormContent) {
+                    // Préserver l'action et les autres attributs du formulaire
+                    const action = form.action;
+                    const method = form.method;
+                    const enctype = form.enctype;
 
-                    // Réappliquer la valeur du type
+                    // Mise à jour du contenu
+                    form.innerHTML = newFormContent.innerHTML;
+
+                    // Restauration des attributs
+                    form.action = action;
+                    form.method = method;
+                    form.enctype = enctype;
+
+                    // S'assurer que le type est toujours sélectionné
                     const typeSelect = form.querySelector('[name="energy[type]"]');
                     if (typeSelect) {
                         typeSelect.value = type;
+                    }
+
+                    // Réinitialiser les contrôleurs Stimulus sur le nouveau contenu
+                    const stimulusApplication = this.application;
+                    if (stimulusApplication) {
+                        stimulusApplication.controllers.forEach(controller => {
+                            if (controller.element.contains(form)) {
+                                controller.disconnect();
+                                controller.connect();
+                            }
+                        });
                     }
                 }
             })
