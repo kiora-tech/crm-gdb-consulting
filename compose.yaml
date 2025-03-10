@@ -22,7 +22,7 @@ services:
     volumes:
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/mysql:/var/lib/mysql
   php:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.0
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.1
     depends_on:
       - database
     environment:
@@ -43,7 +43,7 @@ services:
         delay: 5s
         max_attempts: 3
   nginx:
-    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.8.0
+    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.8.1
     depends_on:
       - php
       - database
@@ -55,7 +55,7 @@ services:
         delay: 5s
         max_attempts: 3
   supervisor:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.0-supervisor
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.1-supervisor
     volumes:
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/uploads:/var/www/website/public/uploads
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/import:/var/www/website/var/import

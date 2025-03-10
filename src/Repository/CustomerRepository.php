@@ -106,6 +106,19 @@ class CustomerRepository extends ServiceEntityRepository
                 ->setParameter('user', $user);
         }
 
+        // Filtre par contrats expirants
+        if ($search->expiringContracts) {
+            $now = new \DateTime();
+            $expirationDate = (new \DateTime())->modify('+' . $search->expirationPeriod . ' months');
+
+            $query->andWhere('e.contractEnd IS NOT NULL')
+                ->andWhere('e.contractEnd >= :now')
+                ->andWhere('e.contractEnd <= :expirationDate')
+                ->setParameter('now', $now)
+                ->setParameter('expirationDate', $expirationDate)
+                ->orderBy('e.contractEnd', 'ASC');
+        }
+
 
         return $query
             ->getQuery();

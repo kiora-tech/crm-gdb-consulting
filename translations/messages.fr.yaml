@@ -205,7 +205,8 @@ customer:
     status: Statut
     information: Informations
     comments: Comment
-
+    expiring_contracts: "Contrats à renouveler"
+    upcoming_renewals: "Renouvellements à venir"
     company_information: Information entreprise
     commercial_information: Information commerciale
     commercial: Commercial
