@@ -5,6 +5,11 @@
 {% block body %}
     <div class="pagetitle">
         <h1>{{ 'dashboard.title'|trans }}</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item active">{{ 'dashboard.title'|trans }}</li>
+            </ol>
+        </nav>
     </div>
 
     <section class="section dashboard">
@@ -13,291 +18,30 @@
             <!-- Colonne gauche -->
             <div class="col-lg-8">
                 <div class="row">
+                    {# Card Clients #}
+                    {% include 'home/dashboard/_card_customers.html.twig' %}
 
-                    <!-- Card Clients -->
-                    <div class="col-xxl-4 col-md-6">
-                        <div class="card info-card customers-card">
-                            <div class="filter">
-                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                    <li class="dropdown-header text-start">
-                                        <h6>{{ 'dashboard.actions'|trans }}</h6>
-                                    </li>
-                                    <li><a class="dropdown-item" href="{{ path('app_customer_index') }}">{{ 'dashboard.view_all'|trans }}</a></li>
-                                    <li><a class="dropdown-item" href="{{ path('app_customer_new') }}">{{ 'dashboard.add_new'|trans }}</a></li>
-                                </ul>
-                            </div>
+                    {# Card Chiffre d'affaires #}
+                    {% include 'home/dashboard/_card_revenue.html.twig' %}
 
-                            <div class="card-body">
-                                <h5 class="card-title">{{ 'dashboard.clients'|trans }}</h5>
+                    {# Card Contrats à renouveler #}
+                    {% include 'home/dashboard/_card_contracts.html.twig' %}
 
-                                <div class="d-flex align-items-center">
-                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-people"></i>
-                                    </div>
-                                    <div class="ps-3">
-                                        <h6>{{ totalCustomers }}</h6>
-                                        <span class="text-success small pt-1 fw-bold">{{ wonCustomers }}</span>
-                                        <span class="text-muted small pt-2 ps-1">{{ 'dashboard.client_won'|trans }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card Chiffre d'affaires -->
-                    <div class="col-xxl-4 col-md-6">
-                        <div class="card info-card revenue-card">
-                            <div class="filter">
-                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                    <li class="dropdown-header text-start">
-                                        <h6>{{ 'dashboard.actions'|trans }}</h6>
-                                    </li>
-                                    <li><a class="dropdown-item" href="{{ path('app_customer_index') }}">{{ 'dashboard.view_details'|trans }}</a></li>
-                                </ul>
-                            </div>
-
-                            <div class="card-body">
-                                <h5 class="card-title">{{ 'dashboard.revenue'|trans }}</h5>
-
-                                <div class="d-flex align-items-center">
-                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-currency-euro"></i>
-                                    </div>
-                                    <div class="ps-3">
-                                        <h6>{{ totalWorth|number_format(0, '.', ' ') }} €</h6>
-                                        <span class="text-success small pt-1 fw-bold">{{ monthlyWonCustomers }}</span>
-                                        <span class="text-muted small pt-2 ps-1">{{ 'dashboard.client_monthly'|trans }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card Contrats à renouveler -->
-                    <div class="col-xxl-4 col-xl-12">
-                        <div class="card info-card contract-card">
-                            <div class="filter">
-                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                    <li class="dropdown-header text-start">
-                                        <h6>{{ 'dashboard.actions'|trans }}</h6>
-                                    </li>
-                                    <li><a class="dropdown-item" href="{{ path('app_energy_index') }}">{{ 'dashboard.view_all'|trans }}</a></li>
-                                </ul>
-                            </div>
-
-                            <div class="card-body">
-                                <h5 class="card-title">{{ 'dashboard.expiring_contracts'|trans }}</h5>
-
-                                <div class="d-flex align-items-center">
-                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-calendar-check"></i>
-                                    </div>
-                                    <div class="ps-3">
-                                        <h6>{{ expiringContracts|length }}</h6>
-                                        <span class="text-danger small pt-1 fw-bold">{{ 'dashboard.to_renew'|trans }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Clients récents -->
-                    <div class="col-12">
-                        <div class="card recent-sales overflow-auto">
-                            <div class="filter">
-                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                    <li class="dropdown-header text-start">
-                                        <h6>{{ 'dashboard.actions'|trans }}</h6>
-                                    </li>
-                                    <li><a class="dropdown-item" href="{{ path('app_customer_index') }}">{{ 'dashboard.view_all'|trans }}</a></li>
-                                </ul>
-                            </div>
-
-                            <div class="card-body">
-                                <h5 class="card-title">{{ 'dashboard.recent_clients'|trans }}</h5>
-
-                                <table class="table table-borderless">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col">{{ 'dashboard.name'|trans }}</th>
-                                        <th scope="col">{{ 'dashboard.status'|trans }}</th>
-                                        <th scope="col">{{ 'dashboard.worth'|trans }}</th>
-                                        <th scope="col">{{ 'dashboard.actions'|trans }}</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for customer in recentCustomers %}
-                                        <tr>
-                                            <td>{{ customer.name }}</td>
-                                            <td>
-                                                {% if customer.status == constant('App\\Entity\\ProspectStatus::IN_PROGRESS') %}
-                                                    <span class="badge bg-warning">{{ 'dashboard.in_progress'|trans }}</span>
-                                                {% elseif customer.status == constant('App\\Entity\\ProspectStatus::WON') %}
-                                                    <span class="badge bg-success">{{ 'dashboard.won'|trans }}</span>
-                                                {% elseif customer.status == constant('App\\Entity\\ProspectStatus::LOST') %}
-                                                    <span class="badge bg-danger">{{ 'dashboard.lost'|trans }}</span>
-                                                {% endif %}
-                                            </td>
-                                            <td>{{ customer.worth ? customer.worth ~ ' €' : '-' }}</td>
-                                            <td>
-                                                <a href="{{ path('app_customer_show', {'id': customer.id}) }}" class="btn btn-sm btn-primary">
-                                                    <i class="bi bi-eye"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    {% else %}
-                                        <tr>
-                                            <td colspan="4" class="text-center">{{ 'dashboard.no_recent_clients'|trans }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
+                    {# Clients récents #}
+                    {% include 'home/dashboard/_card_recent_clients.html.twig' %}
                 </div>
             </div>
 
             <!-- Colonne droite -->
             <div class="col-lg-4">
+                {# Contrats expirant bientôt #}
+                {% include 'home/dashboard/_card_expiring_contracts.html.twig' %}
 
-                <!-- Contrats expirant bientôt -->
-                <div class="card">
-                    <div class="filter">
-                        <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                            <li class="dropdown-header text-start">
-                                <h6>{{ 'dashboard.actions'|trans }}</h6>
-                            </li>
-                            <li><a class="dropdown-item" href="{{ path('app_energy_index') }}">{{ 'dashboard.view_all'|trans }}</a></li>
-                        </ul>
-                    </div>
+                {# Documents récents #}
+                {% include 'home/dashboard/_card_recent_documents.html.twig' %}
 
-                    <div class="card-body pb-0">
-                        <h5 class="card-title">{{ 'dashboard.contracts_to_renew'|trans }}</h5>
-
-                        {% for contract in expiringContracts %}
-                            <div class="news">
-                                <div class="post-item clearfix">
-                                    <div class="d-flex align-items-center">
-                                        <i class="bi {{ contract.type.value == 'ELEC' ? 'bi-lightning-charge-fill text-warning' : 'bi-fire text-danger' }} me-3 fs-3"></i>
-                                        <div>
-                                            <h4>
-                                                <a href="{{ path('app_customer_show', {'id': contract.customer.id}) }}">{{ contract.customer.name }}</a>
-                                            </h4>
-                                            <p>{{ contract.type.value }} - {{ contract.contractEnd|date('d/m/Y') }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% else %}
-                            <div class="news">
-                                <div class="post-item clearfix">
-                                    <p class="text-center">{{ 'dashboard.no_expiring_contracts'|trans }}</p>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <!-- Documents récents -->
-                <div class="card">
-                    <div class="filter">
-                        <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                            <li class="dropdown-header text-start">
-                                <h6>{{ 'dashboard.actions'|trans }}</h6>
-                            </li>
-                            <li><a class="dropdown-item" href="{{ path('app_document_index') }}">{{ 'dashboard.view_all'|trans }}</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="card-body pb-0">
-                        <h5 class="card-title">{{ 'dashboard.recent_documents'|trans }}</h5>
-
-                        <div class="activity">
-                            {% for document in recentDocuments %}
-                                <div class="activity-item d-flex">
-                                    <div class="activite-label">{{ loop.index }}</div>
-                                    <i class="bi bi-circle-fill activity-badge {{ cycle(['text-success', 'text-danger', 'text-primary', 'text-info', 'text-warning'], loop.index) }} align-self-start"></i>
-                                    <div class="activity-content">
-                                        <a href="{{ path('app_document_download', {'id': document.id}) }}" target="_blank" class="fw-bold text-dark">
-                                            {{ document.name }}
-                                        </a>
-                                        <span class="text-muted">({{ document.customer.name }})</span>
-                                    </div>
-                                </div>
-                            {% else %}
-                                <div class="activity-item d-flex">
-                                    <div class="activity-content">
-                                        {{ 'dashboard.no_recent_documents'|trans }}
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Carte des statistiques -->
-                <div class="card">
-                    <div class="card-body pb-0">
-                        <h5 class="card-title">{{ 'dashboard.stats'|trans }}</h5>
-
-                        <div class="text-center my-2 d-flex flex-column gap-3">
-                            <div class="d-flex align-items-center border-bottom pb-3">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-primary me-3" style="width: 50px; height: 50px;">
-                                    <i class="bi bi-people text-white"></i>
-                                </div>
-                                <div class="text-start">
-                                    <h6 class="mb-0">{{ totalCustomers }}</h6>
-                                    <span class="text-muted small">{{ 'dashboard.total_clients'|trans }}</span>
-                                </div>
-                            </div>
-
-                            <div class="d-flex align-items-center border-bottom pb-3">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-warning me-3" style="width: 50px; height: 50px;">
-                                    <i class="bi bi-hourglass-split text-white"></i>
-                                </div>
-                                <div class="text-start">
-                                    <h6 class="mb-0">{{ inProgressCustomers }}</h6>
-                                    <span class="text-muted small">{{ 'dashboard.clients_in_progress'|trans }}</span>
-                                </div>
-                            </div>
-
-                            <div class="d-flex align-items-center border-bottom pb-3">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-success me-3" style="width: 50px; height: 50px;">
-                                    <i class="bi bi-check-circle text-white"></i>
-                                </div>
-                                <div class="text-start">
-                                    <h6 class="mb-0">{{ wonCustomers }}</h6>
-                                    <span class="text-muted small">{{ 'dashboard.clients_won'|trans }}</span>
-                                </div>
-                            </div>
-
-                            <div class="d-flex align-items-center">
-                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-danger me-3" style="width: 50px; height: 50px;">
-                                    <i class="bi bi-x-circle text-white"></i>
-                                </div>
-                                <div class="text-start">
-                                    <h6 class="mb-0">{{ lostCustomers }}</h6>
-                                    <span class="text-muted small">{{ 'dashboard.clients_lost'|trans }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center mt-4 mb-3">
-                            <a href="{{ path('app_customer_index') }}" class="btn btn-primary btn-sm">
-                                {{ 'dashboard.view_all_clients'|trans }}
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
+                {# Carte des statistiques #}
+                {% include 'home/dashboard/_card_stats.html.twig' %}
             </div>
         </div>
     </section>

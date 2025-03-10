@@ -1,0 +1,55 @@
+{# Clients récents #}
+<div class="col-12">
+    <div class="card recent-sales overflow-auto">
+        <div class="filter">
+            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                <li class="dropdown-header text-start">
+                    <h6>{{ 'dashboard.actions'|trans }}</h6>
+                </li>
+                <li><a class="dropdown-item" href="{{ path('app_customer_index') }}">{{ 'dashboard.view_all'|trans }}</a></li>
+            </ul>
+        </div>
+
+        <div class="card-body">
+            <h5 class="card-title">{{ 'dashboard.recent_clients'|trans }}</h5>
+
+            <table class="table table-borderless">
+                <thead>
+                <tr>
+                    <th scope="col">{{ 'dashboard.name'|trans }}</th>
+                    <th scope="col">{{ 'dashboard.status'|trans }}</th>
+                    <th scope="col">{{ 'dashboard.worth'|trans }}</th>
+                    <th scope="col">{{ 'dashboard.actions'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for customer in recentCustomers %}
+                    <tr>
+                        <td>{{ customer.name }}</td>
+                        <td>
+                            {% if customer.status == constant('App\\Entity\\ProspectStatus::IN_PROGRESS') %}
+                                <span class="badge bg-warning">{{ 'dashboard.in_progress'|trans }}</span>
+                            {% elseif customer.status == constant('App\\Entity\\ProspectStatus::WON') %}
+                                <span class="badge bg-success">{{ 'dashboard.won'|trans }}</span>
+                            {% elseif customer.status == constant('App\\Entity\\ProspectStatus::LOST') %}
+                                <span class="badge bg-danger">{{ 'dashboard.lost'|trans }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ customer.worth ? customer.worth ~ ' €' : '-' }}</td>
+                        <td>
+                            <a href="{{ path('app_customer_show', {'id': customer.id}) }}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">{{ 'dashboard.no_recent_clients'|trans }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

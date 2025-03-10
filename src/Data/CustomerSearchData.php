@@ -17,4 +17,8 @@ class CustomerSearchData
     public ?ProspectStatus $status = null;
 
     public ?string $contactName = '';
+
+    public int $expirationPeriod  = 3; // en mois
+
+    public bool $expiringContracts = false;
 }

@@ -71,14 +71,11 @@ final readonly class Builder
                 ->setLabel((string)t('menu.document_type'))
                 ->setExtra('icon', 'bi bi-file')
                 ->setExtra('safe_label', true);
-
+            $menu->addChild('menu.template', ['route' => 'app_template_index'])
+                ->setLabel((string)t('menu.template'))
+                ->setExtra('icon', 'bi bi-file-earmark-text')
+                ->setExtra('safe_label', true);
         }
-        $menu->addChild('menu.template', ['route' => 'app_template_index'])
-            ->setLabel((string)t('menu.template'))
-            ->setExtra('icon', 'bi bi-file-earmark-text')
-            ->setExtra('safe_label', true);
-
-
         return $menu;
     }
 }

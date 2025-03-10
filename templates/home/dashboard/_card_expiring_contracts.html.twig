@@ -1,0 +1,38 @@
+{# Contrats expirant bientôt #}
+<div class="card">
+    <div class="filter">
+        <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+            <li class="dropdown-header text-start">
+                <h6>{{ 'dashboard.actions'|trans }}</h6>
+            </li>
+            <li><a class="dropdown-item" href="{{ path('app_customer_index', {'expiringContracts': '1'}) }}">{{ 'dashboard.view_all'|trans }}</a></li>
+        </ul>
+    </div>
+
+    <div class="card-body pb-0">
+        <h5 class="card-title">{{ 'dashboard.contracts_to_renew'|trans }}</h5>
+
+        {% for contract in expiringContracts %}
+            <div class="news">
+                <div class="post-item clearfix">
+                    <div class="d-flex align-items-center">
+                        <i class="bi {{ contract.type.value == 'ELEC' ? 'bi-lightning-charge-fill text-warning' : 'bi-fire text-danger' }} me-3 fs-3"></i>
+                        <div>
+                            <h4>
+                                <a href="{{ path('app_customer_show', {'id': contract.customer.id}) }}">{{ contract.customer.name }}</a>
+                            </h4>
+                            <p>{{ contract.type.value }} - {{ contract.contractEnd|date('d/m/Y') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="news">
+                <div class="post-item clearfix">
+                    <p class="text-center">{{ 'dashboard.no_expiring_contracts'|trans }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
