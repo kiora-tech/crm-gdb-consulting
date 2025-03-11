@@ -35,10 +35,10 @@ class Energy
     #[ORM\Column(nullable: true)]
     private ?int $powerKva = null;
 
-    #[ORM\ManyToOne(targetEntity: Fta::class)]
+    #[ORM\ManyToOne(targetEntity: Fta::class, inversedBy: 'energies')]
     private ?Fta $fta = null;
 
-    #[ORM\Column(type: Types::STRING, enumType: Segment::class, nullable: true)]
+    #[ORM\Column(type: Types::STRING, nullable: true, enumType: Segment::class)]
     private ?Segment $segment = null;
 
     #[ORM\Column(nullable: true)]

@@ -27,7 +27,7 @@ class DocumentType
     /**
      * @var Collection<int, Template>
      */
-    #[ORM\OneToMany(targetEntity: Document::class, mappedBy: 'documentType', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Template::class, mappedBy: 'documentType', orphanRemoval: true)]
     private Collection $templates;
 
     public function __construct()
