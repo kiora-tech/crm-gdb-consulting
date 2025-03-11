@@ -25,7 +25,7 @@ class Energy
     private ?string $code = null;  // PDL pour ELEC, PCE pour GAZ
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Assert\NotBlank]
+    #[Assert\NotBlank]
     private ?string $provider = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
@@ -104,12 +104,12 @@ class Energy
         return $this;
     }
 
-    public function getCode(): ?int
+    public function getCode(): ?string
     {
         return $this->code;
     }
 
-    public function setCode(?int $code): static
+    public function setCode(?string $code): static
     {
         $this->code = $code;
 
