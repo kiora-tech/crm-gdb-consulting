@@ -1,11 +1,33 @@
-<div class="pagetitle" style="display: flex;justify-content:space-between;">
+<div class="pagetitle d-flex justify-content-between align-items-center">
     <h1>{{ customer.name }}</h1>
-    <twig:Button
-            link="{{ path('app_customer_edit', {'id': customer.id}) }}"
-            theme="primary"
-            size="sm"
-            :outline="true"
-            icon="pencil-square"
-            :attributes="{'title': 'action.edit'|trans}"
-    />
+    <div class="d-flex gap-2">
+        <twig:Button
+                link="{{ path('app_customer_index') }}"
+                theme="secondary"
+                size="sm"
+                :outline="true"
+                icon="arrow-left"
+                :attributes="{'title': 'button.back'|trans}"
+        />
+
+        <twig:Button
+                link="{{ path('app_customer_edit', {'id': customer.id}) }}"
+                theme="primary"
+                size="sm"
+                :outline="true"
+                icon="pencil-square"
+                :attributes="{'title': 'action.edit'|trans}"
+        />
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <twig:DeleteButton
+                    deleteRoute="app_customer_delete"
+                    :deleteRouteParams="{'id': customer.id}"
+                    :entityId="customer.id"
+                    size="sm"
+                    :outline="true"
+                    confirmationMessage="delete_confirmation.message"
+            />
+        {% endif %}
+    </div>
 </div>

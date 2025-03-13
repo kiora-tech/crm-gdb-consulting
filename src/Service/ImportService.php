@@ -23,7 +23,7 @@ readonly class ImportService
     /**
      * Initie l'importation d'un fichier Excel
      */
-    public function importFromUpload(UploadedFile $file): string
+    public function importFromUpload(UploadedFile $file, int $userId): string
     {
         // Valider que c'est bien un fichier Excel
         $this->validateExcelFile($file);
@@ -32,17 +32,9 @@ readonly class ImportService
         $filePath = $this->saveUploadedFile($file);
 
         // Démarrer le processus d'importation asynchrone
-        $this->startImportProcess($filePath, $file->getClientOriginalName());
+        $this->startImportProcess($filePath, $userId, $file->getClientOriginalName());
 
         return $filePath;
-    }
-
-    /**
-     * Démarre l'importation à partir d'un chemin de fichier existant
-     */
-    public function importFromExcel(string $filePath, string $originalFilename = ''): void
-    {
-        $this->startImportProcess($filePath, $originalFilename ?: basename($filePath));
     }
 
     /**
@@ -93,9 +85,9 @@ readonly class ImportService
     /**
      * Démarre le processus d'importation via le message bus
      */
-    private function startImportProcess(string $filePath, string $originalFilename): void
+    private function startImportProcess(string $filePath, int $userId, string $originalFilename): void
     {
-        $message = new StartImportMessage($filePath, $originalFilename);
+        $message = new StartImportMessage($filePath, $userId, $originalFilename);
         $this->messageBus->dispatch($message);
 
         $this->logger->info('Processus d\'importation démarré', [

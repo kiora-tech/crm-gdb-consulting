@@ -57,10 +57,10 @@ final readonly class Builder
             ->setExtra('icon', 'bi bi-file-earmark-text')
             ->setExtra('safe_label', true);
 
-        $menu->addChild('menu.document_signature', ['route' => 'app_document_signature_index'])
-            ->setLabel((string)t('menu.document_signature'))
-            ->setExtra('icon', 'bi bi-file-earmark-text')
-            ->setExtra('safe_label', true);
+//        $menu->addChild('menu.document_signature', ['route' => 'app_document_signature_index'])
+//            ->setLabel((string)t('menu.document_signature'))
+//            ->setExtra('icon', 'bi bi-file-earmark-text')
+//            ->setExtra('safe_label', true);
 
         if ($this->security->isGranted('ROLE_ADMIN')) {
             $menu->addChild('menu.user', ['route' => 'app_user_index'])

@@ -9,6 +9,7 @@ use App\Entity\Energy;
 use App\Entity\EnergyType;
 use App\Entity\ProspectOrigin;
 use App\Entity\ProspectStatus;
+use App\Entity\User;
 use App\Message\ProcessExcelBatchMessage;
 use App\Service\ExcelBatchReadFilter;
 use App\Service\ImportErrorTracker;
@@ -30,7 +31,6 @@ class ProcessExcelBatchMessageHandler
     public function __construct(
         private readonly ManagerRegistry $doctrine,
         private readonly LoggerInterface $logger,
-        private readonly Security $security,
         private readonly ImportErrorTracker $errorTracker,
         private readonly ValidatorInterface $validator
     ) {
@@ -43,6 +43,7 @@ class ProcessExcelBatchMessageHandler
         $endRow = $message->getEndRow();
         $headerRow = $message->getHeaderRow();
         $originalFilename = $message->getOriginalFilename() ?? basename($filePath);
+        $userId = $message->getUserId();
 
         $this->logger->info('Processing batch', [
             'file' => $filePath,
@@ -120,7 +121,7 @@ class ProcessExcelBatchMessageHandler
 
             // Traiter les données en petits lots pour éviter les problèmes de mémoire
             foreach (array_chunk($rowsData, self::FLUSH_INTERVAL) as $batch) {
-                $this->processBatch($batch);
+                $this->processBatch($batch, $userId);
             }
 
             // Générer un rapport d'erreurs si des erreurs ont été trouvées
@@ -151,7 +152,7 @@ class ProcessExcelBatchMessageHandler
     /**
      * Traite un lot de lignes avec un EntityManager frais
      */
-    private function processBatch(array $rows): void
+    private function processBatch(array $rows, int $userId): void
     {
 
         try {
@@ -166,7 +167,7 @@ class ProcessExcelBatchMessageHandler
                 }
 
                 try {
-                    $this->processRow($entityManager, $row['rowIndex'], $row['data']);
+                    $this->processRow($entityManager, $row['rowIndex'], $row['data'], $userId);
 
                     // Flush après chaque ligne réussie pour éviter de perdre le travail déjà fait
                     $entityManager->flush();
@@ -217,7 +218,7 @@ class ProcessExcelBatchMessageHandler
         }
     }
 
-    private function processRow(EntityManagerInterface $entityManager, int $rowIndex, array $rowData): void
+    private function processRow(EntityManagerInterface $entityManager, int $rowIndex, array $rowData, int $userId): void
     {
         // Log pour déboguer
         $this->logger->debug('Données de ligne brutes', ['row' => $rowIndex, 'data' => $rowData]);
@@ -233,7 +234,7 @@ class ProcessExcelBatchMessageHandler
 
         try {
             // Créer ou récupérer le client
-            $customer = $this->getOrCreateCustomer($entityManager, $rowData['name'], $rowData['lead_origin'] ?? '');
+            $customer = $this->getOrCreateCustomer($entityManager, $rowData['name'], $rowData['lead_origin'] ?? '', $userId);
 
             // Mise à jour du SIRET si disponible
             if (!empty($rowData['siret'])) {
@@ -374,7 +375,7 @@ class ProcessExcelBatchMessageHandler
         return $mappings[$key] ?? $key;
     }
 
-    private function getOrCreateCustomer(EntityManagerInterface $entityManager, string $name, string $leadOrigin): Customer
+    private function getOrCreateCustomer(EntityManagerInterface $entityManager, string $name, string $leadOrigin, int $userId): Customer
     {
         // Nettoyer le nom pour éviter les problèmes
         $name = trim($name);
@@ -392,9 +393,10 @@ class ProcessExcelBatchMessageHandler
             $customer->setName($name);
             $customer->setLeadOrigin($leadOrigin ?: 'Import Excel');
             $customer->setOrigin(ProspectOrigin::ACQUISITION);
-            $customer->setUser($this->security->getUser());
             $entityManager->persist($customer);
         }
+
+        $customer->setUser($entityManager->getReference(User::class, $userId));
 
         return $customer;
     }
@@ -449,7 +451,7 @@ class ProcessExcelBatchMessageHandler
             $comment->setNote($commentText);
             $entityManager->persist($comment);
         } else {
-            $comment->setNote($comment->getNote() . "\n" . $commentText);
+            $comment->setNote($commentText);
         }
     }
 

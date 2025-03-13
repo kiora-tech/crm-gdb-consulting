@@ -1,3 +1,5 @@
+template:
+    invalid_mime_type: "Type de fichier invalide"
 civility:
     mr: "Monsieur"
     mrs: "Madame"

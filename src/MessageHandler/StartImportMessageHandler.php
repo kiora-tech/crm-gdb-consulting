@@ -64,6 +64,7 @@ class StartImportMessageHandler
                     $filePath,
                     $startRow,
                     $endRow,
+                    $message->getUserId(),
                     $headerRow,
                     $message->getOriginalFilename()
                 );

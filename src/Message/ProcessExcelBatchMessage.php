@@ -15,6 +15,7 @@ readonly class ProcessExcelBatchMessage
         private string $filePath,
         private int    $startRow,
         private int    $endRow,
+        private int    $userId,
         private array  $headerRow = [],
         private ?string $originalFilename = null
     ) {
@@ -33,6 +34,11 @@ readonly class ProcessExcelBatchMessage
     public function getEndRow(): int
     {
         return $this->endRow;
+    }
+
+    public function getUserId(): int
+    {
+        return $this->userId;
     }
 
     public function getHeaderRow(): array

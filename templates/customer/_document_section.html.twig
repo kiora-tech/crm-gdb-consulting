@@ -25,7 +25,7 @@
                         size: 'sm',
                         icon: 'file-earmark-text',
                         outline: true,
-                        label: 'document.generate'|trans,
+                        label: 'document.generate',
                         attributes: {
                             'data-bs-toggle': 'dropdown',
                             'aria-expanded': 'false'
@@ -49,20 +49,6 @@
                     </ul>
                 </div>
             </div>
-        </div>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="card-title mb-0">{{ "documentDoc"|trans }}</h5>
-
-            {{ component('Button', {
-                theme: 'primary',
-                size: 'sm',
-                icon: 'plus',
-                outline: true,
-                attributes: {
-                    'data-action': 'click->dropzone#openModal',
-                    'title': 'document.add'|trans
-                }
-            }) }}
         </div>
 
         {# Ajout d'un wrapper avec data-dropzone-target="documentList" #}

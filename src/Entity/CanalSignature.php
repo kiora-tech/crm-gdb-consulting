@@ -7,7 +7,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 enum CanalSignature: string implements TranslatableInterface
 {
-    case COURIER = 'courier';
+    case COURTIER = 'courtier';
     case FOURNISSEUR = 'fournisseur';
     case GDB = 'gdb';
 

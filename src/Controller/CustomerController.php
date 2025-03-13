@@ -140,7 +140,7 @@ class CustomerController extends AbstractController
             $file = $request->files->get('file');
 
             if ($file && $file->isValid()) {
-                $importService->importFromUpload($file);
+                $importService->importFromUpload($file, $this->getUser()->getId());
 
                 $this->addFlash('success', 'File uploaded and import data started.');
 
@@ -178,7 +178,7 @@ class CustomerController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_customer_index', [], Response::HTTP_SEE_OTHER);
+            return  $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
         }
 
         return $this->render('customer/edit.html.twig', [
@@ -190,6 +190,8 @@ class CustomerController extends AbstractController
     #[Route('/{id}', name: '_delete', methods: ['POST'])]
     public function delete(Request $request, Customer $customer, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Accès refusé. Seuls les administrateurs peuvent supprimer des clients.');
+
         if ($this->isCsrfTokenValid('delete' . $customer->getId(), $request->getPayload()->get('_token'))) {
             $entityManager->remove($customer);
             $entityManager->flush();
