@@ -24,4 +24,5 @@ return [
     Knp\Bundle\PaginatorBundle\KnpPaginatorBundle::class => ['all' => true],
     Symfony\UX\Dropzone\DropzoneBundle::class => ['all' => true],
     Liip\TestFixturesBundle\LiipTestFixturesBundle::class => ['dev' => true, 'test' => true],
+    Sentry\SentryBundle\SentryBundle::class => ['prod' => true],
 ];
