@@ -466,19 +466,19 @@ class ProcessExcelBatchMessageHandler
         }
 
         // Chercher une énergie existante
-        $existingEnergy = null;
+        $energy = null;
         if ($pceCode) {
-            $existingEnergy = $entityManager->getRepository(Energy::class)
+            $energy = $entityManager->getRepository(Energy::class)
                 ->findOneBy(['code' => $pceCode, 'customer' => $customer]);
         } else {
             // Si pas de code, chercher par fournisseur
             if (!empty($rowData['provider'])) {
-                $existingEnergy = $entityManager->getRepository(Energy::class)
+                $energy = $entityManager->getRepository(Energy::class)
                     ->findOneBy(['provider' => $rowData['provider'], 'customer' => $customer]);
             }
         }
 
-        if (!$existingEnergy) {
+        if (!$energy) {
             // Créer une nouvelle énergie
             $energy = new Energy();
 
@@ -503,16 +503,16 @@ class ProcessExcelBatchMessageHandler
         } else {
             // Mettre à jour l'énergie existante
             if (!empty($rowData['provider'])) {
-                $existingEnergy->setProvider($rowData['provider']);
+                $energy->setProvider($rowData['provider']);
             }
         }
 
         if (!empty($rowData['contract_end']) && $rowData['contract_end'] instanceof \DateTime) {
-            $existingEnergy->setContractEnd($rowData['contract_end']);
-        } elseif (!empty($rowData['contract_end']) && !$existingEnergy->getContractEnd()) {
+            $energy->setContractEnd($rowData['contract_end']);
+        } elseif (!empty($rowData['contract_end']) && !$energy->getContractEnd()) {
             $date = $this->parseDate($rowData['contract_end']);
             if ($date) {
-                $existingEnergy->setContractEnd($date);
+                $energy->setContractEnd($date);
             }
         }
     }
