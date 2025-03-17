@@ -29,6 +29,27 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+  supervisor:
+    image: !reset null
+    build:
+      dockerfile: ./docker/php/Dockerfile
+      target: supervisor
+    volumes:
+      - .:/var/www/website
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      - COMPOSER_MEMORY_LIMIT=-1
+      - APP_ENV=dev
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "php", "-v"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   nginx:
     image: !reset null

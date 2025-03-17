@@ -27,6 +27,7 @@ class DocumentType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Document::class,
+            'csrf_protection' => false,
         ]);
     }
 }

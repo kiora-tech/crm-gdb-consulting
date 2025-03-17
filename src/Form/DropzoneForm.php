@@ -37,6 +37,7 @@ class DropzoneForm extends AbstractType
         $resolver->setDefaults([
             'data_class' => Document::class,
             'customer' => null,
+            'csrf_protection' => false,
         ]);
     }
 }

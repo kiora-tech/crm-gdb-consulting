@@ -25,7 +25,7 @@ services:
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/mysql:/var/lib/mysql
 
   migrations:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.7
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.9
     command: sh -c "php bin/console doctrine:migrations:migrate --no-interaction"
     deploy:
       restart_policy:
@@ -40,7 +40,7 @@ services:
       - database
 
   php:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.7
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.9
     depends_on:
       - database
     environment:
@@ -55,7 +55,6 @@ services:
     deploy:
       placement:
         constraints:
-          - node.labels.memory == 2G
           - node.labels.db == true
       restart_policy:
         condition: on-failure
@@ -63,19 +62,22 @@ services:
         max_attempts: 3
 
   nginx:
-    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.8.7
+    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.8.9
     depends_on:
       - php
     ports:
       - "81:80"
     deploy:
+      placement:
+        constraints:
+          - node.labels.db == true
       restart_policy:
         condition: on-failure
         delay: 5s
         max_attempts: 3
 
   supervisor:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.7-supervisor
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.9-supervisor
     volumes:
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/uploads:/var/www/website/public/uploads
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/import:/var/www/website/var/import
@@ -90,7 +92,6 @@ services:
     deploy:
       placement:
         constraints:
-          - node.labels.memory == 2G
           - node.labels.db == true
       restart_policy:
         condition: any
