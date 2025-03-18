@@ -1,4 +1,4 @@
-FROM php:8.4-fpm AS base
+FROM php:8.4.5-fpm AS base
 
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
@@ -28,7 +28,7 @@ RUN echo 'eval "$(/var/www/website/bin/console completion bash )"\n' >> ~/.bashr
 
 RUN install-php-extensions xdebug
 
-FROM registry.kiora.tech/kiora/crm-gdb_php_base:0.3.0 AS prod
+FROM registry.kiora.tech/kiora/crm-gdb_php_base:0.4.1 AS prod
 
 COPY . /var/www/website
 
