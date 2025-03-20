@@ -14,9 +14,6 @@ services:
       retries: 30
       start_period: 10s
     deploy:
-      placement:
-        constraints:
-          - node.labels.db == true
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -30,9 +27,6 @@ services:
     deploy:
       restart_policy:
         condition: none
-      placement:
-        constraints:
-          - node.labels.db == true
     environment:
       - APP_ENV=prod
       - DATABASE_URL=${DATABASE_URL:-mysql://symfony:symfony@database:3306/symfony_docker?serverVersion=8.0.40&charset=utf8mb4}
@@ -53,9 +47,6 @@ services:
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/import:/var/www/website/var/import
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/logs:/var/www/website/var/log
     deploy:
-      placement:
-        constraints:
-          - node.labels.db == true
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -68,9 +59,6 @@ services:
     ports:
       - "${NGINX_PORT:-81}:80"
     deploy:
-      placement:
-        constraints:
-          - node.labels.db == true
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -90,9 +78,6 @@ services:
       - MAILER_DSN=${MAILER_DSN:-smtp://mailer:1025}
       - SYMFONY_TRUSTED_PROXIES=${SYMFONY_TRUSTED_PROXIES:-127.0.0.1}
     deploy:
-      placement:
-        constraints:
-          - node.labels.db == true
       restart_policy:
         condition: any
         delay: 15s
