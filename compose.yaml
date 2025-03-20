@@ -58,6 +58,8 @@ services:
       - php
     ports:
       - "${NGINX_PORT:-81}:80"
+    volumes:
+      - /srv/swarm-data/${ENV:-prod}/crm-gdb/logs:/var/log/nginx
     deploy:
       restart_policy:
         condition: on-failure
