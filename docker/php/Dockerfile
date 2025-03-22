@@ -9,7 +9,8 @@ RUN apt update \
 
 RUN install-php-extensions intl opcache pdo_mysql zip apcu gd xml dom sysvsem xsl fileinfo
 
-COPY ./docker/php/common-php.ini /usr/local/etc/php/conf.d/common-php.ini
+COPY ./docker/php/conf.d/common-php.ini /usr/local/etc/php/conf.d/common-php.ini
+COPY ./docker/php/php-fpm.d/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 WORKDIR /var/www/website
 
@@ -19,7 +20,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 FROM build AS dev
 
-COPY ./docker/php/dev-php.ini /usr/local/etc/php/conf.d/dev-php.ini
+COPY ./docker/php/conf.d/dev-php.ini /usr/local/etc/php/conf.d/dev-php.ini
 
 RUN /usr/local/bin/composer completion bash | tee /etc/bash_completion.d/composer
 
@@ -28,11 +29,11 @@ RUN echo 'eval "$(/var/www/website/bin/console completion bash )"\n' >> ~/.bashr
 
 RUN install-php-extensions xdebug
 
-FROM registry.kiora.tech/kiora/crm-gdb_php_base:0.4.1 AS prod
+FROM registry.kiora.tech/kiora/crm-gdb_php_base:0.4.2 AS prod
 
 COPY . /var/www/website
 
-COPY ./docker/php/prod-php.ini /usr/local/etc/php/conf.d/prod-php.ini
+COPY ./docker/php/conf.d/prod-php.ini /usr/local/etc/php/conf.d/prod-php.ini
 
 RUN chown -R www-data:www-data /var/www/website/var \
     && chmod -R 775 /var/www/website/var
