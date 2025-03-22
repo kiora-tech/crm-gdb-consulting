@@ -20,11 +20,9 @@ services:
         max_attempts: 3
     volumes:
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/mysql:/var/lib/mysql
-    networks:
-      - crm_gbd_network
 
   migrations:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.10
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.11
     command: sh -c "php bin/console doctrine:migrations:migrate --no-interaction"
     deploy:
       restart_policy:
@@ -34,11 +32,9 @@ services:
       - DATABASE_URL=${DATABASE_URL:-mysql://symfony:symfony@database:3306/symfony_docker?serverVersion=8.0.40&charset=utf8mb4}
     depends_on:
       - database
-    networks:
-      - crm_gbd_network
 
   php:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.10
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.11
     depends_on:
       - database
     environment:
@@ -55,11 +51,9 @@ services:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-    networks:
-      - crm_gbd_network
 
   nginx:
-    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.8.10
+    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.8.11
     depends_on:
       - php
     ports:
@@ -71,10 +65,8 @@ services:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-    networks:
-      - crm_gbd_network
   supervisor:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.10-supervisor
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.11-supervisor
     volumes:
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/uploads:/var/www/website/public/uploads
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/import:/var/www/website/var/import
@@ -91,10 +83,3 @@ services:
         condition: any
         delay: 15s
         window: 300s
-    networks:
-      - crm_gbd_network
-
-networks:
-  crm_gbd_network:
-    driver: overlay
-    attachable: true
