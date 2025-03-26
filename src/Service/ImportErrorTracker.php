@@ -173,6 +173,9 @@ class ImportErrorTracker
                         if ($this->headers) {
                             $orderedData = [];
                             foreach ($this->headers as $headerKey) {
+                                if(!is_string($headerKey)) {
+                                    continue; // Ignorer les clés non valides
+                                }
                                 $normalizedKey = $this->normalizeHeaderKey($headerKey);
                                 // Sécuriser l'accès aux données qui pourraient ne pas exister
                                 $orderedData[] = isset($rowData[$normalizedKey]) ? $rowData[$normalizedKey] : null;

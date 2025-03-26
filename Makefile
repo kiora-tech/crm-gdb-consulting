@@ -5,7 +5,7 @@ DOCKER_IMAGE_PREFIX=registry.kiora.tech/kiora/crm-gdb_
 
 update: init vendor update_symfony build test-unit
 
-build_app: ##
+build_app: ## build the app  make build_app TAG=ton_tag
 ifndef TAG
 	$(error Vous devez spécifier une image avec 'make build_app TAG=ton_tag')
 endif

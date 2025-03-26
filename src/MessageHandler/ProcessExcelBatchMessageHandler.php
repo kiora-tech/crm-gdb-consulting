@@ -292,7 +292,7 @@ class ProcessExcelBatchMessageHandler
         $rowData = [];
         foreach ($headerRow as $colIndex => $headerName) {
             // Sauter les cellules vides dans l'en-tête
-            if (empty($headerName)) {
+            if (empty($headerName) || !is_string($headerName)) {
                 continue;
             }
 
