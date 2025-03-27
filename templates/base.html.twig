@@ -16,9 +16,19 @@
 	{% if is_granted('ROLE_USER') %}
 		<aside
 			id="sidebar" class="sidebar" data-turbo-frame="body">
-			{# <turbo-frame id="sidebar-frame" data-turbo-action="advance">#}
 			{{ include('_menu.html.twig') }}
-			{#  </turbo-frame>#}
+			<div class="sidebar-footer mt-auto border-top py-2 px-3">
+				<small class="text-muted">CRM-GDB v{{ app_version|default('dev') }}</small>
+			</div>
 		</aside>
+	{% endif %}
+
+{% endblock %}
+
+{% block sidebar_footer %}
+	{% if is_granted('ROLE_USER') %}
+		<div class="sidebar-footer">
+			<small class="text-muted">CRM-GDB v{{ app_version|default('dev') }}</small>
+		</div>
 	{% endif %}
 {% endblock %}
