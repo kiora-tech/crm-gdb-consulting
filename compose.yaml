@@ -16,6 +16,13 @@ services:
       retries: 30
       start_period: 10s
     deploy:
+      placement:
+        constraints:
+          - node.labels.role == database
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -28,15 +35,21 @@ services:
     networks:
       - crm-gdb-dev_default
     command: sh -c "php bin/console doctrine:migrations:migrate --no-interaction"
-    deploy:
-      restart_policy:
-        condition: none
     environment:
       - APP_ENV=prod
       - DATABASE_URL=${DATABASE_URL:-mysql://symfony:symfony@database:3306/symfony_docker?serverVersion=8.0.40&charset=utf8mb4}
     depends_on:
       - database
-
+    deploy:
+      placement:
+        constraints:
+          - node.labels.memory == medium
+      restart_policy:
+        condition: none
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
   php:
     image: registry.kiora.tech/kiora/crm-gdb_php:0.8.17
     networks:
@@ -53,6 +66,14 @@ services:
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/import:/var/www/website/var/import
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/logs:/var/www/website/var/log
     deploy:
+      replicas: 2
+      placement:
+        constraints:
+          - node.labels.memory == medium
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -69,6 +90,13 @@ services:
     volumes:
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/logs:/var/log/nginx
     deploy:
+      placement:
+        constraints:
+          - node.labels.memory == medium
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -90,6 +118,13 @@ services:
       - MAILER_DSN=${MAILER_DSN:-smtp://mailer:1025}
       - SYMFONY_TRUSTED_PROXIES=${SYMFONY_TRUSTED_PROXIES:-127.0.0.1}
     deploy:
+      placement:
+        constraints:
+          - node.labels.memory == high
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
       restart_policy:
         condition: any
         delay: 15s
