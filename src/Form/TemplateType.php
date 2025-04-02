@@ -45,6 +45,7 @@ class TemplateType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Template::class,
+            'csrf_protection' => false,
         ]);
     }
 }
