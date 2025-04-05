@@ -107,7 +107,6 @@ services:
       - crm-gdb-dev_default
     volumes:
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/uploads:/var/www/website/public/uploads
-      - /srv/swarm-data/${ENV:-prod}/crm-gdb/templates:/var/www/website/public/templates
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/import:/var/www/website/var/import
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/logs:/var/www/website/var/log
     depends_on:
