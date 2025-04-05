@@ -46,7 +46,7 @@ class TemplateController extends BaseCrudController
         Request $request,
         SluggerInterface $slugger,
         LoggerInterface $logger,
-        #[Autowire('%kernel.project_dir%/public/templates')] string $uploadDirectory,
+        #[Autowire('%kernel.project_dir%/public/uploads/templates')] string $uploadDirectory,
     ): Response {
         $template = new Template();
         $form = $this->createForm(TemplateFormType::class, $template);
@@ -89,7 +89,7 @@ class TemplateController extends BaseCrudController
         Template $template,
         SluggerInterface $slugger,
         LoggerInterface $logger,
-        #[Autowire('%kernel.project_dir%/public/templates')] string $uploadDirectory,
+        #[Autowire('%kernel.project_dir%/public/uploads/templates')] string $uploadDirectory,
     ): Response {
         $form = $this->createForm(TemplateFormType::class, $template);
         $form->handleRequest($request);
@@ -105,7 +105,7 @@ class TemplateController extends BaseCrudController
 
                 try {
                     // Supprimer l'ancien fichier
-                    $oldPath = $this->getParameter('kernel.project_dir') . '/public/' . $template->getPath();
+                    $oldPath = $this->getParameter('kernel.project_dir') . '/public/uploads/' . $template->getPath();
                     if (file_exists($oldPath)) {
                         unlink($oldPath);
                     }

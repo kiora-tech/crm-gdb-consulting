@@ -328,3 +328,13 @@ a form {
     display: block;
     margin-top: 0.25rem;
 }
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    min-height: 97vh;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+}

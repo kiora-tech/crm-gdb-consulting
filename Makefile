@@ -2,15 +2,16 @@ include make/*.mk
 .DEFAULT_GOAL:=help
 
 DOCKER_IMAGE_PREFIX=registry.kiora.tech/kiora/crm-gdb_
+APP_VERSION=$(shell grep -oP 'APP_VERSION=\K[0-9\.]+' .env)
 
 update: init vendor update_symfony build test-unit
 
-build_app: ##
+build_app: ## build the app  make build_app TAG=ton_tag
 ifndef TAG
 	$(error Vous devez spécifier une image avec 'make build_app TAG=ton_tag')
 endif
 	rm -rf var/cache/* var/log/* public/uploads/client/prospect/* public/uploads/client/resume/* public/uploads/template/prospect/* public/uploads/template/resume/*
-
+	sed -i 's/APP_VERSION=.*/APP_VERSION=$(TAG)/' .env;
 	${DOCKER_CMD} run --rm \
 		-v $(shell pwd):/app \
 		-w /app \
