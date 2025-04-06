@@ -19,10 +19,6 @@ services:
       placement:
         constraints:
           - node.labels.role == database
-      resources:
-        limits:
-          cpus: '2'
-          memory: 2G
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -46,10 +42,6 @@ services:
           - node.labels.memory == medium
       restart_policy:
         condition: none
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
   php:
     image: registry.kiora.tech/kiora/crm-gdb_php:0.8.17
     networks:
@@ -70,10 +62,6 @@ services:
       placement:
         constraints:
           - node.labels.memory == medium
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1G
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -93,10 +81,6 @@ services:
       placement:
         constraints:
           - node.labels.memory == medium
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -120,10 +104,6 @@ services:
       placement:
         constraints:
           - node.labels.memory == high
-      resources:
-        limits:
-          cpus: '2'
-          memory: 4G
       restart_policy:
         condition: any
         delay: 15s
