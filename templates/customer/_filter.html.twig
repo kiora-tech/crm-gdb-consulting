@@ -19,7 +19,7 @@
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-2">
                 <div class="form-floating">
                     {{ form_widget(form.status, {
                         attr: {
@@ -33,7 +33,7 @@
             </div>
 
             {# Nom du contact #}
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="form-floating">
                     {{ form_widget(form.contactName, {
                         attr: {
@@ -45,6 +45,20 @@
                     {{ form_errors(form.contactName) }}
                 </div>
             </div>
+            {% if is_granted('ROLE_ADMIN') %}
+            <div class="col-md-3">
+                <div class="form-floating">
+                    {{ form_widget(form.user, {
+                        attr: {
+                            class: 'form-control',
+                            id: 'floatingContact'
+                        }
+                    }) }}
+                    <label for="floatingContact">{{ 'user.name'|trans }}</label>
+                    {{ form_errors(form.user) }}
+                </div>
+            </div>
+            {% endif %}
         </div>
 
         {# Contrats expirants #}

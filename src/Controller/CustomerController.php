@@ -13,17 +13,14 @@ use App\Form\DropzoneForm;
 use App\Repository\CustomerRepository;
 use App\Service\ImportService;
 use App\Service\PaginationService;
-use App\Service\Template\TemplateProcessor;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/customer', name: 'app_customer')]
 class CustomerController extends AbstractController

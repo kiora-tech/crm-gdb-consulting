@@ -100,10 +100,16 @@ class CustomerRepository extends ServiceEntityRepository
                 ->setParameter('siret', '%' . $search->siret . '%');
         }
 
-        if($user){
+        if($user) {
             $query = $query
                 ->andWhere('c.user = :user OR c.user IS NULL')
                 ->setParameter('user', $user);
+        }
+
+        if($search->user) {
+            $query = $query
+                ->andWhere('c.user = :user')
+                ->setParameter('user', $search->user);
         }
 
         // Filtre par contrats expirants
