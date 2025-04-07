@@ -61,7 +61,7 @@ services:
       replicas: 2
       placement:
         constraints:
-          - node.labels.memory == medium
+          - node.hostname == raspberrypiprod
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -80,7 +80,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.labels.memory == medium
+          - node.hostname == raspberrypiprod
       restart_policy:
         condition: on-failure
         delay: 5s
