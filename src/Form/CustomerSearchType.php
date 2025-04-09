@@ -4,6 +4,8 @@ namespace App\Form;
 
 use App\Data\CustomerSearchData;
 use App\Entity\ProspectStatus;
+use App\Entity\User;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -45,7 +47,17 @@ class CustomerSearchType extends AbstractType
             ->add('expiringContracts', CheckboxType::class, [
                 'label' => 'customer.expiring_contracts',
                 'required' => false,
-            ]);
+            ])
+            ->add('user', EntityType::class, [
+                'class' => User::class,
+                'choice_label' => function (User $user) {
+                    return (string) $user;
+                },
+                'label' => false,
+                'placeholder' => 'user.select',
+                'required' => false,
+            ])
+        ;
 
     }
 

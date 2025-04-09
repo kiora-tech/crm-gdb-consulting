@@ -111,7 +111,8 @@ user:
     last_name: "Nom de famille"
     email: Email
     roles: Rôles
-create: Ajout
+    select: Sélectionner un utilisateur
+    create: Ajout
 update: Modification
 deletedAt: "Date de suppression"
 reset_password:

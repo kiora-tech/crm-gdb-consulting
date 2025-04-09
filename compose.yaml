@@ -19,10 +19,6 @@ services:
       placement:
         constraints:
           - node.labels.role == database
-      resources:
-        limits:
-          cpus: '2'
-          memory: 2G
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -31,7 +27,7 @@ services:
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/mysql:/var/lib/mysql
 
   migrations:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.17
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.18
     networks:
       - crm-gdb-dev_default
     command: sh -c "php bin/console doctrine:migrations:migrate --no-interaction"
@@ -46,12 +42,8 @@ services:
           - node.labels.memory == medium
       restart_policy:
         condition: none
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
   php:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.17
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.18
     networks:
       - crm-gdb-dev_default
     depends_on:
@@ -70,17 +62,13 @@ services:
       placement:
         constraints:
           - node.labels.memory == medium
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1G
       restart_policy:
         condition: on-failure
         delay: 5s
         max_attempts: 3
 
   nginx:
-    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.8.17
+    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.8.18
     networks:
       - crm-gdb-dev_default
     depends_on:
@@ -93,16 +81,12 @@ services:
       placement:
         constraints:
           - node.labels.memory == medium
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
       restart_policy:
         condition: on-failure
         delay: 5s
         max_attempts: 3
   supervisor:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.17-supervisor
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.8.18-supervisor
     networks:
       - crm-gdb-dev_default
     volumes:
@@ -120,10 +104,6 @@ services:
       placement:
         constraints:
           - node.labels.memory == high
-      resources:
-        limits:
-          cpus: '2'
-          memory: 4G
       restart_policy:
         condition: any
         delay: 15s

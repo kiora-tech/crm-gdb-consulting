@@ -3,6 +3,7 @@
 namespace App\Data;
 
 use App\Entity\ProspectStatus;
+use App\Entity\User;
 
 class CustomerSearchData
 {
@@ -21,4 +22,6 @@ class CustomerSearchData
     public int $expirationPeriod  = 3; // en mois
 
     public bool $expiringContracts = false;
+
+    public ?User $user = null;
 }
