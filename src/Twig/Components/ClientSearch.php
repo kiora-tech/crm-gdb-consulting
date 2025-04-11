@@ -43,12 +43,19 @@ class ClientSearch
                 co.firstName LIKE :query OR
                 co.email LIKE :query OR
                 co.phone LIKE :query OR
-                co.position LIKE :query
+                co.position LIKE :query OR
+                c.siret LIKE :query
                 '
             )
             ->leftJoin('c.energies', 'e')
             ->leftJoin('c.contacts', 'co')
             ->setParameter('query', '%'.$this->query.'%')
+            // Ordre de priorité: SIRET exact > SIRET partiel > autres champs
+            ->orderBy('CASE WHEN c.siret = :exact_siret THEN 0 WHEN c.siret LIKE :start_siret THEN 1 ELSE 2 END', 'ASC')
+            ->setParameter('exact_siret', $this->query)
+            ->setParameter('start_siret', $this->query.'%')
+            // Tri secondaire par nom pour les résultats de même priorité
+            ->addOrderBy('c.name', 'ASC')
             ->getQuery()
             ->getResult();
 

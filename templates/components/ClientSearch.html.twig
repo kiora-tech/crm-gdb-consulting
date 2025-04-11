@@ -9,6 +9,9 @@
                 <li class="list-group-item">
                     <a href="{{ path('app_customer_show', {id: customer.id}) }}">
                         {{ customer }}
+                        {% if customer.siret %}
+                        - {{ customer.siret }}
+                        {% endif %}
                     </a>
                 </li>
             {% endfor %}
