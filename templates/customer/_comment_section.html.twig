@@ -16,14 +16,38 @@
         <div class="frameHeight">
             <div class="flex-grow-1">
                 <div class="d-flex align-items-center">
-                    <div class="ps-3">
+                    <div class="ps-3 w-100">
                         {% for comment in customer.comments %}
-                            <div class="mb-2">
-                                {{ comment.createdAt|date('d/m/Y') }} -
-                                {{ comment.note }}
+                            <div class="mb-3 p-2 border-bottom position-relative">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="text-muted small"
+                                          {% if comment.updatedAt %}
+                                          title="{{ comment.updatedAt|date('d/m/Y H:i') }}"
+                                          {% endif %}
+                                    >{{ comment.createdAt|date('d/m/Y H:i') }}</span>
+                                    <div class="position-absolute end-0 top-0 mt-2 me-2">
+                                        {{ component('Button', {
+                                            theme: 'primary',
+                                            icon: 'pencil-square',
+                                            size: 'sm',
+                                            outline: true,
+                                            attributes: {
+                                                'data-action': 'modal#open',
+                                                'data-modal-url-value': path('app_comment_modal_edit', {
+                                                    'id': comment.id,
+                                                    'customer': customer.id
+                                                }),
+                                                'title': 'action.edit'|trans
+                                            }
+                                        }) }}
+                                    </div>
+                                </div>
+                                <div class="mt-1">
+                                    {{ comment.note|nl2br }}
+                                </div>
                             </div>
                         {% else %}
-                            <p>{{ "comment.no_comment"|trans }}</p>
+                            <p class="text-center text-muted mt-3">{{ "comment.no_comment"|trans }}</p>
                         {% endfor %}
                     </div>
                 </div>
