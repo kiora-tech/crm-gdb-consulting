@@ -246,10 +246,11 @@ abstract class CustomerInfoController extends AbstractController
         if ($customer) {
             $entity->setCustomer($customer);
         }
-        if ($this->isCsrfTokenValid('delete'.$id, $request->getPayload()->getString('_token'))) {
+        //if ($this->isCsrfTokenValid('delete'.$id, $request->getPayload()->getString('_token'))) {
             $this->entityManager->remove($entity);
             $this->entityManager->flush();
-        }
+        //}
+
         if ($customer) {
             return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()], Response::HTTP_SEE_OTHER);
         }

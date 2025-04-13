@@ -101,11 +101,19 @@ class CustomerController extends AbstractController
     }
 
     #[Route('/{id}/status/{status}', name: '_status')]
-    public function updateStatus(Customer $customer, string $status, EntityManagerInterface $entityManager): Response
+    public function updateStatus(Request $request, Customer $customer, string $status, EntityManagerInterface $entityManager): Response
     {
         $newStatus = ProspectStatus::from($status);
         $customer->setStatus($newStatus);
         $entityManager->flush();
+
+        if ($request->isXmlHttpRequest() && $newStatus === ProspectStatus::LOST) {
+            return $this->json([
+                'success' => true,
+                'status' => $status,
+                'customerId' => $customer->getId()
+            ]);
+        }
 
         return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
     }
