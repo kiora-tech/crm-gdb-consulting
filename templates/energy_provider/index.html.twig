@@ -1,0 +1,13 @@
+{# templates/energy_provider/index.html.twig #}
+{% extends 'crud/index.html.twig' %}
+
+{% block extra_buttons %}
+
+    <twig:Button
+            link="{{ path('app_energy_provider_merge_form') }}"
+            theme="warning"
+            :outline="true"
+            icon="shuffle"
+            :attributes="{'title': 'energy_provider.merge.title'|trans}"
+    />
+{% endblock %}

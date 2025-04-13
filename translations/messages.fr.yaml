@@ -35,6 +35,7 @@ menu:
     document: Documents
     contact: Contacts
     document_type: "Type de document"
+    energy_provider: "Fournisseur d'énergie"
 document:
     name: Nom
     type: Type
@@ -354,3 +355,33 @@ template:
         title: Modifier le template
     new:
         title: Nouveau template
+energy_provider:
+    title: Fournisseurs d'énergie
+    show:
+        title: 'Détails du fournisseur d''énergie'
+    name: 'Nom'
+    energy_count: 'Nombre de contrats'
+    details: 'Informations du fournisseur'
+    energies_list: 'Liste des contrats associés'
+    energies: 'contrats'
+    index:
+        title: 'Fournisseurs d''énergie'
+    merge:
+        title: 'Fusionner des fournisseurs'
+        explanation: 'Cette action vous permet de fusionner deux fournisseurs d''énergie. Tous les contrats du fournisseur source seront transférés vers le fournisseur cible, puis le fournisseur source sera supprimé.'
+        source: 'Fournisseur source'
+        target: 'Fournisseur cible'
+        select_source: 'Sélectionnez le fournisseur source'
+        select_target: 'Sélectionnez le fournisseur cible'
+        source_help: 'Ce fournisseur sera supprimé après la fusion'
+        target_help: 'Ce fournisseur recevra tous les contrats du fournisseur source'
+        confirm: 'Êtes-vous sûr de vouloir fusionner ces fournisseurs? Cette action est irréversible.'
+        invalid_selection: 'Sélection de fournisseurs invalide. Veuillez sélectionner deux fournisseurs différents.'
+        provider_not_found: 'Un ou plusieurs fournisseurs sélectionnés n''existent plus.'
+        success: 'Les fournisseurs ont été fusionnés avec succès.'
+        error: 'Une erreur est survenue lors de la fusion des fournisseurs.'
+    delete:
+        error_in_use: 'Ce fournisseur ne peut pas être supprimé car il est associé à un ou plusieurs contrats d''énergie.'
+        success: 'Le fournisseur a été supprimé avec succès.'
+    edit:
+        title: 'Modifier le fournisseur d''énergie'

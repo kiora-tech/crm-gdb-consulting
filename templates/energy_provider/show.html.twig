@@ -1,0 +1,115 @@
+{# templates/energy_provider/show.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'energy_provider.show.title'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="pagetitle d-flex justify-content-between align-items-center">
+        <h1>{{ provider.name }}</h1>
+        <div class="d-flex gap-2">
+            <twig:Button
+                    link="{{ path('app_energy_provider_index') }}"
+                    theme="secondary"
+                    size="sm"
+                    outline="true"
+                    icon="arrow-left"
+                    attributes={'title': 'button.back'|trans}
+            />
+
+            <twig:Button
+                    link="{{ path('app_energy_provider_edit', {'id': provider.id}) }}"
+                    theme="primary"
+                    size="sm"
+                    outline="true"
+                    icon="pencil-square"
+                    attributes={'title': 'action.edit'|trans}
+            />
+
+            {% if is_granted('ROLE_ADMIN') %}
+                <twig:DeleteButton
+                        deleteRoute="app_energy_provider_delete"
+                        deleteRouteParams={'id': provider.id}
+                        entityId=provider.id
+                        size="sm"
+                        outline="true"
+                        confirmationMessage="delete_confirmation.message"
+                />
+            {% endif %}
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ 'energy_provider.details'|trans }}</h5>
+
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <th style="width: 30%">{{ 'energy_provider.name'|trans }}</th>
+                                <td>{{ provider.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ 'energy_provider.energy_count'|trans }}</th>
+                                <td>{{ provider.energies|length }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if provider.energies|length > 0 %}
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ 'energy_provider.energies_list'|trans }}</h5>
+
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr class="table-primary">
+                                        <th>{{ 'customer.name'|trans }}</th>
+                                        <th>{{ 'energy.type'|trans }}</th>
+                                        <th>{{ 'energy.code'|trans }}</th>
+                                        <th>{{ 'energy.contract_end'|trans }}</th>
+                                        <th>{{ 'button.actions'|trans }}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for energy in provider.energies %}
+                                        <tr>
+                                            <td>
+                                                <a href="{{ path('app_customer_show', {'id': energy.customer.id}) }}">
+                                                    {{ energy.customer.name }}
+                                                </a>
+                                            </td>
+                                            <td>{{ energy.type|trans }}</td>
+                                            <td>{{ energy.code }}</td>
+                                            <td>{{ energy.contractEnd ? energy.contractEnd|date('d/m/Y') : "-" }}</td>
+                                            <td>
+                                                <twig:Button
+                                                        link="{{ path('app_energy_edit', {'id': energy.id}) }}"
+                                                        theme="primary"
+                                                        size="sm"
+                                                        outline="true"
+                                                        icon="pencil-square"
+                                                        attributes={'title': 'action.edit'|trans}
+                                                />
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}
