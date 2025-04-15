@@ -59,12 +59,12 @@ final readonly class Builder
                 ->setLabel((string)t('menu.template'))
                 ->setExtra('icon', 'bi bi-file-earmark-medical')
                 ->setExtra('safe_label', true);
-
-            $menu->addChild('menu.energy_provider', ['route' => 'app_energy_provider_index'])
-                ->setLabel((string)t('menu.energy_provider'))
-                ->setExtra('icon', 'bi bi-lightning-charge')
-                ->setExtra('safe_label', true);
         }
+
+        $menu->addChild('menu.energy_provider', ['route' => 'app_energy_provider_index'])
+            ->setLabel((string)t('menu.energy_provider'))
+            ->setExtra('icon', 'bi bi-lightning-charge')
+            ->setExtra('safe_label', true);
         return $menu;
     }
 }

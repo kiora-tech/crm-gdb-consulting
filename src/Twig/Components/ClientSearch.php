@@ -38,7 +38,7 @@ class ClientSearch
                 'c.name LIKE :query OR 
                 e.type LIKE :query OR 
                 e.code LIKE :query OR 
-                e.provider LIKE :query OR
+                p.name LIKE :query OR
                 co.lastName LIKE :query OR
                 co.firstName LIKE :query OR
                 co.email LIKE :query OR
@@ -48,6 +48,7 @@ class ClientSearch
                 '
             )
             ->leftJoin('c.energies', 'e')
+            ->leftJoin('e.energyProvider', 'p')
             ->leftJoin('c.contacts', 'co')
             ->setParameter('query', '%'.$this->query.'%')
             // Ordre de priorité: SIRET exact > SIRET partiel > autres champs
