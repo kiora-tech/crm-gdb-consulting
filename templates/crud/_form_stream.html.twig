@@ -1,0 +1,22 @@
+{# templates/crud/_form_stream.html.twig #}
+<turbo-stream action="replace" target="form-container">
+    <template>
+        <div id="form-container">
+            {% if template_path is defined %}
+                {{ include(template_path, {
+                    'form': form,
+                    'entity': entity,
+                    'customer': customer
+                }) }}
+            {% else %}
+                {{ include('crud/_form.html.twig', {
+                    'form': form,
+                    'entity': entity,
+                    'customer': customer,
+                    'back_route': back_route|default('app_customer_index'),
+                    'delete_route': delete_route|default(null),
+                }) }}
+            {% endif %}
+        </div>
+    </template>
+</turbo-stream>

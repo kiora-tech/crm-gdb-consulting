@@ -4,11 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Customer;
 use App\Entity\Energy;
+use App\Entity\EnergyType;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\UX\Turbo\TurboBundle;
 
 #[Route('/energy', name: 'app_energy')]
 final class EnergyController extends CustomerInfoController
@@ -21,9 +23,7 @@ final class EnergyController extends CustomerInfoController
     protected function getFormVars($form, ?object $entity = null): array
     {
         $vars = parent::getFormVars($form, $entity);
-
         $vars['template_path'] = 'energy/_form.html.twig';
-
         return $vars;
     }
 
@@ -64,6 +64,20 @@ final class EnergyController extends CustomerInfoController
             }
 
             return $this->redirectToRoute($this->getBaseRouteName().'_index');
+        }
+
+        // Gestion des erreurs de formulaire avec Turbo Stream
+        if ($form->isSubmitted() && !$form->isValid()) {
+            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                return $this->render('crud/_form_stream.html.twig', [
+                    'form' => $form,
+                    'entity' => $entity,
+                    'customer' => $customer,
+                    'template_path' => 'energy/_form.html.twig',
+                ], new Response(null, 422, [
+                    'Content-Type' => 'text/vnd.turbo-stream.html'
+                ]));
+            }
         }
 
         return $this->render('crud/form.html.twig', $this->getFormVars($form, $entity));
@@ -119,5 +133,19 @@ final class EnergyController extends CustomerInfoController
         }
 
         return $this->render('crud/_modal_form.html.twig', $vars);
+    }
+
+    /**
+     * Méthode appelée pour préparer l'entité avant la création du formulaire
+     */
+    protected function prepareEntity(Energy $entity, Request $request): void
+    {
+        // Si un type d'énergie est spécifié dans la requête, on l'applique à l'entité
+        if ($request->query->has('energyType')) {
+            $energyType = $request->query->get('energyType');
+            if (in_array($energyType, ['ELEC', 'GAZ']) && (!$entity->getId() || $entity->getType() === null)) {
+                $entity->setType(EnergyType::from($energyType));
+            }
+        }
     }
 }

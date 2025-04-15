@@ -5,9 +5,11 @@ namespace App\Entity;
 use App\Repository\EnergyRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EnergyRepository::class)]
+#[UniqueEntity(['code','type'], message: 'Ce code est déjà utilisé pour ce type d\'énergie')]
 class Energy
 {
     #[ORM\Id]

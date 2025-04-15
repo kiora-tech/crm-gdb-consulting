@@ -10,8 +10,9 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
+    <div id="form-container">
     {% if template_path is defined %}
-    {{ include(template_path) }}
+        {{ include(template_path) }}
     {% else %}
     {{ form_start(form, {'attr': {'data-turbo-frame': '_top'}}) }}
     {{ form_widget(form) }}
@@ -25,4 +26,5 @@
     </div>
     {{ form_end(form) }}
     {% endif %}
+    </div>
 </div>
