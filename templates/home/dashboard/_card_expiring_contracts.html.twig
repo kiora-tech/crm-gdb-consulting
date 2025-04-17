@@ -19,10 +19,10 @@
                     <div class="d-flex align-items-center">
                         <i class="bi {{ contract.type.value == 'ELEC' ? 'bi-lightning-charge-fill text-warning' : 'bi-fire text-danger' }} me-3 fs-3"></i>
                         <div>
-                            <h4>
+                            <span>
                                 <a href="{{ path('app_customer_show', {'id': contract.customer.id}) }}">{{ contract.customer.name }}</a>
-                            </h4>
-                            <p>{{ contract.type.value }} - {{ contract.contractEnd|date('d/m/Y') }}</p>
+                            </span><br />
+                            <span>{{ contract.type.value }} - {{ contract.contractEnd|date('d/m/Y') }}</span>
                         </div>
                     </div>
                 </div>

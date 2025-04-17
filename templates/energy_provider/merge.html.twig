@@ -1,0 +1,66 @@
+{# templates/energy_provider/merge.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'energy_provider.merge.title'|trans }}{% endblock %}
+
+{% block body %}
+<div class="pagetitle d-flex justify-content-between align-items-center">
+    <h1>{{ 'energy_provider.merge.title'|trans }}</h1>
+    <twig:Button
+            link="{{ path('app_energy_provider_index') }}"
+            theme="secondary"
+            label="button.back"
+            icon="arrow-left"
+    />
+</div>
+
+<section class="section">
+    <div class="card">
+        <div class="card-body p-4">
+            <form method="post" action="{{ path('app_energy_provider_merge_process') }}">
+                <div class="mb-4">
+                    <p class="alert alert-info">
+                        {{ 'energy_provider.merge.explanation'|trans }}
+                    </p>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="source_provider" class="form-label">{{ 'energy_provider.merge.source'|trans }}</label>
+                            <select id="source_provider" name="source_provider" class="form-control form-select" required>
+                                <option value="">{{ 'energy_provider.merge.select_source'|trans }}</option>
+                                {% for provider in providers %}
+                                    <option value="{{ provider.id }}">{{ provider.name }} ({{ provider.energies|length }} {{ 'energy_provider.energies'|trans }})</option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">{{ 'energy_provider.merge.source_help'|trans }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="target_provider" class="form-label">{{ 'energy_provider.merge.target'|trans }}</label>
+                            <select id="target_provider" name="target_provider" class="form-control form-select" required>
+                                <option value="">{{ 'energy_provider.merge.select_target'|trans }}</option>
+                                {% for provider in providers %}
+                                    <option value="{{ provider.id }}">{{ provider.name }} ({{ provider.energies|length }} {{ 'energy_provider.energies'|trans }})</option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">{{ 'energy_provider.merge.target_help'|trans }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center mt-4">
+                    <twig:Button
+                            theme="warning"
+                            icon="shuffle"
+                            type="submit"
+                            :attributes='{onclick: "return confirm(\"energy_provider.merge.confirm\")"}'
+                    />
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -5,9 +5,11 @@ namespace App\Entity;
 use App\Repository\EnergyRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EnergyRepository::class)]
+#[UniqueEntity(['code','type'], message: 'Ce code est déjà utilisé pour ce type d\'énergie')]
 class Energy
 {
     #[ORM\Id]
@@ -23,10 +25,6 @@ class Energy
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $code = null;  // PDL pour ELEC, PCE pour GAZ
-
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\NotBlank]
-    private ?string $provider = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $contractEnd = null;
@@ -73,7 +71,11 @@ class Energy
     private ?GasTransportRate $transportRate = null;  // Tarif acheminement
 
     #[ORM\Column(nullable: true)]
-    private ?float $totalConsumption = null;  // Conso TOTAL
+    private ?float $totalConsumption = null;
+
+    #[ORM\ManyToOne(inversedBy: 'energies')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?EnergyProvider $energyProvider = null;  // Conso TOTAL
 
     public function getId(): ?int
     {
@@ -112,18 +114,6 @@ class Energy
     public function setCode(?string $code): static
     {
         $this->code = $code;
-
-        return $this;
-    }
-
-    public function getProvider(): ?string
-    {
-        return $this->provider;
-    }
-
-    public function setProvider(?string $provider): static
-    {
-        $this->provider = $provider;
 
         return $this;
     }
@@ -400,6 +390,18 @@ class Energy
     public function setTotalConsumption(?float $totalConsumption): Energy
     {
         $this->totalConsumption = $totalConsumption;
+        return $this;
+    }
+
+    public function getEnergyProvider(): ?EnergyProvider
+    {
+        return $this->energyProvider;
+    }
+
+    public function setEnergyProvider(?EnergyProvider $energyProvider): static
+    {
+        $this->energyProvider = $energyProvider;
+
         return $this;
     }
 }

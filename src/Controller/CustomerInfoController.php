@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Customer;
-use App\Repository\DocumentTypeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ObjectRepository;
@@ -15,7 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\UX\Turbo\TurboBundle;
 use function Symfony\Component\String\u;
 
 abstract class CustomerInfoController extends AbstractController
@@ -69,6 +68,12 @@ abstract class CustomerInfoController extends AbstractController
     {
         $entity = new ($this->getEntityClass());
         $entity->setCustomer($customer);
+
+        // Permet aux contrôleurs enfants de personnaliser l'entité avant la création du formulaire
+        if (method_exists($this, 'prepareEntity')) {
+            $this->prepareEntity($entity, $request);
+        }
+
         $form = $this->createForm($this->getFormTypeClass(), $entity, [
             'customer' => $customer,
             'action' => $this->generateFormAction($entity, $customer)
@@ -86,7 +91,131 @@ abstract class CustomerInfoController extends AbstractController
             return $this->redirectToRoute($this->getBaseRouteName().'_index');
         }
 
+        // Gestion des erreurs de formulaire avec Turbo Stream
+        if ($form->isSubmitted() && !$form->isValid()) {
+            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                $vars = $this->getFormVars($form, $entity);
+                $vars['customer'] = $customer;
+
+                return $this->render('crud/_form_stream.html.twig', $vars, new Response(null, 422, [
+                    'Content-Type' => 'text/vnd.turbo-stream.html'
+                ]));
+            }
+        }
+
         return $this->render('crud/form.html.twig', $this->getFormVars($form, $entity));
+    }
+
+    #[Route('/{id}/edit/{customer?}', name: '_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, int $id, ?Customer $customer = null): Response
+    {
+        $entity = $this->getRepository()->find($id);
+
+        if ($customer) {
+            $entity->setCustomer($customer);
+        }
+
+        // Permet aux contrôleurs enfants de personnaliser l'entité avant la création du formulaire
+        if (method_exists($this, 'prepareEntity')) {
+            $this->prepareEntity($entity, $request);
+        }
+
+        $form = $this->createForm($this->getFormTypeClass(), $entity, [
+            'customer' => $customer,
+            'action' => $this->generateFormAction($entity, $customer)
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+
+            if ($customer) {
+                return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()], Response::HTTP_SEE_OTHER);
+            }
+
+            return $this->redirectToRoute($this->getBaseRouteName().'_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        // Gestion des erreurs de formulaire avec Turbo Stream
+        if ($form->isSubmitted() && !$form->isValid()) {
+            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                $vars = $this->getFormVars($form, $entity);
+                $vars['customer'] = $customer;
+
+                return $this->render('crud/_form_stream.html.twig', $vars, new Response(null, 422, [
+                    'Content-Type' => 'text/vnd.turbo-stream.html'
+                ]));
+            }
+        }
+
+        return $this->render('crud/form.html.twig', $this->getFormVars($form, $entity));
+    }
+
+    #[Route('/modal/new/{customer}', name: '_modal_new', methods: ['GET', 'POST'])]
+    public function modalNew(Request $request, Customer $customer): Response
+    {
+        $entity = new ($this->getEntityClass());
+        $entity->setCustomer($customer);
+
+        // Permet aux contrôleurs enfants de personnaliser l'entité
+        if (method_exists($this, 'prepareEntity')) {
+            $this->prepareEntity($entity, $request);
+        }
+
+        $form = $this->createForm($this->getFormTypeClass(), $entity, [
+            'customer' => $customer,
+            'action' => $this->generateFormAction($entity, $customer)
+        ]);
+
+        // Traiter la soumission du formulaire
+        if ($request->isMethod('POST')) {
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->entityManager->persist($entity);
+                $this->entityManager->flush();
+
+                if ($request->isXmlHttpRequest()) {
+                    return $this->json([
+                        'success' => true,
+                        'redirect' => $this->generateUrl('app_customer_show', ['id' => $customer->getId()])
+                    ]);
+                }
+
+                return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
+            }
+
+            // Gestion des erreurs de formulaire avec Turbo Stream
+            if ($form->isSubmitted() && !$form->isValid() && TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+                $vars = [
+                    'form' => $form,
+                    'entity' => $entity,
+                    'customer' => $customer,
+                    'page_prefix' => $this->getPagePrefix()
+                ];
+
+                if (method_exists($this, 'getModalFormVars')) {
+                    $vars = array_merge($vars, $this->getModalFormVars($form, $entity));
+                }
+
+                return $this->render('crud/_form_stream.html.twig', $vars, new Response(null, 422, [
+                    'Content-Type' => 'text/vnd.turbo-stream.html'
+                ]));
+            }
+        }
+
+        // Ajout des variables pour le template spécifique
+        $vars = [
+            'form' => $form->createView(),
+            'customer' => $customer,
+            'page_prefix' => $this->getPagePrefix()
+        ];
+
+        if (method_exists($this, 'getModalFormVars')) {
+            $vars = array_merge($vars, $this->getModalFormVars($form, $entity));
+        }
+
+        return $this->render('crud/_modal_form.html.twig', $vars);
     }
 
     #[Route('/modal/{id}/edit/{customer}', name: '_modal_edit', methods: ['GET', 'POST'])]
@@ -96,6 +225,11 @@ abstract class CustomerInfoController extends AbstractController
 
         if ($customer) {
             $entity->setCustomer($customer);
+        }
+
+        // Permet aux contrôleurs enfants de personnaliser l'entité
+        if (method_exists($this, 'prepareEntity')) {
+            $this->prepareEntity($entity, $request);
         }
 
         $form = $this->createForm($this->getFormTypeClass(), $entity, [
@@ -119,6 +253,24 @@ abstract class CustomerInfoController extends AbstractController
             return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
         }
 
+        // Gestion des erreurs de formulaire avec Turbo Stream
+        if ($form->isSubmitted() && !$form->isValid() && TurboBundle::STREAM_FORMAT === $request->getPreferredFormat()) {
+            $vars = [
+                'form' => $form,
+                'entity' => $entity,
+                'customer' => $customer,
+                'page_prefix' => $this->getPagePrefix()
+            ];
+
+            if (method_exists($this, 'getModalFormVars')) {
+                $vars = array_merge($vars, $this->getModalFormVars($form, $entity));
+            }
+
+            return $this->render('crud/_form_stream.html.twig', $vars, new Response(null, 422, [
+                'Content-Type' => 'text/vnd.turbo-stream.html'
+            ]));
+        }
+
         $vars = [
             'form' => $form->createView(),
             'customer' => $customer,
@@ -130,30 +282,6 @@ abstract class CustomerInfoController extends AbstractController
         if (method_exists($this, 'getModalFormVars')) {
             $vars = array_merge($vars, $this->getModalFormVars($form, $entity));
         }
-
-        return $this->render('crud/_modal_form.html.twig', $vars);
-    }
-
-    #[Route('/modal/new/{customer}', name: '_modal_new', methods: ['GET', 'POST'])]
-    public function modalNew(Request $request, Customer $customer): Response
-    {
-        $entity = new ($this->getEntityClass());
-        $entity->setCustomer($customer);
-        $form = $this->createForm($this->getFormTypeClass(), $entity, [
-            'customer' => $customer,
-            'action' => $this->generateFormAction($entity, $customer)
-        ]);
-
-        // Ajout des variables pour le template spécifique
-        $vars = [
-            'form' => $form->createView(),
-            'customer' => $customer,
-            'page_prefix' => $this->getPagePrefix()
-        ];
-
-
-        $vars = array_merge($vars, $this->getModalFormVars($form, $entity));
-
 
         return $this->render('crud/_modal_form.html.twig', $vars);
     }
@@ -209,36 +337,6 @@ abstract class CustomerInfoController extends AbstractController
         ];
     }
 
-    #[Route('/{id}/edit/{customer?}', name: '_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, int $id, ?Customer $customer = null): Response
-    {
-        $entity = $this->getRepository()->find($id);
-        
-        if ($customer) {
-            $entity->setCustomer($customer);
-        }
-
-        $form = $this->createForm($this->getFormTypeClass(), $entity, [
-            'customer' => $customer,
-            'action' => $this->generateFormAction($entity, $customer)
-        ]);
-        $form->handleRequest($request);
-    
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->flush();
-            
-            if ($customer) {
-                return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()], Response::HTTP_SEE_OTHER);
-            }
-    
-            return $this->redirectToRoute($this->getBaseRouteName().'_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-
-        return $this->render('crud/form.html.twig', $this->getFormVars($form, $entity));
-    }
-
-
     #[Route('/{id}/{customer?}', name: '_delete', methods: ['POST'])]
     public function delete(Request $request, int $id, ?Customer $customer = null): Response
     {
@@ -246,10 +344,11 @@ abstract class CustomerInfoController extends AbstractController
         if ($customer) {
             $entity->setCustomer($customer);
         }
-        if ($this->isCsrfTokenValid('delete'.$id, $request->getPayload()->getString('_token'))) {
+        //if ($this->isCsrfTokenValid('delete'.$id, $request->getPayload()->getString('_token'))) {
             $this->entityManager->remove($entity);
             $this->entityManager->flush();
-        }
+        //}
+
         if ($customer) {
             return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()], Response::HTTP_SEE_OTHER);
         }

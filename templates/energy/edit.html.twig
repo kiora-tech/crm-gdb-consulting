@@ -6,8 +6,8 @@
 {% block body %}
 	<h1>Edit Energy</h1>
 	<turbo-frame id="energies">
-		<div class="overlay" id="contact-overlay">
-			<div class="overlay-content">
+		<div class="overlay" id="energies-overlay">
+			<div class="overlay-content" id="form-container">
 				{{ include('energy/_form.html.twig', {'button_label': 'Update'}) }}
 			</div>
 		</div>

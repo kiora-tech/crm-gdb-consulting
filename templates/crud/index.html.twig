@@ -8,13 +8,16 @@
 {% block body %}
     <div class="pagetitle d-flex justify-content-between align-items-center">
         <h1>{{ page_title|trans }}</h1>
-        {% if new_route %}
-        {{ component('Button', {
-            link: path(new_route),
-            theme: 'primary',
-            icon: 'plus'
-        }) }}
-        {% endif %}
+        <div class="d-flex gap-2">
+            {% block extra_buttons %}{% endblock %}
+            {% if new_route %}
+                {{ component('Button', {
+                    link: path(new_route),
+                    theme: 'primary',
+                    icon: 'plus'
+                }) }}
+            {% endif %}
+        </div>
     </div>
 
     <section class="section">

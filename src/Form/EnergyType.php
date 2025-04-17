@@ -21,9 +21,14 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use App\Entity\EnergyType as EnergyTypeEnum;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\Routing\RouterInterface;
 
 class EnergyType extends AbstractType
 {
+    public function __construct(private readonly RouterInterface $router)
+    {
+
+    }
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         // Capture l'entité originale pour une vérification ultérieure
@@ -73,9 +78,15 @@ class EnergyType extends AbstractType
                     'label' => isset($data['type']) && $data['type'] === 'ELEC' ? 'energy.pdl' : 'energy.pce',
                     'required' => false,
                 ])
-                ->add('provider', TextType::class, [
+                ->add('energyProvider', EnergyProviderAutocompleteType::class, [
                     'label' => 'energy.provider',
                     'required' => false,
+                    'attr' => [
+                        'class' => 'form-control',
+                        'placeholder' => 'energy.provider_placeholder',
+                        'data-controller' => 'energy-provider-autocomplete',
+                        'data-energy-provider-autocomplete-url-value' => $this->router->generate('app_energy_provider_new_ajax'),
+                    ],
                 ])
                 ->add('contractEnd', DateType::class, [
                     'widget' => 'single_text',
@@ -105,9 +116,15 @@ class EnergyType extends AbstractType
                     'label' => $energy && $energy->getType() === EnergyTypeEnum::ELEC ? 'energy.pdl' : 'energy.pce',
                     'required' => false,
                 ])
-                ->add('provider', TextType::class, [
+                ->add('energyProvider', EnergyProviderAutocompleteType::class, [
                     'label' => 'energy.provider',
                     'required' => false,
+                    'attr' => [
+                        'class' => 'form-control',
+                        'placeholder' => 'energy.provider_placeholder',
+                        'data-controller' => 'energy-provider-autocomplete',
+                        'data-energy-provider-autocomplete-url-value' => $this->router->generate('app_energy_provider_new_ajax'),
+                    ],
                 ])
                 ->add('contractEnd', DateType::class, [
                     'widget' => 'single_text',

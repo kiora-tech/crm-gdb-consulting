@@ -116,7 +116,7 @@ class Customer
         return $this->leadOrigin;
     }
 
-    public function setLeadOrigin(string $leadOrigin): static
+    public function setLeadOrigin(?string $leadOrigin): static
     {
         $this->leadOrigin = $leadOrigin;
 

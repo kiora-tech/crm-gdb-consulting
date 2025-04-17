@@ -27,7 +27,7 @@
                     <tbody>
                     {% for energy in customer.energies %}
                         <tr>
-                            <td>{{ energy.provider }}</td>
+                            <td>{{ energy.energyProvider }}</td>
                             <td>{{ energy.type|trans }}</td>
                             <td>{{ energy.code }}</td>
                             <td>{{ energy.contractEnd ? energy.contractEnd|date('d/m/Y') : "-" }}</td>

@@ -27,7 +27,14 @@
                     <div class="mt-2">
                         {% if customer.status is same as enum('App\\Entity\\ProspectStatus').IN_PROGRESS or customer.status is null %}
                             <a href="{{ path('app_customer_status', {'id': customer.id, 'status': enum('App\\Entity\\ProspectStatus').WON.value}) }}" class="btn btn-sm btn-success">{{ enum('App\\Entity\\ProspectStatus').WON|trans }}</a>
-                            <a href="{{ path('app_customer_status', {'id': customer.id, 'status': enum('App\\Entity\\ProspectStatus').LOST.value }) }}" class="btn btn-sm btn-danger">{{ enum('App\\Entity\\ProspectStatus').LOST|trans }}</a>
+                            <a href="{{ path('app_customer_status', {'id': customer.id, 'status': enum('App\\Entity\\ProspectStatus').LOST.value }) }}"
+                               class="btn btn-sm btn-danger"
+                               data-controller="customer-status"
+                               data-action="customer-status#changeStatus"
+                               data-status="lost"
+                               data-modal-url-value="{{ path('app_energy_modal_new', {'customer': customer.id}) }}">
+                                {{ enum('App\\Entity\\ProspectStatus').LOST|trans }}
+                            </a>
                         {% else %}
                             <a href="{{ path('app_customer_status', {'id': customer.id, 'status': enum('App\\Entity\\ProspectStatus').IN_PROGRESS.value }) }}" class="btn btn-sm btn-warning">{{ enum('App\\Entity\\ProspectStatus').IN_PROGRESS|trans }}</a>
                         {% endif %}
