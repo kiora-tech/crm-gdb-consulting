@@ -1,38 +1,45 @@
-👋 Hey there!
-=============
+# CRM-GDB
 
-Welcome to our Symfony user management project! We built this project to help you manage users and their associated companies. Plus, we threw in some fun features like password reset and a snazzy menu. 🚀
+![Version](https://img.shields.io/badge/version-0.8.18-blue.svg)
+![PHP](https://img.shields.io/badge/PHP-8.4.5-purple.svg)
+![Symfony](https://img.shields.io/badge/Symfony-7.2-black.svg)
 
-Here's what you'll find in this project:
+Un système de gestion de la relation client (CRM) moderne développé avec Symfony 7.2 et PHP 8.4, conçu spécifiquement pour Kiora et GDB Consulting.
 
-- User management with Symfony's built-in security features
-- Company management with a one-to-many relationship to users
-- Login and password reset functionality using symfonycasts/reset-password-bundle
-- A slick menu using knplabs/knp-menu-bundle
-- Beautiful styling with Tailwind CSS
-We generated all the pages using Symfony's make:crud command, so you know it's good stuff. 😎
+## À propos
 
-To get started with this project, you'll need to run the following commands:
+CRM-GDB est une application web qui permet de gérer efficacement les clients, les contacts, les contrats d'énergie, et les documents. L'application est conçue en suivant les principes DRY (Don't Repeat Yourself), SOLID et KISS (Keep It Simple, Stupid).
 
-```bash
-docker run --rm --interactive --tty --user $(id -u):$(id -g) --volume $PWD:/app composer create-project kiora-tech/user-app my_project
-cd my_project
-make install_symfony
-```
+## Fonctionnalités principales
 
-The make install_symfony command will create the database and load some fixtures to help you get started.
+- **Gestion des clients** : Suivi complet des informations des clients, statuts des prospects et historique
+- **Gestion des contrats d'énergie** : Suivi des contrats d'électricité et de gaz avec dates d'échéance
+- **Gestion documentaire** : Stockage et génération de documents à partir de templates
+- **Gestion des utilisateurs** : Administration des utilisateurs avec différents niveaux d'accès
+- **Tableau de bord** : Vue d'ensemble des indicateurs clés de performance
+- **Import/Export** : Capacité d'importer et d'exporter des données au format Excel
 
-Once the project is installed, you can access it at localhost:8080 if you're using Docker.
+## Architecture technique
 
-Here are some additional make commands that you might find useful:
-* make php
-* make test
-* make
+- **Backend** : Symfony 7.2, PHP 8.4
+- **Frontend** : Bootstrap, Stimulus.js, Turbo
+- **Base de données** : MySQL 8.0
+- **Conteneurisation** : Docker
 
-We hope you enjoy using this project as much as we enjoyed building it! If you have any questions or run into any issues, don't hesitate to reach out. We're always here to help. 🤗
+## Environnement de développement
 
-Happy coding! 💻
+Un environnement Docker complet est fourni pour faciliter le développement et assurer une cohérence entre les environnements.
 
-Note: This README is just a draft, and you can customize it further to fit your project's specific needs and tone. Also, make sure to replace the project name and version number in the command with your actual project name and version.
+## Documentation
 
-Hope this helps! Let me know if you have any other questions. 😊
+Pour une documentation complète, veuillez consulter le [dossier docs](./docs/).
+
+## Licence
+
+Ce logiciel est sous licence propriétaire. Voir le fichier [LICENSE](LICENSE.md) pour plus de détails.
+
+© 2025 Kiora & GDB Consulting. Tous droits réservés.
+
+---
+
+Développé avec ❤️ pour Kiora et GDB Consulting.
