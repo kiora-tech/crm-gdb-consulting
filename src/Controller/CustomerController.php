@@ -121,6 +121,7 @@ class CustomerController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $customer = new Customer();
+        $customer->setUser($this->getUser());
         $form = $this->createForm(CustomerType::class, $customer);
         $form->handleRequest($request);
 

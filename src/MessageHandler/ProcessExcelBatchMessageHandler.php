@@ -32,7 +32,7 @@ class ProcessExcelBatchMessageHandler
         $headerRow = $message->getHeaderRow();
         $userId = $message->getUserId();
 
-        $this->logger->info('Processing SIRET assignment batch', [
+        $this->logger->info('Processing customer assignment batch', [
             'file' => $filePath,
             'start_row' => $startRow,
             'end_row' => $endRow
@@ -58,27 +58,38 @@ class ProcessExcelBatchMessageHandler
                 try {
                     $rowData = $this->getRowData($worksheet, $rowIndex, $headerRow);
 
-                    // Si on a un SIRET, on cherche le client correspondant
+                    // OPTION 1: Recherche par SIRET
                     if (!empty($rowData['siret'])) {
                         $siret = $this->cleanSiret($rowData['siret']);
 
                         if (!empty($siret)) {
-                            $this->assignUserToCustomerBySiret($entityManager, $siret, $user);
-                            $processedCount++;
-
-                            // Flush périodique pour éviter de saturer la mémoire
-                            if ($processedCount % self::FLUSH_INTERVAL === 0) {
-                                $entityManager->flush();
-                                $entityManager->clear();
-
-                                // Récupérer à nouveau la référence à l'utilisateur après clear()
-                                $user = $entityManager->getReference(User::class, $userId);
-
-                                $this->logger->info('Intermediary flush completed', [
-                                    'processed_rows' => $processedCount
-                                ]);
+                            if ($this->assignUserToCustomerBySiret($entityManager, $siret, $user)) {
+                                $processedCount++;
                             }
                         }
+                    }
+                    // OPTION 2: Fallback - Recherche par nom d'établissement si le SIRET est absent
+                    elseif (!empty($rowData['name'])) {
+                        $name = trim($rowData['name']);
+
+                        if (!empty($name)) {
+                            if ($this->assignUserToCustomerByName($entityManager, $name, $user)) {
+                                $processedCount++;
+                            }
+                        }
+                    }
+
+                    // Flush périodique pour éviter de saturer la mémoire
+                    if ($processedCount > 0 && $processedCount % self::FLUSH_INTERVAL === 0) {
+                        $entityManager->flush();
+                        $entityManager->clear();
+
+                        // Récupérer à nouveau la référence à l'utilisateur après clear()
+                        $user = $entityManager->getReference(User::class, $userId);
+
+                        $this->logger->info('Intermediary flush completed', [
+                            'processed_rows' => $processedCount
+                        ]);
                     }
                 } catch (\Exception $e) {
                     $this->logger->error('Error processing row: ' . $e->getMessage(), [
@@ -89,7 +100,7 @@ class ProcessExcelBatchMessageHandler
             }
 
             // Flush final pour les dernières entités
-            if ($processedCount % self::FLUSH_INTERVAL !== 0) {
+            if ($processedCount > 0 && $processedCount % self::FLUSH_INTERVAL !== 0) {
                 $entityManager->flush();
             }
 
@@ -98,7 +109,7 @@ class ProcessExcelBatchMessageHandler
             unset($spreadsheet);
             gc_collect_cycles();
 
-            $this->logger->info('SIRET assignment batch completed', [
+            $this->logger->info('Customer assignment batch completed', [
                 'processed_rows' => $processedCount
             ]);
         } catch (\Exception $e) {
@@ -111,23 +122,51 @@ class ProcessExcelBatchMessageHandler
 
     /**
      * Assigne un utilisateur à un client trouvé par SIRET
+     * @return bool True si un client a été trouvé et assigné
      */
-    private function assignUserToCustomerBySiret(EntityManagerInterface $entityManager, string $siret, User $user): void
+    private function assignUserToCustomerBySiret(EntityManagerInterface $entityManager, string $siret, User $user): bool
     {
         $customer = $entityManager->getRepository(Customer::class)
             ->findOneBy(['siret' => $siret]);
 
         if ($customer) {
             $customer->setUser($user);
-            $this->logger->info('User assigned to customer', [
+            $this->logger->info('User assigned to customer by SIRET', [
                 'siret' => $siret,
                 'user_id' => $user->getId(),
                 'customer_id' => $customer->getId()
             ]);
+            return true;
         } else {
             $this->logger->warning('Customer not found for SIRET', [
                 'siret' => $siret
             ]);
+            return false;
+        }
+    }
+
+    /**
+     * Assigne un utilisateur à un client trouvé par nom d'établissement
+     * @return bool True si un client a été trouvé et assigné
+     */
+    private function assignUserToCustomerByName(EntityManagerInterface $entityManager, string $name, User $user): bool
+    {
+        $customer = $entityManager->getRepository(Customer::class)
+            ->findOneBy(['name' => $name]);
+
+        if ($customer) {
+            $customer->setUser($user);
+            $this->logger->info('User assigned to customer by name', [
+                'name' => $name,
+                'user_id' => $user->getId(),
+                'customer_id' => $customer->getId()
+            ]);
+            return true;
+        } else {
+            $this->logger->warning('Customer not found for name', [
+                'name' => $name
+            ]);
+            return false;
         }
     }
 
@@ -186,12 +225,23 @@ class ProcessExcelBatchMessageHandler
         $key = preg_replace('/\s+/', '_', $key);
         $key = preg_replace('/[^a-z0-9_]/', '', $key);
 
-        // Mapper les noms de colonnes courants, en se concentrant sur le SIRET
+        // Mapper les noms de colonnes courants
         $mappings = [
+            // SIRET mappings
             'siret' => 'siret',
             'numero_siret' => 'siret',
             'siren' => 'siret',
             'numero_siren' => 'siret',
+
+            // NAME mappings
+            'name' => 'name',
+            'nom' => 'name',
+            'raison_sociale' => 'name',
+            'nom_etablissement' => 'name',
+            'etablissement' => 'name',
+            'client' => 'name',
+            'nom_client' => 'name',
+            'nom_de_letablissement' => 'name',
         ];
 
         return $mappings[$key] ?? $key;
