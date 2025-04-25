@@ -315,6 +315,12 @@ Password:	Mot de passe
 Company:	Entreprise
 ASC: ASC
 DESC: DESC
+First name:    Prénom
+Last name:    Nom
+Position:    Poste
+Email:    Email
+Phone:    Téléphone
+Customer:    Client
 
 header:
     profile:

@@ -33,8 +33,8 @@ class ClientSearch
         }
 
         /** @var Customer[] $result */
-        $result = $this->entityManager->getRepository(Customer::class)->createQueryBuilder('c')
-            ->where(
+        $result = $this->entityManager->getRepository(Customer::class)->getQueryBuilder()
+            ->andWhere(
                 'c.name LIKE :query OR 
                 e.type LIKE :query OR 
                 e.code LIKE :query OR 
@@ -47,9 +47,7 @@ class ClientSearch
                 c.siret LIKE :query
                 '
             )
-            ->leftJoin('c.energies', 'e')
             ->leftJoin('e.energyProvider', 'p')
-            ->leftJoin('c.contacts', 'co')
             ->setParameter('query', '%'.$this->query.'%')
             // Ordre de priorité: SIRET exact > SIRET partiel > autres champs
             ->orderBy('CASE WHEN c.siret = :exact_siret THEN 0 WHEN c.siret LIKE :start_siret THEN 1 ELSE 2 END', 'ASC')

@@ -32,12 +32,7 @@ class CustomerController extends AbstractController
         $form = $this->createForm(CustomerSearchType::class, $data);
         $form->handleRequest($request);
 
-        //if user is admin
-        if ($security->isGranted('ROLE_ADMIN')) {
-            $query = $customerRepository->search($data);
-        } else {
-            $query = $customerRepository->search($data, $this->getUser());
-        }
+        $query = $customerRepository->search($data);
 
         $customers = $paginationService->paginate($query, $request);
 
@@ -194,14 +189,12 @@ class CustomerController extends AbstractController
     }
 
     #[Route('/{id}', name: '_delete', methods: ['POST'])]
-    public function delete(Request $request, Customer $customer, EntityManagerInterface $entityManager): Response
+    public function delete(Customer $customer, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Accès refusé. Seuls les administrateurs peuvent supprimer des clients.');
 
-        if ($this->isCsrfTokenValid('delete' . $customer->getId(), $request->getPayload()->get('_token'))) {
-            $entityManager->remove($customer);
-            $entityManager->flush();
-        }
+        $entityManager->remove($customer);
+        $entityManager->flush();
 
         return $this->redirectToRoute('app_customer_index', [], Response::HTTP_SEE_OTHER);
     }
