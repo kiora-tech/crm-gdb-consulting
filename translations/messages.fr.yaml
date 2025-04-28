@@ -120,49 +120,45 @@ dashboard:
     projects_in_hold: "Projets en attente"
 
 common:
-  date_format: "H:i:s d/m/Y"
-  date_day_format: d/m/Y
-loggable:
-  common:
-    action: Action
-    version: Version
-    editor: Éditeur
-    modified_fields: "Champs Modifiés"
-    date: Date
-    actions: Actions
-    view_all: Voir tout
-    add_new: Ajouter
-    view_details: Voir détails
-    client_won: clients gagnés
-    client_monthly: nouveaux clients ce mois
-    to_renew: à renouveler prochainement
-    clients: Clients
-    revenue: Chiffre d'affaires
-    expiring_contracts: Contrats expirants
-    client_distribution: Répartition des clients
-    client_status: Statut des clients
-    in_progress: En cours
-    won: Gagnés
-    lost: Perdus
-    recent_clients: Clients récents
-    name: Nom
-    status: Statut
-    worth: Valeur
-    contracts_to_renew: Contrats à renouveler
-    no_expiring_contracts: Aucun contrat expirant prochainement
-    recent_documents: Documents récents
-    no_recent_documents: Aucun document récent
-    stats: Statistiques
-    total_clients: Total clients
-    clients_in_progress: Clients en cours
-    clients_won: Clients gagnés
-    clients_lost: Clients perdus
-    view_all_clients: Voir tous les clients
-    no_recent_clients: Aucun client récent
-
-common:
     date_format: "H:i:s d/m/Y"
     date_day_format: d/m/Y
+loggable:
+    common:
+        action: Action
+        version: Version
+        editor: Éditeur
+        modified_fields: "Champs Modifiés"
+        date: Date
+        actions: Actions
+        view_all: Voir tout
+        add_new: Ajouter
+        view_details: Voir détails
+        client_won: clients gagnés
+        client_monthly: nouveaux clients ce mois
+        to_renew: à renouveler prochainement
+        clients: Clients
+        revenue: Chiffre d'affaires
+        expiring_contracts: Contrats expirants
+        client_distribution: Répartition des clients
+        client_status: Statut des clients
+        in_progress: En cours
+        won: Gagnés
+        lost: Perdus
+        recent_clients: Clients récents
+        name: Nom
+        status: Statut
+        worth: Valeur
+        contracts_to_renew: Contrats à renouveler
+        no_expiring_contracts: Aucun contrat expirant prochainement
+        recent_documents: Documents récents
+        no_recent_documents: Aucun document récent
+        stats: Statistiques
+        total_clients: Total clients
+        clients_in_progress: Clients en cours
+        clients_won: Clients gagnés
+        clients_lost: Clients perdus
+        view_all_clients: Voir tous les clients
+        no_recent_clients: Aucun client récent
 
 roles: Rôles
 password: "Mot de passe"
@@ -241,9 +237,6 @@ delete_confirmation:
     message: 'Êtes-vous sûr de vouloir supprimer cet élement?'
 
 no_record: "Pas d'enregistrement"
-
-ELEC: Electricité
-GAZ:  Gaz
 
 ELEC: Electricité
 GAZ: Gaz
