@@ -7,9 +7,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 enum ProspectStatus: string implements TranslatableInterface
 {
+    case IN_PROGRESS = 'in_progress';
     case WON = 'won';
     case LOST = 'lost';
-    case IN_PROGRESS = 'in_progress';
+
 
     public static function values(): array
     {

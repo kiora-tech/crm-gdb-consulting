@@ -28,7 +28,8 @@ class ContactType extends AbstractType
             ->add('address');
         if (!$options['customer'] instanceof Customer) {
             $builder->add('customer', EntityType::class, [
-                'class' => Customer::class
+                'class' => Customer::class,
+                'autocomplete' => true,
             ]);
         }
 
