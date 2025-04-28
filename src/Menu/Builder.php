@@ -20,8 +20,7 @@ final readonly class Builder
     public function __construct(
         private FactoryInterface $factory,
         private Security $security,
-    ) {
-    }
+    ) {}
 
     public function createMainMenu(): ItemInterface
     {
@@ -41,9 +40,9 @@ final readonly class Builder
             ->setExtra('icon', 'bi bi-person-vcard')
             ->setExtra('safe_label', true);
 
-        $menu->addChild('menu.document', ['route' => 'app_document_index'])
-            ->setLabel((string)t('menu.document'))
-            ->setExtra('icon', 'bi bi-file-earmark-text')
+        $menu->addChild('menu.project', ['route' => 'app_project_index'])
+            ->setLabel((string)t('menu.project'))
+            ->setExtra('icon', 'bi bi-person-vcard')
             ->setExtra('safe_label', true);
 
         if ($this->security->isGranted('ROLE_ADMIN')) {
@@ -51,20 +50,7 @@ final readonly class Builder
                 ->setLabel((string)t('menu.user'))
                 ->setExtra('icon', 'bi bi-people')
                 ->setExtra('safe_label', true);
-            $menu->addChild('menu.document_type', ['route' => 'app_document_type_index'])
-                ->setLabel((string)t('menu.document_type'))
-                ->setExtra('icon', 'bi bi-file-earmark-ruled')
-                ->setExtra('safe_label', true);
-            $menu->addChild('menu.template', ['route' => 'app_template_index'])
-                ->setLabel((string)t('menu.template'))
-                ->setExtra('icon', 'bi bi-file-earmark-medical')
-                ->setExtra('safe_label', true);
         }
-
-        $menu->addChild('menu.energy_provider', ['route' => 'app_energy_provider_index'])
-            ->setLabel((string)t('menu.energy_provider'))
-            ->setExtra('icon', 'bi bi-lightning-charge')
-            ->setExtra('safe_label', true);
         return $menu;
     }
 }

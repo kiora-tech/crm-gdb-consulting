@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ "contact.list"|trans }}{% endblock %}
+
+{% block body %}
+<div class="pagetitle d-flex justify-content-between align-items-center">
+    <h1>{{ "contact.list"|trans }}</h1>
+    <a href="{{ path('app_contact_new') }}" class="btn btn-primary">
+        <i class="bi bi-plus"></i> {{ "button.add_contact"|trans }}
+    </a>
+</div>
+
+<div class="container mt-4">
+    <!-- Filters Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-funnel"></i> {{ "filters"|trans }}</h5>
+        </div>
+        <div class="card-body">
+            {{ form_start(form, { 'attr': { 'class': 'row g-3' } }) }}
+          
+            <div class="col-md-3">
+                {{ form_row(form.name, { 'label': 'Name'|trans }) }}
+            </div>
+            <div class="col-md-3">
+                {{ form_row(form.email, { 'label': 'Email'|trans }) }}
+            </div>
+            <div class="col-md-3">
+                {{ form_row(form.phone, { 'label': 'Phone'|trans }) }}
+            </div>
+            <div class="col-md-12 text-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> {{ "button.search"|trans }}
+                </button>
+                <a href="{{ path('app_contact_index') }}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> {{ "button.reset"|trans }}
+                </a>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <!-- Contact List Section -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-people-fill"></i> {{ "contact.list"|trans }}</h5>
+        </div>
+        <div class="card-body">
+            {% if contacts|length > 0 %}
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>{{ "contact.name"|trans }}</th>
+                            <th>{{ "contact.email"|trans }}</th>
+                            <th>{{ "contact.phone"|trans }}</th>
+                            <th>{{ "contact.customer"|trans }}</th>
+                            <th class="text-end">{{ "table.actions"|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for contact in contacts %}
+                            <tr>
+                                <td>{{ contact.firstName }} {{ contact.lastName }}</td>
+                                <td>{{ contact.email }}</td>
+                                <td>{{ contact.phone }}</td>
+                                <td>{{ contact.customer ? contact.customer.name : 'N/A' }}</td>
+                                <td class="text-end">
+                                    <a href="{{ path('app_contact_show', { id: contact.id }) }}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-eye"></i> {{ "button.view"|trans }}
+                                    </a>
+                                    <a href="{{ path('app_contact_edit', { id: contact.id }) }}" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-pencil-square"></i> {{ "button.edit"|trans }}
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="text-center mb-0">{{ "table.no_contacts"|trans }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

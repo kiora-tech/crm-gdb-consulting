@@ -36,6 +36,7 @@ menu:
     contact: Contacts
     document_type: "Type de document"
     energy_provider: "Fournisseur d'énergie"
+    project: Projet
 document:
     name: Nom
     type: Type
@@ -45,6 +46,8 @@ document:
     dropzone: Dépot de fichier
     add: Ajout
     generate: Générer
+    tax_declarations: "Déclarations de revenus"
+    invoices: "Factures"
 
 comment:
     no_comment: Pas de commentaire
@@ -68,6 +71,64 @@ login:
 dashboard:
     hello: Bonjour
     title: Tableau de bord
+    actions: Actions
+    view_all: Voir tout
+    add_new: Ajouter
+    view_details: Voir détails
+    client_won: clients gagnés
+    client_monthly: nouveaux clients ce mois
+    to_renew: à renouveler prochainement
+    clients: Clients
+    revenue: Chiffre d'affaires
+    expiring_contracts: Contrats expirants
+    client_distribution: Répartition des clients
+    client_status: Statut des clients
+    in_progress: En cours
+    won: Gagnés
+    lost: Perdus
+    recent_clients: Clients récents
+    name: Nom
+    status: Statut
+    worth: Valeur
+    contracts_to_renew: Contrats à renouveler
+    no_expiring_contracts: Aucun contrat expirant prochainement
+    recent_documents: Documents récents
+    no_recent_documents: Aucun document récent
+    stats: Statistiques
+    total_clients: Total clients
+    clients_in_progress: Clients en cours
+    clients_won: Clients gagnés
+    clients_lost: Clients perdus
+    view_all_clients: Voir tous les clients
+    no_recent_clients: Aucun client récent
+    projects: Projet
+    ongoing_projects: Projets en cours
+    completed_projects: Projets terminés
+    view_projects: Voir tous les projets
+    projects_deadline_soon: "Projets avec échéance imminente"
+    no_upcoming_deadlines: "Aucun projet avec une échéance imminente."
+    view_all_projects: "Voir tous les projets"
+    projects_expired: "Projets expirés"
+    deadline_passed: "Échéance dépassée"
+    deadline_approaching: "Échéance imminente"
+    company: "Entreprise"
+    view: "Voir"
+    project_stats: "Statistiques des projets"
+    projects_completed: "Projets terminés"
+    projects_with_deadlines: "Projets avec des échéances"
+    projects_waiting_validation: "Projets en attente de validation"
+    projects_in_hold: "Projets en attente"
+
+common:
+  date_format: "H:i:s d/m/Y"
+  date_day_format: d/m/Y
+loggable:
+  common:
+    action: Action
+    version: Version
+    editor: Éditeur
+    modified_fields: "Champs Modifiés"
+    date: Date
     actions: Actions
     view_all: Voir tout
     add_new: Ajouter
@@ -128,6 +189,7 @@ reset_password:
         mail_request: "Votre requête de réinitialisation de mot de passe."
 button:
     meet: 'Rendez-vous'
+    add_customer: 'Ajouter un client'
     reset: Réinitialiser
     filter: Filtrer
     restore_version: 'Restaurer cette version'
@@ -183,7 +245,14 @@ no_record: "Pas d'enregistrement"
 ELEC: Electricité
 GAZ:  Gaz
 
+ELEC: Electricité
+GAZ: Gaz
+
 customer:
+
+    company_name: Nom de l'entreprise
+    details: Détails du client
+    projects: Projets
     company_group: "Groupement d'entreprises"
     add_prospect: Ajouter un prospect
     add_energy: Ajouter une énergie
@@ -224,7 +293,8 @@ customer:
         commission: Commission du commercial
         lead_origin: Origine du lead
         name: Nom du client
-
+project:
+    list: Liste des projets
 contact:
     title: Contacts
     name: Nom/Prénom de l'interlocuteur
@@ -279,40 +349,40 @@ action:
 table:
     actions: Actions
     no_data: Aucune donnée disponible
-Action:	Action
-Action a mener:	Action a mener
+Action: Action
+Action a mener: Action a mener
 Worth: Valeur
-Valeur du contrat:	Valeur du contrat
-Commision:	Commission
-Commission du commercial:	Commission du commercial
-Origin:	Origin
-acquisition:	Acquisition
-renouvellement:	Renouvellement
+Valeur du contrat: Valeur du contrat
+Commision: Commission
+Commission du commercial: Commission du commercial
+Origin: Origin
+acquisition: Acquisition
+renouvellement: Renouvellement
 courtier: Courtier
 fournisseur: Fournisseur
 gdb: GDB
-won:	Gagné
-lost:	Perdu
-in_progress:	En cours
-Acquisition:	Acquisition
-Renouvellement:	Renouvellement
-Margin:	Marge
-Company group:	"Groupement d'entreprises"
-Mobile phone:	Téléphone mobile
-Address:	Adresse
-Power:	Puissance
-Segment:	Segment
-C1:	C1
-C2:	C2
-C3:	C3
-C4:	C4
-C5:	C5
-Total:	Total
-Note:	Note
-documentDoc:	Document
-File:	Fichier
-Password:	Mot de passe
-Company:	Entreprise
+won: Gagné
+lost: Perdu
+in_progress: En cours
+Acquisition: Acquisition
+Renouvellement: Renouvellement
+Margin: Marge
+Company group: "Groupement d'entreprises"
+Mobile phone: Téléphone mobile
+Address: Adresse
+Power: Puissance
+Segment: Segment
+C1: C1
+C2: C2
+C3: C3
+C4: C4
+C5: C5
+Total: Total
+Note: Note
+documentDoc: Document
+File: Fichier
+Password: Mot de passe
+Company: Entreprise
 ASC: ASC
 DESC: DESC
 

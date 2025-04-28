@@ -39,11 +39,17 @@ class Customer
     #[ORM\OrderBy(['firstName' => 'ASC'])]
     private Collection $contacts;
 
+    /**
+     * @var Collection<int, Project>
+     */
+    #[ORM\OneToMany(targetEntity: Project::class, mappedBy: 'customer', cascade: ['persist'], orphanRemoval: true)]
+    private Collection $projects;
+
     #[ORM\Column(type: Types::STRING, enumType: ProspectOrigin::class)]
     #[Assert\NotBlank]
     private ProspectOrigin $origin;
 
-    #[ORM\Column(type:  Types::STRING, nullable: true, enumType: ProspectStatus::class)]
+    #[ORM\Column(type: Types::STRING, nullable: true, enumType: ProspectStatus::class)]
     private ?ProspectStatus $status = null;
 
     /**
@@ -88,10 +94,12 @@ class Customer
 
     public function __construct()
     {
+        $this->origin = ProspectOrigin::RENOUVELLEMENT;
         $this->energies = new ArrayCollection();
         $this->contacts = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->documents = new ArrayCollection();
+        $this->projects = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -182,6 +190,36 @@ class Customer
             // set the owning side to null (unless already changed)
             if ($contact->getCustomer() === $this) {
                 $contact->setCustomer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Project>
+     */
+    public function getProjects(): Collection
+    {   
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): static
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects->add($project);
+            $project->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProject(Project $project): static
+    {
+        if ($this->projects->removeElement($project)) {
+            // Set the owning side to null (unless already changed)
+            if ($project->getCustomer() === $this) {
+                $project->setCustomer(null);
             }
         }
 

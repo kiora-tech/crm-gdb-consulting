@@ -2,9 +2,11 @@
 
 namespace App\Repository;
 
+use App\Data\ContactSearchData;
 use App\Entity\Contact;
 use App\Entity\Customer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -25,7 +27,7 @@ class ContactRepository extends ServiceEntityRepository
      * @param ?string $number
      * @return Contact
      */
-    public function findContactByCustomerAndEmailOrNumber(Customer $customer,string $contactName, ?string $email, ?string $number): ?Contact
+    public function findContactByCustomerAndEmailOrNumber(Customer $customer, string $contactName, ?string $email, ?string $number): ?Contact
     {
         if ($customer->getId() === null) {
             return null; // Ou gérez cette situation différemment
@@ -41,5 +43,38 @@ class ContactRepository extends ServiceEntityRepository
             ->setParameter('number', $number);
 
         return $qb->getQuery()->setMaxResults(1)->getOneOrNullResult();
+    }
+
+    public function search(ContactSearchData $search): Query
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->leftJoin('c.customer', 'customer')
+            ->addSelect('customer');
+
+        // Filter by customer
+        if (!empty($search->customer)) {
+            $qb->andWhere('customer.id = :customer')
+                ->setParameter('customer', $search->customer);
+        }
+
+        // Filter by name
+        if (!empty($search->name)) {
+            $qb->andWhere('CONCAT(c.firstName, \' \', c.lastName) LIKE :name')
+                ->setParameter('name', '%' . $search->name . '%');
+        }
+
+        // Filter by email
+        if (!empty($search->email)) {
+            $qb->andWhere('c.email LIKE :email')
+                ->setParameter('email', '%' . $search->email . '%');
+        }
+
+        // Filter by phone
+        if (!empty($search->phone)) {
+            $qb->andWhere('c.phone LIKE :phone OR c.mobilePhone LIKE :phone')
+                ->setParameter('phone', '%' . $search->phone . '%');
+        }
+
+        return $qb->getQuery();
     }
 }

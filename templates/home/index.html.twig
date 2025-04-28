@@ -17,10 +17,10 @@
                     {% include 'home/dashboard/_card_customers.html.twig' %}
 
                     {# Card Chiffre d'affaires #}
-                    {% include 'home/dashboard/_card_revenue.html.twig' %}
+                    {% include 'home/dashboard/_card_project.html.twig' %}
 
                     {# Card Contrats à renouveler #}
-                    {% include 'home/dashboard/_card_contracts.html.twig' %}
+                    {% include 'home/dashboard/_card_project_deadline.html.twig' %}
 
                     {# Clients récents #}
                     {% include 'home/dashboard/_card_recent_clients.html.twig' %}
@@ -30,10 +30,7 @@
             <!-- Colonne droite -->
             <div class="col-lg-4">
                 {# Contrats expirant bientôt #}
-                {% include 'home/dashboard/_card_expiring_contracts.html.twig' %}
-
-                {# Documents récents #}
-                {% include 'home/dashboard/_card_recent_documents.html.twig' %}
+                {% include 'home/dashboard/_card_expiring_projects.html.twig' %}
 
                 {# Carte des statistiques #}
                 {% include 'home/dashboard/_card_stats.html.twig' %}

@@ -1,6 +1,6 @@
-{# Card Clients #}
+{# Card Projects #}
 <div class="col-xxl-4 col-md-6">
-    <div class="card info-card customers-card shadow-sm border-0">
+    <div class="card info-card project-card shadow-sm border-0">
         <!-- Dropdown Actions -->
         <div class="filter">
             <a class="icon text-muted" href="#" data-bs-toggle="dropdown">
@@ -11,13 +11,8 @@
                     <h6 class="mb-0">{{ 'dashboard.actions'|trans }}</h6>
                 </li>
                 <li>
-                    <a class="dropdown-item" href="{{ path('app_customer_index') }}">
-                        <i class="bi bi-eye me-2"></i>{{ 'dashboard.view_all'|trans }}
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="{{ path('app_customer_new') }}">
-                        <i class="bi bi-plus-circle me-2"></i>{{ 'dashboard.add_new'|trans }}
+                    <a class="dropdown-item" href="{{ path('app_project_index') }}">
+                        <i class="bi bi-eye me-2"></i>{{ 'dashboard.view_projects'|trans }}
                     </a>
                 </li>
             </ul>
@@ -26,18 +21,18 @@
         <!-- Card Body -->
         <div class="card-body">
             <h5 class="card-title text-primary fw-bold">
-                <i class="bi bi-people me-2"></i>{{ 'dashboard.clients'|trans }}
+                <i class="bi bi-kanban me-2"></i>{{ 'dashboard.projects'|trans }}
             </h5>
 
             <div class="d-flex align-items-center mt-4">
                 <!-- Icon Section -->
                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-primary text-white">
-                    <i class="bi bi-people fs-4"></i>
+                    <i class="bi bi-kanban fs-4"></i>
                 </div>
 
-                <!-- Client Stats -->
+                <!-- Project Stats -->
                 <div class="ps-4">
-                    <h6 class="mb-1">{{ totalCustomers }}</h6>
+                    <h6 class="mb-1">{{ totalProjects }}</h6>
                    
                 </div>
             </div>

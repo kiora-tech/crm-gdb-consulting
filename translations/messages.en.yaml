@@ -27,6 +27,7 @@ menu:
     client_document: 'Client Document'
     document_signature: 'Document Signature'
     create_account: 'Create an account'
+    projects: Projects
 choice:
     'yes': 'Yes'
     'no': 'No'
@@ -317,7 +318,7 @@ spouse: Spouse
 child: Child
 objectives: Objectives
 comment: Comment
-NoComments:	No comment
+NoComments: No comment
 nonFinancialAssets: 'Non-financial assets'
 financialAsset: 'Financial asset'
 liabilities: Liabilities
@@ -1039,30 +1040,50 @@ client_stats:
     stable: "Stable"
 dashboard:
     hello: "Hello"
+    projects: "Projects"
+    ongoing_projects: "Ongoing Projects"
+    completed_projects: "Completed Projects"
+    view_projects: "View Projects"
+    projects_deadline_soon: "Projects Deadline Soon"
+    no_upcoming_deadlines: "No upcoming project deadlines."
+    view_all_projects: "View All Projects"
+    projects_expired: "Projects with Expired Deadlines"
+    deadline_passed: "Deadline Passed"
+    recent_clients: "Recent Clients"
+    no_recent_clients: "No recent clients."
+    company: "Company"
+    project_stats: "Project Statistics"
+    projects_completed: "Projects Completed"
+    projects_with_deadlines: "Projects with Deadlines"
+    projects_waiting_validation: "Projects Waiting for Validation"
+    projects_in_hold: "Projects In Hold"
+    view: "View"
     history_signature:
         label: "History Signature"
     actuality:
         label: "Actuality"
 siret: siret
 customer:
-  add_prospect: Add a prospect
-  add_energy: Add an energy
-  add_contact: Add a contact
-  add_business_entity: Add a commercial entity
-  prospects: Prospects
-  energies: Energy
-  business_entities: Business entity
-  no_siret: No SIRET found
-  contacts: Contacts
-  contract_energies: Energy contract
-  lead_origin: Lead origin
-  siret_list: Siret List
-  edit: Modify
-  new: New
-  add_siret: Add a Siret
-  siret: Siret Number
-  update_details: Update
-  add_comment: Add a comment
+    add_prospect: Add a prospect
+    add_energy: Add an energy
+    add_contact: Add a contact
+    add_business_entity: Add a commercial entity
+    prospects: Prospects
+    energies: Energy
+    business_entities: Business entity
+    no_siret: No SIRET found
+    contacts: Contacts
+    contract_energies: Energy contract
+    lead_origin: Lead origin
+    siret_list: Siret List
+    edit: Modify
+    new: New
+    add_siret: Add a Siret
+    siret: Siret Number
+    update_details: Update
+    add_comment: Add a comment
+project:
+    list: Project list
 2fa:
     title: "Two-Factor Authentication"
     enter_google_code: "Enter the code from Google Authenticator"
@@ -1093,30 +1114,30 @@ flash_message:
         success: "Your profile has been successfully updated."
         deleted_profile_picture: "Your profile picture has been successfully deleted."
 
-Action:	Action
-Action a mener:	Action to be taken
-Worth: Value  
+Action: Action
+Action a mener: Action to be taken
+Worth: Value
 Valeur du contrat: Contract value
 Commision: Commision
 Commission du commercial: Salesperson commission
-Origin:	Origin
-Partenaire:	Partner  
+Origin: Origin
+Partenaire: Partner
 Salon professionnel: Trade show
 Listing: Listing
-Site web: Website  
-Référencement: SEO  
-Autre: Other  
-Gagné: Won  
-Perdu: Lost  
+Site web: Website
+Référencement: SEO
+Autre: Other
+Gagné: Won
+Perdu: Lost
 En cours: In progress
 Acquisition: Acquisition
-Renouvellement:	Renewal  
-Margin:	Margin
+Renouvellement: Renewal
+Margin: Margin
 Company group: Company group
 Mobile phone: Mobile phone
 Address: Address
-Power:	Power
-Base price:	Base price
+Power: Power
+Base price: Base price
 Peak hour: Peak hour
 Off peak hour: Off peak hour
 Peak hour summer: Peak hour summer
@@ -1125,13 +1146,13 @@ Off peak hour summer: Off peak hour summer
 Peak hour winter: Peak hour winter
 Horo season: Horo season
 Segment: Segment
-C1:	C1
-C2:	C2
-C3:	C3
-C4:	C4
-C5:	C5
-Total:	Total
-customer.comments:	Commentaire
+C1: C1
+C2: C2
+C3: C3
+C4: C4
+C5: C5
+Total: Total
+customer.comments: Commentaire
 Note: Note
 documentDoc: document
 File: File

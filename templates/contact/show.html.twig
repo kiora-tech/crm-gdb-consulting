@@ -1,66 +1,98 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Contact
-{% endblock %}
+{% block title %}{{ contact.firstName }} {{ contact.lastName }}{% endblock %}
 
 {% block body %}
-	<section class="section profile">
-		<div class="row">
-			<div class="col-xl-4">
+<div class="pagetitle">
+    <h1>Contact Details</h1>
+</div>
 
-				<div class="card">
-					<div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-						<h2>{{ entity }}</h2>
-						<h3>{{ entity.position }}</h3>
-						<div class="social-links mt-2">
-							{{ entity.email }}
-						</div>
-					</div>
-				</div>
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <!-- Card Header -->
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-person-lines-fill"></i> {{ contact.firstName }} {{ contact.lastName }}</h5>
+            <a href="{{ path('app_contact_index') }}" class="btn btn-light btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
 
-			</div>
+        <!-- Card Body -->
+        <div class="card-body">
+            <!-- Personal Information Section -->
+            <h6 class="bold mb-3"><i class="bi bi-person-fill"></i> Personal Information</h6>
+            <table class="table table-borderless mb-4">
+                <tbody>
+                    <tr>
+                        <th class="text-muted">First Name</th>
+                        <td>{{ contact.firstName }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">Last Name</th>
+                        <td>{{ contact.lastName }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">Position</th>
+                        <td>{{ contact.position ?: 'N/A' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <hr>
 
-			<div class="col-xl-8">
+            <!-- Contact Information Section -->
+            <h6 class=" mb-3"><i class="bi bi-envelope-fill"></i> Contact Information</h6>
+            <table class="table table-borderless mb-4">
+                <tbody>
+                    <tr>
+                        <th class="text-muted">Email</th>
+                        <td>
+                            {% if contact.email %}
+                                <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">Phone</th>
+                        <td>{{ contact.phone ?: 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-muted">Mobile Phone</th>
+                        <td>{{ contact.mobilePhone ?: 'N/A' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <hr>
 
-				<div class="card">
-					<div class="card-body pt-3">
-						<div class="pagetitle d-flex justify-content-between">
-							<h1>{{ "customer.contacts"|trans }}</h1>
-						</div>
-						<div class="tab-pane fade show active profile-overview" id="profile-overview" role="tabpanel">
-							<h5 class="card-title">Contact</h5>
+            <!-- Address Section -->
+            <h6 class=" mb-3"><i class="bi bi-geo-alt-fill"></i> Address</h6>
+            <p class="text-muted">{{ contact.address ?: 'N/A' }}</p>
+            <hr>
 
-							<p>Téléphone fixe : {{ entity.phone }}</p>
-							<p>Téléphone mobile :{{ entity.mobilePhone }}</p>
-							<p>Adresse : {{ entity.address }}</p>
-						</div>
+            <!-- Customer Section -->
+            <h6 class=" mb-3"><i class="bi bi-building"></i> Customer</h6>
+            <p class="text-muted">
+                {% if contact.customer %}
+                    <a href="{{ path('app_customer_show', { id: contact.customer.id }) }}">{{ contact.customer.name }}</a>
+                {% else %}
+                    N/A
+                {% endif %}
+            </p>
+        </div>
 
-					</div>
-
-				</div>
-
-			</div>
-				<div class="divFlexs">
-					<twig:Button
-							link="{{ path('app_contact_index') }}"
-							theme="secondary"
-							label="button.back"
-							icon="arrow-left"
-					/>
-					<twig:Button
-							link="{{ path('app_contact_edit', {'id': entity.id}) }}"
-							theme="primary"
-							icon="pencil-square"
-							label="button.edit"
-					/>
-					{{ component('DeleteButton', {
-						deleteRoute: "app_contact_delete",
-						deleteRouteParams: {id: entity.id},
-						entityId: entity.id,
-						showLabel: true
-					}) }}
-
-
-		</div>
-	</div>
-</section>{% endblock %}
+        <!-- Card Footer -->
+        <div class="card-footer text-end">
+            <a href="{{ path('app_contact_edit', { id: contact.id }) }}" class="btn btn-primary btn-sm">
+                <i class="bi bi-pencil-square"></i> Edit
+            </a>
+            {{ component('DeleteButton', {
+                deleteRoute: 'app_contact_delete',
+                deleteRouteParams: { id: contact.id },
+                entityId: contact.id,
+                showLabel: true
+            }) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,41 +1,123 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-	{{ "menu.customer"|trans }}
+    {{ "menu.customer"|trans }}
 {% endblock %}
 
 {% block body %}
-<div data-controller="modal customer-status">
-	{% include 'customer/_header.html.twig' with {'customer': customer} %}
+<div>
+    <section class="section dashboard">
+        <div class="row">
+            <!-- Customer Details Section -->
+            <div class="col-lg-12">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">{{ "customer.details"|trans }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <th>{{ "customer.name"|trans }}</th>
+                                    <td>{{ customer.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>{{ "customer.company_name"|trans }}</th>
+                                    <td>{{ customer.companyGroup }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-	<section class="section dashboard">
-		<div class="row">
-			<div class="col-lg-8">
-				<div class="row">
-					{% include 'customer/_information_card.html.twig' with {'customer': customer} %}
-					{% include 'customer/_energy_section.html.twig' with {'customer': customer} %}
-					{% include 'customer/_contact_section.html.twig' with {'customer': customer} %}
-				</div>
-			</div>
+            <!-- Customer Contacts Section -->
+            <div class="col-lg-12">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ "customer.contacts"|trans }}</h5>
+                        <a href="{{ path('app_contact_new', { customerId: customer.id }) }}" class="btn btn-sm btn-light">
+                            <i class="bi bi-plus"></i> {{ "button.add_contact"|trans }}
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        {% if customer.contacts|length > 0 %}
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>{{ "contact.name"|trans }}</th>
+                                        <th>{{ "contact.email"|trans }}</th>
+                                        <th>{{ "contact.phone"|trans }}</th>
+                                        <th>{{ "contact.position"|trans }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for contact in customer.contacts %}
+                                        <tr>
+                                            <td>{{ contact.firstName }} {{ contact.lastName }}</td>
+                                            <td>{{ contact.email }}</td>
+                                            <td>{{ contact.phone }}</td>
+                                            <td>{{ contact.position }}</td>
+                                           
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p class="text-center mb-0">{{ "table.no_contacts"|trans }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
 
-			<div class="col-lg-4">
-				{% include 'customer/_comment_section.html.twig' with {'customer': customer} %}
-				{% include 'customer/_document_section.html.twig' with {'customer': customer, 'formDocument': formDocument} %}
-			</div>
-		</div>
-	</section>
-
-	<div class="modal fade"
-		 id="modal"
-		 tabindex="-1"
-		 data-modal-target="modal">
-		<div class="modal-dialog">
-			<div class="modal-content" data-modal-target="content">
-				<div class="modal-loading">
-					{{ 'modal.loading'|trans }}
-				</div>
-			</div>
-		</div>
-	</div>
+            <!-- Customer Projects Section -->
+            <div class="col-lg-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ "customer.projects"|trans }}</h5>
+						<a href="{{ path('app_project_new', { customerId: customer.id }) }}" class="btn btn-sm btn-light">
+							<i class="bi bi-plus"></i> {{ "button.add_project"|trans }}
+						</a>
+                    </div>
+                    <div class="card-body">
+                        {% if customer.projects|length > 0 %}
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>{{ "project.name"|trans }}</th>
+                                        <th>{{ "project.status"|trans }}</th>
+                                        <th>{{ "project.start_date"|trans }}</th>
+                                        <th>{{ "project.deadline"|trans }}</th>
+                                        <th>{{ "project.budget"|trans }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for project in customer.projects %}
+                                        <tr>
+                                            <td>{{ project.name }}</td>
+                                            <td>
+                                                <span class="badge 
+                                                    {% if project.status == 'in_progress' %} bg-warning text-dark
+                                                    {% elseif project.status == 'completed' %} bg-success
+                                                    {% elseif project.status == 'on_hold' %} bg-secondary
+                                                    {% else %} bg-info {% endif %}">
+                                                    {{ project.status|capitalize }}
+                                                </span>
+                                            </td>
+                                            <td>{{ project.startDate ? project.startDate|date('Y-m-d') : 'N/A' }}</td>
+                                            <td>{{ project.deadline ? project.deadline|date('Y-m-d') : 'N/A' }}</td>
+                                            <td>{{ project.budget ? '$' ~ project.budget|number_format(2) : 'N/A' }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p class="text-center mb-0">{{ "table.no_projects"|trans }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 {% endblock %}
