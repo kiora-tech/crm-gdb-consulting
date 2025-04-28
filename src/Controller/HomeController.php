@@ -7,6 +7,7 @@ use App\Entity\Document;
 use App\Entity\Energy;
 use App\Entity\ProspectStatus;
 use App\Entity\User;
+use App\Repository\ProjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class HomeController extends AbstractController
 {
     #[Route('/', name: 'homepage')]
-    public function index(EntityManagerInterface $entityManager): Response
+    public function index(EntityManagerInterface $entityManager, ProjectRepository $projectRepository): Response
     {
         // Récupérer les données pour le tableau de bord
         /** @var User $user */
@@ -102,15 +103,24 @@ class HomeController extends AbstractController
             ->getQuery()
             ->getSingleScalarResult() ?? 0;
 
-
+        // Clients gagnés ce mois-ci
         $monthlyWonCustomers = $customerRepo->createQueryBuilder('c')
             ->select('COUNT(c.id)')
             ->where('c.status = :status')
-            // Dans un vrai système, vous auriez une date de modification à vérifier ici
             ->setParameter('status', ProspectStatus::WON)
             ->getQuery()
             ->getSingleScalarResult();
 
+        // Projets
+        $totalProjects = $projectRepository->count([]);
+        $ongoingProjects = $projectRepository->count(['status' => 'in_progress']);
+        $completedProjects = $projectRepository->count(['status' => 'completed']);
+        $upcomingDeadlineProjects = $projectRepository->findUpcomingDeadlines();
+        $expiredProjects = $projectRepository->findExpiredProjects();
+        $completedProjects = $projectRepository->count(['status' => 'completed']);
+        $upcomingDeadlineProjects = $projectRepository->findUpcomingDeadlines();
+        $projectsWaitingForValidation = $projectRepository->count(['status' => 'waiting_for_validation']);
+        $inHoldProjects = $projectRepository->count(['status' => 'on_hold']);
         // Retourner les données au template
         return $this->render('home/index.html.twig', [
             'totalCustomers' => $totalCustomers,
@@ -122,6 +132,15 @@ class HomeController extends AbstractController
             'recentDocuments' => $recentDocuments,
             'totalWorth' => $totalWorth,
             'monthlyWonCustomers' => $monthlyWonCustomers,
+            'totalProjects' => $totalProjects,
+            'ongoingProjects' => $ongoingProjects,
+            'completedProjects' => $completedProjects,
+            'upcomingDeadlineProjects' => $upcomingDeadlineProjects,
+            'expiredProjects' => $expiredProjects,
+            'completedProjects' => $completedProjects,
+            'upcomingDeadlineProjects' => count($upcomingDeadlineProjects),
+            'projectsWaitingForValidation' => $projectsWaitingForValidation,
+            'inHoldProjects' => $inHoldProjects,
         ]);
     }
 }

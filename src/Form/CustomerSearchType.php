@@ -27,15 +27,6 @@ class CustomerSearchType extends AbstractType
                     'placeholder' => 'customer.name'
                 ]
             ])
-            ->add(
-                'status',
-                EnumType::class,
-                [
-                    'label' => false,
-                    'required' => false,
-                    'class' => ProspectStatus::class,
-                ]
-            )
             ->add('contactName', TextType::class, [
                 'label' => false,
                 'required' => false,
@@ -43,22 +34,7 @@ class CustomerSearchType extends AbstractType
                 'attr' => [
                     'placeholder' => 'contact.name'
                 ]
-            ])
-            ->add('expiringContracts', CheckboxType::class, [
-                'label' => 'customer.expiring_contracts',
-                'required' => false,
-            ])
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => function (User $user) {
-                    return (string) $user;
-                },
-                'label' => false,
-                'placeholder' => 'user.select',
-                'required' => false,
-            ])
-        ;
-
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

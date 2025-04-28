@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Fta;
-use App\Form\FTAType;
+use App\Form\FtaType;
 use App\Repository\FTARepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/fta')]
-final class FTAController extends AbstractController
+final class FtaController extends AbstractController
 {
     #[Route(name: 'app_fta_index', methods: ['GET'])]
     public function index(FTARepository $fTARepository): Response
@@ -26,7 +26,7 @@ final class FTAController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $fta = new Fta();
-        $form = $this->createForm(FTAType::class, $fta);
+        $form = $this->createForm(FtaType::class, $fta);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -53,7 +53,7 @@ final class FTAController extends AbstractController
     #[Route('/{id}/edit', name: 'app_fta_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Fta $fta, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(FTAType::class, $fta);
+        $form = $this->createForm(FtaType::class, $fta);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

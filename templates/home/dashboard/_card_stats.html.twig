@@ -1,53 +1,60 @@
-{# Carte des statistiques #}
-<div class="card">
+{# Project Statistics Card #}
+<div class="card shadow-sm border-0">
     <div class="card-body pb-0">
-        <h5 class="card-title">{{ 'dashboard.stats'|trans }}</h5>
+        <h5 class="card-title text-primary fw-bold">
+            <i class="bi bi-bar-chart me-2"></i>{{ 'dashboard.project_stats'|trans }}
+        </h5>
 
         <div class="text-center my-2 d-flex flex-column gap-3">
-            <div class="d-flex align-items-center border-bottom pb-3">
-                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-primary me-3" style="width: 50px; height: 50px;">
-                    <i class="bi bi-people text-white"></i>
-                </div>
-                <div class="text-start">
-                    <h6 class="mb-0">{{ totalCustomers }}</h6>
-                    <span class="text-muted small">{{ 'dashboard.total_clients'|trans }}</span>
-                </div>
-            </div>
-
-            <div class="d-flex align-items-center border-bottom pb-3">
-                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-warning me-3" style="width: 50px; height: 50px;">
-                    <i class="bi bi-hourglass-split text-white"></i>
-                </div>
-                <div class="text-start">
-                    <h6 class="mb-0">{{ inProgressCustomers }}</h6>
-                    <span class="text-muted small">{{ 'dashboard.clients_in_progress'|trans }}</span>
-                </div>
-            </div>
-
+            <!-- Completed Projects -->
             <div class="d-flex align-items-center border-bottom pb-3">
                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-success me-3" style="width: 50px; height: 50px;">
                     <i class="bi bi-check-circle text-white"></i>
                 </div>
                 <div class="text-start">
-                    <h6 class="mb-0">{{ wonCustomers }}</h6>
-                    <span class="text-muted small">{{ 'dashboard.clients_won'|trans }}</span>
+                    <h6 class="mb-0">{{ completedProjects }}</h6>
+                    <span class="text-muted small">{{ 'dashboard.projects_completed'|trans }}</span>
                 </div>
             </div>
 
-            <div class="d-flex align-items-center">
-                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-danger me-3" style="width: 50px; height: 50px;">
-                    <i class="bi bi-x-circle text-white"></i>
+            <!-- Projects with Deadlines -->
+            <div class="d-flex align-items-center border-bottom pb-3">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-warning me-3" style="width: 50px; height: 50px;">
+                    <i class="bi bi-calendar-event text-white"></i>
                 </div>
                 <div class="text-start">
-                    <h6 class="mb-0">{{ lostCustomers }}</h6>
-                    <span class="text-muted small">{{ 'dashboard.clients_lost'|trans }}</span>
+                    <h6 class="mb-0">{{ upcomingDeadlineProjects }}</h6>
+                    <span class="text-muted small">{{ 'dashboard.projects_with_deadlines'|trans }}</span>
+                </div>
+            </div>
+
+            <!-- Projects Waiting for Validation -->
+            <div class="d-flex align-items-center border-bottom pb-3">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-info me-3" style="width: 50px; height: 50px;">
+                    <i class="bi bi-hourglass-split text-white"></i>
+                </div>
+                <div class="text-start">
+                    <h6 class="mb-0">{{ projectsWaitingForValidation }}</h6>
+                    <span class="text-muted small">{{ 'dashboard.projects_waiting_validation'|trans }}</span>
+                </div>
+            </div>
+
+            <!-- In-Hold Projects -->
+            <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-secondary me-3" style="width: 50px; height: 50px;">
+                    <i class="bi bi-pause-circle text-white"></i>
+                </div>
+                <div class="text-start">
+                    <h6 class="mb-0">{{ inHoldProjects }}</h6>
+                    <span class="text-muted small">{{ 'dashboard.projects_in_hold'|trans }}</span>
                 </div>
             </div>
         </div>
 
+        <!-- View All Projects Button -->
         <div class="text-center mt-4 mb-3">
-            <a href="{{ path('app_customer_index') }}" class="btn btn-primary btn-sm">
-                {{ 'dashboard.view_all_clients'|trans }}
+            <a href="{{ path('app_project_index') }}" class="btn btn-primary btn-sm">
+                {{ 'dashboard.view_all_projects'|trans }}
             </a>
         </div>
     </div>

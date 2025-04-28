@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Contact{% endblock %}
+
+{% block body %}
+<div class="pagetitle">
+    <h1>Edit Contact</h1>
+</div>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-pencil-square"></i> Edit Contact</h5>
+            <a href="{{ path('app_contact_index') }}" class="btn btn-light btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+        <div class="card-body">
+            {{ form_start(form, { 'attr': { 'class': 'needs-validation', 'novalidate': 'novalidate' } }) }}
+            
+            <!-- Personal Information Section -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.firstName, null, { 'label_attr': { 'class': 'form-label fw-bold' } }) }}
+                    {{ form_widget(form.firstName, { 'attr': { 'class': 'form-control', 'placeholder': 'Enter first name' } }) }}
+                    {{ form_errors(form.firstName) }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.lastName, null, { 'label_attr': { 'class': 'form-label fw-bold' } }) }}
+                    {{ form_widget(form.lastName, { 'attr': { 'class': 'form-control', 'placeholder': 'Enter last name' } }) }}
+                    {{ form_errors(form.lastName) }}
+                </div>
+            </div>
+
+            <!-- Contact Information Section -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.email, null, { 'label_attr': { 'class': 'form-label fw-bold' } }) }}
+                    {{ form_widget(form.email, { 'attr': { 'class': 'form-control', 'placeholder': 'Enter email address' } }) }}
+                    {{ form_errors(form.email) }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.phone, null, { 'label_attr': { 'class': 'form-label fw-bold' } }) }}
+                    {{ form_widget(form.phone, { 'attr': { 'class': 'form-control', 'placeholder': 'Enter phone number' } }) }}
+                    {{ form_errors(form.phone) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.mobilePhone, null, { 'label_attr': { 'class': 'form-label fw-bold' } }) }}
+                    {{ form_widget(form.mobilePhone, { 'attr': { 'class': 'form-control', 'placeholder': 'Enter mobile phone (optional)' } }) }}
+                    {{ form_errors(form.mobilePhone) }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.position, null, { 'label_attr': { 'class': 'form-label fw-bold' } }) }}
+                    {{ form_widget(form.position, { 'attr': { 'class': 'form-control', 'placeholder': 'Enter position (optional)' } }) }}
+                    {{ form_errors(form.position) }}
+                </div>
+            </div>
+
+            <!-- Address Section -->
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    {{ form_label(form.address, null, { 'label_attr': { 'class': 'form-label fw-bold' } }) }}
+                    {{ form_widget(form.address, { 'attr': { 'class': 'form-control', 'placeholder': 'Enter address (optional)' } }) }}
+                    {{ form_errors(form.address) }}
+                </div>
+            </div>
+
+            <!-- Customer Section (if applicable) -->
+            {% if form.customer is defined %}
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        {{ form_label(form.customer, null, { 'label_attr': { 'class': 'form-label fw-bold' } }) }}
+                        {{ form_widget(form.customer, { 'attr': { 'class': 'form-control', 'placeholder': 'Select a customer' } }) }}
+                        {{ form_errors(form.customer) }}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Submit Button -->
+            <div class="text-end mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-check-circle"></i> Update Contact
+                </button>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
