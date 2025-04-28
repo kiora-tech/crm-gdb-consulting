@@ -45,6 +45,11 @@ final readonly class Builder
             ->setExtra('icon', 'bi bi-person-vcard')
             ->setExtra('safe_label', true);
 
+        $menu->addChild('menu.project', ['route' => 'app_project_index'])
+            ->setLabel((string)t('menu.project'))
+            ->setExtra('icon', 'bi bi-person-vcard')
+            ->setExtra('safe_label', true);
+
         if ($this->security->isGranted('ROLE_ADMIN')) {
             $menu->addChild('menu.user', ['route' => 'app_user_index'])
                 ->setLabel((string)t('menu.user'))

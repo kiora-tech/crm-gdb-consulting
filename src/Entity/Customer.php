@@ -200,7 +200,7 @@ class Customer
      * @return Collection<int, Project>
      */
     public function getProjects(): Collection
-    {   
+    {
         return $this->projects;
     }
 
