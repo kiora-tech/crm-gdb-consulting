@@ -23,7 +23,7 @@ class PaginationService
     /**
      * @return PaginationInterface<int, mixed>
      */
-    public function paginate(Query|array $query, Request $request, int $defaultLimit = 20, string $pageParamName = 'page'): PaginationInterface
+    public function paginate(Query|array $query, Request $request, int $defaultLimit = 30, string $pageParamName = 'page'): PaginationInterface
     {
         $page = $request->query->getInt($pageParamName, 1);
         $limit = $request->query->getInt('limit', $defaultLimit);

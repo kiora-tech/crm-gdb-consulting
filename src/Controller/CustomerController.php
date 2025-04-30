@@ -68,7 +68,7 @@ class CustomerController extends AbstractController
         $response = $this->file($filePath, $filename);
 
         // Ajoutez un listener pour supprimer le fichier après le téléchargement
-        $response->deleteFileAfterSend(true);
+        $response->deleteFileAfterSend();
 
         return $response;
     }
