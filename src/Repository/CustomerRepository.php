@@ -130,16 +130,30 @@ class CustomerRepository extends ServiceEntityRepository
         }
 
         // Filtre par contrats expirants
-        if ($search->expiringContracts) {
-            $now = new \DateTime();
-            $expirationDate = (new \DateTime())->modify('+' . $search->expirationPeriod . ' months');
-
+        if ($search->contractEndBefore) {
             $query->andWhere('e.contractEnd IS NOT NULL')
-                ->andWhere('e.contractEnd >= :now')
-                ->andWhere('e.contractEnd <= :expirationDate')
-                ->setParameter('now', $now)
-                ->setParameter('expirationDate', $expirationDate)
+                ->andWhere('e.contractEnd <= :expirationDateBefore')
+                ->setParameter('expirationDateBefore', $search->contractEndBefore)
                 ->orderBy('e.contractEnd', 'ASC');
+        }
+
+        if ($search->contractEndAfter) {
+            $query->andWhere('e.contractEnd IS NOT NULL')
+                ->andWhere('e.contractEnd >= :expirationDateAfter')
+                ->setParameter('expirationDateAfter', $search->contractEndAfter)
+                ->orderBy('e.contractEnd', 'ASC');
+        }
+
+        if (!empty($search->code)) {
+            $query
+                ->andWhere('e.code LIKE :code')
+                ->setParameter('code', '%' . $search->code . '%');
+        }
+
+        if (!empty($search->energyProvider)) {
+            $query
+                ->andWhere('e.energyProvider = :energyProvider')
+                ->setParameter('energyProvider', $search->energyProvider);
         }
 
 

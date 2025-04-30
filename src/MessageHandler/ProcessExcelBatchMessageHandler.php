@@ -241,7 +241,7 @@ class ProcessExcelBatchMessageHandler
         try {
 
             // Créer ou récupérer le client
-            $customer = $this->getOrCreateCustomer($entityManager, $rowData['name'],$rowData['siret'], $rowData['lead_origin'] ?? '', $userId);
+            $customer = $this->getOrCreateCustomer($entityManager, $rowData['name'], (string) $rowData['siret'], $rowData['lead_origin'] ?? '', $userId);
 
             if(!empty($rowData['contact'])){
                 $this->processContact($entityManager, $customer, $rowData);

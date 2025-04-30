@@ -2,6 +2,7 @@
 
 namespace App\Data;
 
+use App\Entity\EnergyProvider;
 use App\Entity\ProspectStatus;
 use App\Entity\User;
 
@@ -19,9 +20,14 @@ class CustomerSearchData
 
     public ?string $contactName = '';
 
-    public int $expirationPeriod  = 3; // en mois
-
-    public bool $expiringContracts = false;
-
     public ?User $user = null;
+
+    public string $leadOrigin = '';
+
+    public ?EnergyProvider $energyProvider = null;
+
+    public ?string $code = '';
+
+    public ?\DateTime $contractEndAfter = null;
+    public ?\DateTime $contractEndBefore = null;
 }
