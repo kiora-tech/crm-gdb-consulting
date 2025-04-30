@@ -2,7 +2,7 @@ knp_paginator:
   page_range: 5
   default_options:
     page_name: page
-    default_limit: 10
+    default_limit: 25
     distinct: false
     sort_direction_name: order
   template:
