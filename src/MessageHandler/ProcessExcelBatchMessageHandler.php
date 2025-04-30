@@ -6,6 +6,7 @@ use App\Entity\Comment;
 use App\Entity\Contact;
 use App\Entity\Customer;
 use App\Entity\Energy;
+use App\Entity\EnergyProvider;
 use App\Entity\EnergyType;
 use App\Entity\ProspectOrigin;
 use App\Entity\ProspectStatus;
@@ -166,6 +167,11 @@ class ProcessExcelBatchMessageHandler
                     $entityManager = $this->doctrine->getManager();
                 }
 
+                $this->logger->debug('Processing batch', [
+                    'row' => $row['rowIndex'],
+                    'data' => $row['data']
+                ]);
+
                 try {
                     $this->processRow($entityManager, $row['rowIndex'], $row['data'], $userId);
 
@@ -233,14 +239,10 @@ class ProcessExcelBatchMessageHandler
         $connection->beginTransaction();
 
         try {
-            // Créer ou récupérer le client
-            $customer = $this->getOrCreateCustomer($entityManager, $rowData['name'], $rowData['lead_origin'] ?? '', $userId);
 
-            // Mise à jour du SIRET si disponible
-            if (!empty($rowData['siret'])) {
-                $siretWithoutSpaces = str_replace(' ', '', (string)$rowData['siret']);
-                $customer->setSiret($siretWithoutSpaces);
-            }
+            // Créer ou récupérer le client
+            $customer = $this->getOrCreateCustomer($entityManager, $rowData['name'],$rowData['siret'], $rowData['lead_origin'] ?? '', $userId);
+
             if(!empty($rowData['contact'])){
                 $this->processContact($entityManager, $customer, $rowData);
             }
@@ -307,7 +309,10 @@ class ProcessExcelBatchMessageHandler
 
             $rowData[$normalizedKey] = $value;
         }
-
+        $this->logger->debug('Row data', [
+            'row_index' => $rowIndex,
+            'data' => $rowData
+        ]);
         return $rowData;
     }
 
@@ -347,6 +352,7 @@ class ProcessExcelBatchMessageHandler
             'raison_sociale' => 'name',
             'nom' => 'name',
             'nom_dtablissement' => 'name',
+            'nom_d_etablissement' => 'name',
             'contact_name' => 'contact',
             'contact' => 'contact',
             'adresse_mail' => 'email',
@@ -375,7 +381,7 @@ class ProcessExcelBatchMessageHandler
         return $mappings[$key] ?? $key;
     }
 
-    private function getOrCreateCustomer(EntityManagerInterface $entityManager, string $name, string $leadOrigin, int $userId): Customer
+    private function getOrCreateCustomer(EntityManagerInterface $entityManager, string $name, string $siret, string $leadOrigin, int $userId): Customer
     {
         // Nettoyer le nom pour éviter les problèmes
         $name = trim($name);
@@ -385,12 +391,20 @@ class ProcessExcelBatchMessageHandler
             $name = substr($name, 0, 252) . '...';
         }
 
-        $customer = $entityManager->getRepository(Customer::class)
-            ->findOneBy(['name' => $name]);
+        $siret = str_replace(' ', '', $siret);
+
+        if(!empty($siret)){
+            $customer = $entityManager->getRepository(Customer::class)
+                ->findOneBy(['siret' => $siret]);
+        }else{
+            $customer = $entityManager->getRepository(Customer::class)
+                ->findOneBy(['name' => $name]);
+        }
 
         if (!$customer) {
             $customer = new Customer();
             $customer->setName($name);
+            $customer->setSiret($siret);
             $customer->setLeadOrigin($leadOrigin ?: 'Import Excel');
             $customer->setOrigin(ProspectOrigin::ACQUISITION);
             $entityManager->persist($customer);
@@ -473,8 +487,11 @@ class ProcessExcelBatchMessageHandler
         } else {
             // Si pas de code, chercher par fournisseur
             if (!empty($rowData['provider'])) {
+                $provider = $entityManager->getRepository(EnergyProvider::class)
+                    ->findOneBy(['name' => $rowData['provider']]);
+
                 $energy = $entityManager->getRepository(Energy::class)
-                    ->findOneBy(['provider' => $rowData['provider'], 'customer' => $customer]);
+                    ->findOneBy(['energyProvider' => $provider, 'customer' => $customer]);
             }
         }
 
@@ -483,7 +500,9 @@ class ProcessExcelBatchMessageHandler
             $energy = new Energy();
 
             if (!empty($rowData['provider'])) {
-                $energy->setProvider($rowData['provider']);
+                $provider = $entityManager->getRepository(EnergyProvider::class)
+                    ->findOneBy(['name' => $rowData['provider']]);
+                $energy->setEnergyProvider($provider);
             }
 
             // Déterminer le type d'énergie
@@ -503,7 +522,9 @@ class ProcessExcelBatchMessageHandler
         } else {
             // Mettre à jour l'énergie existante
             if (!empty($rowData['provider'])) {
-                $energy->setProvider($rowData['provider']);
+                $provider = $entityManager->getRepository(EnergyProvider::class)
+                    ->findOneBy(['name' => $rowData['provider']]);
+                $energy->setEnergyProvider($provider);
             }
         }
 
