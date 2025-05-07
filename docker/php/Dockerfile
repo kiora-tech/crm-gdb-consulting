@@ -29,7 +29,7 @@ RUN echo 'eval "$(/var/www/website/bin/console completion bash )"\n' >> ~/.bashr
 
 RUN install-php-extensions xdebug
 
-FROM registry.kiora.tech/kiora/crm-gdb_php_base:0.4.2 AS prod
+FROM registry.kiora.tech/kiora/crm-gdb_php_base:0.4.1 AS prod
 
 COPY . /var/www/website
 
