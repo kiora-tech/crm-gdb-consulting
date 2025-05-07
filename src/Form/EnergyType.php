@@ -239,7 +239,6 @@ class EnergyType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Energy::class,
             'customer' => null,
-            'csrf_protection' => false,
         ]);
 
         $resolver->setAllowedValues('customer', fn($value) => $value instanceof Customer || $value === null);

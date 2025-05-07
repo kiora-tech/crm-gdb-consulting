@@ -72,7 +72,6 @@ class CustomerType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Customer::class,
-            'csrf_protection' => false,
         ]);
     }
 }

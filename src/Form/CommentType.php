@@ -34,7 +34,6 @@ class CommentType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Comment::class,
             'customer' => null,
-            'csrf_protection' => false,
         ]);
 
         $resolver->setAllowedValues('customer', fn($value) => $value instanceof Customer || $value === null);

@@ -1,0 +1,205 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Test CSRF{% endblock %}
+
+{% block body %}
+<div class="container my-4">
+    <h1>Test de la protection CSRF</h1>
+    
+    <div class="alert alert-info mb-4">
+        <p>Cette page vous permet de tester si la protection CSRF fonctionne correctement.</p>
+        <p>Le token CSRF généré est : <code id="csrf-token-display">{{ token }}</code></p>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2 class="h5 mb-0">Test avec formulaire standard</h2>
+                </div>
+                <div class="card-body">
+                    <form id="standard-form" method="post" action="{{ path('app_debug_csrf_test_submit') }}">
+                        <input type="hidden" name="_csrf_token" value="{{ token }}">
+                        <div class="mb-3">
+                            <label for="standard-name" class="form-label">Nom</label>
+                            <input type="text" class="form-control" id="standard-name" name="name" value="Test">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Soumettre (Standard)</button>
+                    </form>
+                    <div id="standard-result" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2 class="h5 mb-0">Test avec Fetch API</h2>
+                </div>
+                <div class="card-body">
+                    <form id="fetch-form">
+                        <div class="mb-3">
+                            <label for="fetch-name" class="form-label">Nom</label>
+                            <input type="text" class="form-control" id="fetch-name" name="name" value="Test">
+                        </div>
+                        <button type="button" id="fetch-submit" class="btn btn-primary">Soumettre (Fetch)</button>
+                    </form>
+                    <div id="fetch-result" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2 class="h5 mb-0">Test avec header CSRF</h2>
+                </div>
+                <div class="card-body">
+                    <form id="header-form">
+                        <div class="mb-3">
+                            <label for="header-name" class="form-label">Nom</label>
+                            <input type="text" class="form-control" id="header-name" name="name" value="Test">
+                        </div>
+                        <button type="button" id="header-submit" class="btn btn-primary">Soumettre (Header)</button>
+                    </form>
+                    <div id="header-result" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2 class="h5 mb-0">Test sans CSRF</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        Ce test devrait échouer car aucun token CSRF n'est fourni.
+                    </div>
+                    <form id="no-csrf-form">
+                        <div class="mb-3">
+                            <label for="no-csrf-name" class="form-label">Nom</label>
+                            <input type="text" class="form-control" id="no-csrf-name" name="name" value="Test">
+                        </div>
+                        <button type="button" id="no-csrf-submit" class="btn btn-primary">Soumettre (Sans CSRF)</button>
+                    </form>
+                    <div id="no-csrf-result" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const csrfToken = '{{ token }}';
+            
+            // Intercepter la soumission du formulaire standard
+            document.getElementById('standard-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                
+                fetch('{{ path('app_debug_csrf_test_submit') }}', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('standard-result');
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-${data.success ? 'success' : 'danger'}">
+                            ${data.message}
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+            
+            // Test avec Fetch API
+            document.getElementById('fetch-submit').addEventListener('click', function() {
+                const formData = new FormData();
+                formData.append('name', document.getElementById('fetch-name').value);
+                formData.append('_csrf_token', csrfToken);
+                
+                fetch('{{ path('app_debug_csrf_test_submit') }}', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('fetch-result');
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-${data.success ? 'success' : 'danger'}">
+                            ${data.message}
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+            
+            // Test avec header CSRF
+            document.getElementById('header-submit').addEventListener('click', function() {
+                const formData = new FormData();
+                formData.append('name', document.getElementById('header-name').value);
+                formData.append('_csrf_token', csrfToken); // Also include in body for proxy safety
+                
+                fetch('{{ path('app_debug_csrf_test_submit') }}', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest' // Add this to ensure XHR detection
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('header-result');
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-${data.success ? 'success' : 'danger'}">
+                            ${data.message}
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+            
+            // Test sans CSRF
+            document.getElementById('no-csrf-submit').addEventListener('click', function() {
+                const formData = new FormData();
+                formData.append('name', document.getElementById('no-csrf-name').value);
+                
+                fetch('{{ path('app_debug_csrf_test_submit') }}', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('no-csrf-result');
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-${data.success ? 'success' : 'danger'}">
+                            ${data.message}
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Informations de débogage CSRF{% endblock %}
+
+{% block body %}
+<div class="container my-4">
+    <h1>Informations de débogage CSRF</h1>
+    
+    <div class="alert alert-warning">
+        <strong>⚠️ Attention :</strong> Cette page expose des informations sensibles et ne devrait être accessible qu'en environnement de développement ou de débogage.
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Informations de la requête</h2>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>IP Client</th>
+                        <td>{{ info.request.client_ip }}</td>
+                    </tr>
+                    <tr>
+                        <th>Méthode</th>
+                        <td>{{ info.request.method }} (réelle: {{ info.request.real_method }})</td>
+                    </tr>
+                    <tr>
+                        <th>Hôte</th>
+                        <td>{{ info.request.host }}</td>
+                    </tr>
+                    <tr>
+                        <th>Schéma</th>
+                        <td>{{ info.request.scheme }}</td>
+                    </tr>
+                    <tr>
+                        <th>Port</th>
+                        <td>{{ info.request.port }}</td>
+                    </tr>
+                    <tr>
+                        <th>Requête sécurisée</th>
+                        <td>{{ info.request.secure ? 'Oui' : 'Non' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Ajax</th>
+                        <td>{{ info.request.ajax ? 'Oui' : 'Non' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Turbo</th>
+                        <td>{{ info.request.turbo ? 'Oui' : 'Non' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Configuration des proxies de confiance</h2>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>SYMFONY_TRUSTED_PROXIES</th>
+                        <td><code>{{ info.trusted_proxies }}</code></td>
+                    </tr>
+                    <tr>
+                        <th>SYMFONY_TRUSTED_HEADERS</th>
+                        <td><code>{{ info.trusted_headers }}</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">En-têtes de la requête</h2>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Valeur</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for name, value in info.headers %}
+                    <tr>
+                        <td>{{ name }}</td>
+                        <td>
+                            {% if name starts with 'x-forwarded' %}
+                                <strong>{{ value|join(', ') }}</strong>
+                            {% else %}
+                                {{ value|join(', ') }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Variables du serveur</h2>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Valeur</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for name, value in info.server %}
+                    <tr>
+                        <td>{{ name }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Cookies</h2>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Valeur (tronquée)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for name, value in info.cookies %}
+                    <tr>
+                        <td>{{ name }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Test CSRF</h2>
+        </div>
+        <div class="card-body">
+            <p>Token de test CSRF : <code>{{ info.csrf_test_token }}</code></p>
+            <a href="{{ path('app_debug_csrf_test') }}" class="btn btn-primary">Aller à la page de test CSRF</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
