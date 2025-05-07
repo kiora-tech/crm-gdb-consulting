@@ -8,6 +8,7 @@ use App\Entity\ProspectOrigin;
 use App\Entity\ProspectStatus;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateIntervalType;
@@ -19,10 +20,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class CustomerSearchType extends AbstractType
 {
-    public function __construct(private readonly RouterInterface $router)
+    public function __construct(private readonly RouterInterface $router, private readonly AuthorizationCheckerInterface $security)
     {
 
     }
@@ -88,32 +90,32 @@ class CustomerSearchType extends AbstractType
                 'attr' => [
                     'placeholder' => 'energy.code'
                 ]
-            ])
-            ->add('user', EntityType::class, [
+            ]);
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            $builder->add('user', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => function (User $user) {
-                    return (string) $user;
+                    return (string)$user;
                 },
                 'label' => false,
                 'placeholder' => 'user.select',
                 'required' => false,
             ])
-            ->add('unassigned', CheckboxType::class, [
-                'label' => 'customer.unassigned',
-                'required' => false,
-            ])
-            ->add('energyProvider', EnergyProviderAutocompleteType::class, [
-                'label' => 'energy.provider',
-                'required' => false,
-                'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => 'energy.provider',
-                    'data-controller' => 'energy-provider-autocomplete',
-                    'data-energy-provider-autocomplete-url-value' => $this->router->generate('app_energy_provider_new_ajax'),
-                ],
-            ])
-        ;
-
+                ->add('unassigned', CheckboxType::class, [
+                    'label' => 'customer.unassigned',
+                    'required' => false,
+                ]);
+        }
+        $builder->add('energyProvider', EnergyProviderAutocompleteType::class, [
+            'label' => 'energy.provider',
+            'required' => false,
+            'attr' => [
+                'class' => 'form-control',
+                'placeholder' => 'energy.provider',
+                'data-controller' => 'energy-provider-autocomplete',
+                'data-energy-provider-autocomplete-url-value' => $this->router->generate('app_energy_provider_new_ajax'),
+            ],
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
