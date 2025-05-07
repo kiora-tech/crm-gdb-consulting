@@ -36,15 +36,17 @@ class CustomerRepository extends ServiceEntityRepository
             ->leftJoin('c.energies', 'e');
         $user = $this->tokenStorage->getToken()?->getUser();
 
-        if ($this->authorizationChecker->isGranted('ROLE_ADMIN') && $user instanceof User) {
+        if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
+            return $qb;
+        }
 
+        if ($user instanceof User) {
             return $qb
                 ->andWhere('c.user = :login_user OR c.user IS NULL')
                 ->setParameter('login_user', $user);
         }
 
         return $qb;
-
     }
 
     public function search(CustomerSearchData $search): Query
@@ -69,6 +71,12 @@ class CustomerRepository extends ServiceEntityRepository
             $query
                 ->andWhere('c.status = :status')
                 ->setParameter('status', $search->status);
+        }
+        
+        if ($search->origin) {
+            $query
+                ->andWhere('c.origin = :origin')
+                ->setParameter('origin', $search->origin);
         }
 
 
@@ -127,6 +135,11 @@ class CustomerRepository extends ServiceEntityRepository
             $query
                 ->andWhere('c.user = :user')
                 ->setParameter('user', $search->user);
+        }
+        
+        if($search->unassigned) {
+            $query
+                ->andWhere('c.user IS NULL');
         }
 
         // Filtre par contrats expirants

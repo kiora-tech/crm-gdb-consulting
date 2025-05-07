@@ -196,6 +196,8 @@ customer:
     contacts: Contacts
     contract_energies: Contrat d'énergie
     lead_origin: Origine du lead
+    prospect_origin: Type d'origine
+    unassigned: Non assigné
     siret_list: Liste des SIRET
     edit: Modifier
     new: Nouveau

@@ -5,6 +5,7 @@
     <div class="card-body">
         <h5 class="card-title">Filtres de recherche</h5>
 
+        <!-- Ligne 1: Informations client principales -->
         <div class="row mb-3">
             <div class="col-md-4">
                 <div class="form-floating">
@@ -19,7 +20,36 @@
                 </div>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-4">
+                <div class="form-floating">
+                    {{ form_widget(form.contactName, {
+                        attr: {
+                            class: 'form-control',
+                            id: 'floatingContact'
+                        }
+                    }) }}
+                    <label for="floatingContact">{{ 'contact.name'|trans }}</label>
+                    {{ form_errors(form.contactName) }}
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-floating">
+                    {{ form_widget(form.code, {
+                        attr: {
+                            class: 'form-control',
+                            id: 'floatingCode'
+                        }
+                    }) }}
+                    <label for="floatingCode">{{ 'energy.code'|trans }}</label>
+                    {{ form_errors(form.code) }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Ligne 2: États et propriétés -->
+        <div class="row mb-3">
+            <div class="col-md-3">
                 <div class="form-floating">
                     {{ form_widget(form.status, {
                         attr: {
@@ -32,61 +62,102 @@
                 </div>
             </div>
 
-            {# Nom du contact #}
             <div class="col-md-3">
                 <div class="form-floating">
-                    {{ form_widget(form.contactName, {
+                    {{ form_widget(form.origin, {
                         attr: {
-                            class: 'form-control',
-                            id: 'floatingContact'
+                            class: 'form-select',
+                            id: 'floatingOrigin'
                         }
                     }) }}
-                    <label for="floatingContact">{{ 'contact.name'|trans }}</label>
-                    {{ form_errors(form.contactName) }}
+                    <label for="floatingOrigin">{{ 'customer.prospect_origin'|trans }}</label>
+                    {{ form_errors(form.origin) }}
                 </div>
             </div>
+
+            <div class="col-md-3">
+                <div class="form-floating">
+                    {{ form_widget(form.leadOrigin, {
+                        attr: {
+                            class: 'form-control',
+                            id: 'floatingLeadOrigin'
+                        }
+                    }) }}
+                    <label for="floatingLeadOrigin">{{ 'customer.lead_origin'|trans }}</label>
+                    {{ form_errors(form.leadOrigin) }}
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-floating">
+                    {{ form_widget(form.energyProvider, {
+                        attr: {
+                            class: 'form-control',
+                            id: 'floatingProvider',
+                            'data-controller': 'energy-provider-autocomplete',
+                            'data-energy-provider-autocomplete-url-value': path('app_energy_provider_new_ajax')
+                        }
+                    }) }}
+                    <label for="floatingProvider">{{ 'energy.provider'|trans }}</label>
+                    {{ form_errors(form.energyProvider) }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Ligne 3: Dates et utilisateurs -->
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <div class="form-floating">
+                    {{ form_widget(form.contractEndAfter, {
+                        attr: {
+                            class: 'form-control',
+                            id: 'contractEndAfter'
+                        }
+                    }) }}
+                    <label for="contractEndAfter">{{ 'Date de clôture après' }}</label>
+                    {{ form_errors(form.contractEndAfter) }}
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-floating">
+                    {{ form_widget(form.contractEndBefore, {
+                        attr: {
+                            class: 'form-control',
+                            id: 'contractEndBefore'
+                        }
+                    }) }}
+                    <label for="contractEndBefore">{{ 'Date de clôture avant' }}</label>
+                    {{ form_errors(form.contractEndBefore) }}
+                </div>
+            </div>
+
             {% if is_granted('ROLE_ADMIN') %}
             <div class="col-md-3">
                 <div class="form-floating">
                     {{ form_widget(form.user, {
                         attr: {
                             class: 'form-control',
-                            id: 'floatingContact'
+                            id: 'floatingUser'
                         }
                     }) }}
-                    <label for="floatingContact">{{ 'user.name'|trans }}</label>
+                    <label for="floatingUser">{{ 'user.name'|trans }}</label>
                     {{ form_errors(form.user) }}
                 </div>
             </div>
+
+            <div class="col-md-3">
+                <div class="form-check form-switch mt-4 ms-2">
+                    {{ form_widget(form.unassigned, {
+                        attr: {
+                            class: 'form-check-input',
+                            id: 'unassignedSwitch'
+                        }
+                    }) }}
+                    {{ form_errors(form.unassigned) }}
+                </div>
+            </div>
             {% endif %}
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-md-2">
-                {{ form_widget(form.contractEndAfter, {
-                    attr: {
-                        id: 'contractEndAfter'
-                    }
-                }) }}
-                {{ form_errors(form.contractEndAfter) }}
-            </div>
-            <div class="col-md-2">
-                {{ form_widget(form.contractEndBefore, {
-                    attr: {
-                        id: 'contractEndBefore'
-                    }
-                }) }}
-                {{ form_errors(form.contractEndBefore) }}
-            </div>
-            <div class="col-md-3">
-                {{ form_widget(form.code) }}
-                {{ form_errors(form.code) }}
-            </div>
-            <div class="col-md-3">
-                {{ form_widget(form.energyProvider) }}
-                {{ form_errors(form.energyProvider) }}
-            </div>
-
         </div>
 
         <div class="text-center">

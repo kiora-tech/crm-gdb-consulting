@@ -157,6 +157,9 @@ class CustomerController extends AbstractController
     #[Route('/{id}', name: '_show', methods: ['GET'])]
     public function show(Customer $customer, EntityManagerInterface $entityManager): Response
     {
+        // Vérifier si l'utilisateur a le droit de voir ce client
+        $this->denyAccessUnlessGranted('view', $customer);
+        
         $document = new Document();
         $document->setCustomer($customer);
         $formDocument = $this->createForm(DropzoneForm::class, $document, ['customer' => $customer]);
@@ -173,6 +176,9 @@ class CustomerController extends AbstractController
     #[Route('/{id}/edit', name: '_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Customer $customer, EntityManagerInterface $entityManager): Response
     {
+        // Vérifier si l'utilisateur a le droit de modifier ce client
+        $this->denyAccessUnlessGranted('edit', $customer);
+        
         $form = $this->createForm(CustomerType::class, $customer);
         $form->handleRequest($request);
 

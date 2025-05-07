@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Data\CustomerSearchData;
 use App\Entity\EnergyProvider;
+use App\Entity\ProspectOrigin;
 use App\Entity\ProspectStatus;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -45,6 +46,23 @@ class CustomerSearchType extends AbstractType
                     'class' => ProspectStatus::class,
                 ]
             )
+            ->add(
+                'origin',
+                EnumType::class,
+                [
+                    'label' => false,
+                    'required' => false,
+                    'class' => ProspectOrigin::class,
+                    'placeholder' => 'customer.prospect_origin',
+                ]
+            )
+            ->add('leadOrigin', TextType::class, [
+                'label' => false,
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'customer.lead_origin'
+                ]
+            ])
             ->add('contactName', TextType::class, [
                 'label' => false,
                 'required' => false,
@@ -78,6 +96,10 @@ class CustomerSearchType extends AbstractType
                 },
                 'label' => false,
                 'placeholder' => 'user.select',
+                'required' => false,
+            ])
+            ->add('unassigned', CheckboxType::class, [
+                'label' => 'customer.unassigned',
                 'required' => false,
             ])
             ->add('energyProvider', EnergyProviderAutocompleteType::class, [

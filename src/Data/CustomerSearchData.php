@@ -3,6 +3,7 @@
 namespace App\Data;
 
 use App\Entity\EnergyProvider;
+use App\Entity\ProspectOrigin;
 use App\Entity\ProspectStatus;
 use App\Entity\User;
 
@@ -21,8 +22,12 @@ class CustomerSearchData
     public ?string $contactName = '';
 
     public ?User $user = null;
+    
+    public bool $unassigned = false;
 
-    public string $leadOrigin = '';
+    public ?string $leadOrigin = '';
+    
+    public ?ProspectOrigin $origin = null;
 
     public ?EnergyProvider $energyProvider = null;
 

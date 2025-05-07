@@ -30,3 +30,5 @@ compose.override.yaml
 
 /public/uploads/documents/*
 /public/templates/*
+
+**/.claude/settings.local.json
