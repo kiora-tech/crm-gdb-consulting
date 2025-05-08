@@ -25,43 +25,111 @@ class TemplateProcessor
 
     public function processTemplate(Template $template, Customer $customer): string
     {
-        $templatePath = $this->publicDir . '/' . ltrim($template->getPath(), '/');
+        $this->logger->info('Début du traitement du template', [
+            'template_id' => $template->getId(),
+            'template_label' => $template->getLabel(),
+            'template_path' => $template->getPath()
+        ]);
 
+        $templatePath = $this->publicDir . '/' . ltrim($template->getPath(), '/');
+        $this->logger->debug('Chemin complet du template', ['full_path' => $templatePath]);
+
+        // Vérification que le fichier existe
         if (!file_exists($templatePath)) {
+            $this->logger->critical('Fichier template introuvable', [
+                'path' => $templatePath,
+                'directory_exists' => is_dir(dirname($templatePath)),
+                'directory_readable' => is_readable(dirname($templatePath)),
+                'directory_content' => scandir(dirname($templatePath))
+            ]);
             throw new \RuntimeException("Template file not found: $templatePath");
         }
 
-        // Crée le processeur de template
-        $processor = new PhpWordProcessor($templatePath);
-
-        // Récupère toutes les variables du template
-        $variables = $this->extractVariables($processor);
-
-        // Remplace chaque variable
-        foreach ($variables as $variable) {
-            try {
-                $value = $this->resolveValue($customer, $variable);
-                $formattedValue = $this->formatValue($value);
-
-                $this->logger->debug('Processing variable', [
-                    'variable' => $variable,
-                    'value' => $formattedValue
-                ]);
-
-                $processor->setValue($variable, $formattedValue);
-            } catch (\Exception $e) {
-                $this->logger->warning('Failed to process variable', [
-                    'variable' => $variable,
-                    'error' => $e->getMessage()
-                ]);
-            }
+        // Vérification que le fichier est lisible
+        if (!is_readable($templatePath)) {
+            $this->logger->critical('Fichier template non lisible', [
+                'path' => $templatePath,
+                'permissions' => substr(sprintf('%o', fileperms($templatePath)), -4),
+                'file_size' => filesize($templatePath)
+            ]);
+            throw new \RuntimeException("Template file not readable: $templatePath");
         }
 
-        // Génère le fichier de sortie
-        $tempFile = tempnam(sys_get_temp_dir(), 'doc_') . '.docx';
-        $processor->saveAs($tempFile);
+        try {
+            // Crée le processeur de template
+            $this->logger->debug('Création du processeur de template');
+            $processor = new PhpWordProcessor($templatePath);
+            $this->logger->debug('Processeur de template créé avec succès');
 
-        return $tempFile;
+            // Récupère toutes les variables du template
+            $this->logger->debug('Extraction des variables du template');
+            $variables = $this->extractVariables($processor);
+            $this->logger->debug('Variables extraites', ['count' => count($variables), 'variables' => $variables]);
+
+            // Remplace chaque variable
+            foreach ($variables as $variable) {
+                try {
+                    $this->logger->debug('Résolution de la variable', ['variable' => $variable]);
+                    $value = $this->resolveValue($customer, $variable);
+                    $formattedValue = $this->formatValue($value);
+
+                    $this->logger->debug('Traitement variable', [
+                        'variable' => $variable,
+                        'raw_value' => $value,
+                        'formatted_value' => $formattedValue
+                    ]);
+
+                    $processor->setValue($variable, $formattedValue);
+                } catch (\Exception $e) {
+                    $this->logger->warning('Échec du traitement de la variable', [
+                        'variable' => $variable,
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                }
+            }
+
+            // Génère le fichier de sortie
+            $tempDir = sys_get_temp_dir();
+            $this->logger->debug('Répertoire temporaire', ['dir' => $tempDir]);
+            
+            // Vérifier que le répertoire temporaire est accessible en écriture
+            if (!is_writable($tempDir)) {
+                $this->logger->critical('Répertoire temporaire non accessible en écriture', [
+                    'directory' => $tempDir,
+                    'permissions' => substr(sprintf('%o', fileperms($tempDir)), -4)
+                ]);
+                throw new \RuntimeException("Temporary directory not writable: $tempDir");
+            }
+            
+            $tempFile = tempnam($tempDir, 'doc_') . '.docx';
+            $this->logger->debug('Sauvegarde du fichier temporaire', ['temp_file' => $tempFile]);
+            
+            $processor->saveAs($tempFile);
+            
+            if (!file_exists($tempFile)) {
+                $this->logger->critical('Fichier temporaire non créé', [
+                    'path' => $tempFile,
+                    'error' => error_get_last()
+                ]);
+                throw new \RuntimeException("Failed to create temporary file: $tempFile");
+            }
+            
+            $this->logger->info('Fichier temporaire créé avec succès', [
+                'temp_file' => $tempFile,
+                'file_size' => filesize($tempFile)
+            ]);
+
+            return $tempFile;
+            
+        } catch (\Exception $e) {
+            $this->logger->error('Erreur lors du traitement du template', [
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
     }
 
     private function extractVariables(PhpWordProcessor $processor): array
@@ -79,14 +147,68 @@ class TemplateProcessor
     private function resolveValue(object $object, string $path): mixed
     {
         try {
-            return $this->propertyAccessor->getValue($object, trim($path));
+            $trimmedPath = trim($path);
+            $this->logger->debug('Tentative de résolution de valeur', [
+                'path' => $trimmedPath, 
+                'object_class' => get_class($object)
+            ]);
+            
+            // Vérifier si le chemin est accessible
+            if (!$this->propertyAccessor->isReadable($object, $trimmedPath)) {
+                $this->logger->warning('Propriété non accessible', [
+                    'path' => $trimmedPath,
+                    'object_class' => get_class($object),
+                    'available_properties' => $this->getObjectProperties($object)
+                ]);
+                return '';
+            }
+            
+            $value = $this->propertyAccessor->getValue($object, $trimmedPath);
+            $this->logger->debug('Valeur résolue avec succès', [
+                'path' => $trimmedPath,
+                'value_type' => is_object($value) ? get_class($value) : gettype($value)
+            ]);
+            
+            return $value;
         } catch (\Exception $e) {
-            $this->logger->error('Failed to resolve value', [
+            $this->logger->error('Échec de résolution de valeur', [
                 'path' => $path,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'object_properties' => $this->getObjectProperties($object)
             ]);
             return '';
         }
+    }
+    
+    /**
+     * Récupère les propriétés disponibles d'un objet pour le débogage
+     */
+    private function getObjectProperties(object $object): array
+    {
+        $properties = [];
+        
+        try {
+            $reflection = new \ReflectionObject($object);
+            foreach ($reflection->getProperties() as $property) {
+                $property->setAccessible(true);
+                $properties[] = $property->getName();
+            }
+            
+            // Ajouter les méthodes getters
+            foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+                $methodName = $method->getName();
+                if (strpos($methodName, 'get') === 0 && $method->getNumberOfRequiredParameters() === 0) {
+                    $properties[] = lcfirst(substr($methodName, 3));
+                }
+            }
+        } catch (\Exception $e) {
+            $this->logger->warning('Échec de récupération des propriétés de l\'objet', [
+                'error' => $e->getMessage()
+            ]);
+        }
+        
+        return $properties;
     }
 
     private function formatValue(mixed $value): string

@@ -187,20 +187,67 @@ class DocumentController extends CustomerInfoController
         #[Autowire('%kernel.project_dir%/public/uploads/documents')]
         string $uploadDirectory,
         SluggerInterface $slugger,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        LoggerInterface $logger
     ): Response {
         try {
+            $logger->info('Début de génération de document', [
+                'template_id' => $template->getId(),
+                'template_label' => $template->getLabel(),
+                'customer_id' => $customer->getId(),
+                'customer_name' => $customer->getName(),
+                'upload_directory' => $uploadDirectory
+            ]);
+
+            // Vérifier l'existence du répertoire d'upload
+            if (!is_dir($uploadDirectory)) {
+                $logger->critical('Le répertoire d\'upload n\'existe pas', [
+                    'directory' => $uploadDirectory
+                ]);
+                throw new \RuntimeException('Le répertoire d\'upload n\'existe pas: ' . $uploadDirectory);
+            }
+
+            // Vérifier les permissions d'écriture
+            if (!is_writable($uploadDirectory)) {
+                $logger->critical('Le répertoire d\'upload n\'est pas accessible en écriture', [
+                    'directory' => $uploadDirectory,
+                    'permissions' => substr(sprintf('%o', fileperms($uploadDirectory)), -4)
+                ]);
+                throw new \RuntimeException('Le répertoire d\'upload n\'est pas accessible en écriture: ' . $uploadDirectory);
+            }
+
             // Génère le document à partir du template
+            $logger->info('Traitement du template', [
+                'template_path' => $template->getPath()
+            ]);
             $tempFile = $templateProcessor->processTemplate($template, $customer);
+            $logger->info('Template traité avec succès', [
+                'temp_file' => $tempFile
+            ]);
 
             // Crée le nouveau nom de fichier
             $originalFilename = pathinfo($template->getOriginalFilename(), PATHINFO_FILENAME);
             $extension = pathinfo($template->getOriginalFilename(), PATHINFO_EXTENSION);
             $safeFilename = $slugger->slug($originalFilename . '_' . $customer->getName());
             $newFilename = $safeFilename . '-' . uniqid() . '.' . $extension;
+            $fullPath = $uploadDirectory . '/' . $newFilename;
+            
+            $logger->info('Déplacement du fichier temporaire', [
+                'from' => $tempFile,
+                'to' => $fullPath
+            ]);
 
             // Déplace le fichier dans le répertoire uploads
-            rename($tempFile, $uploadDirectory . '/' . $newFilename);
+            if (!rename($tempFile, $fullPath)) {
+                $logger->error('Échec du déplacement du fichier', [
+                    'source' => $tempFile,
+                    'destination' => $fullPath,
+                    'error' => error_get_last()
+                ]);
+                throw new \RuntimeException('Impossible de déplacer le fichier temporaire vers la destination finale');
+            }
+
+            $logger->info('Fichier déplacé avec succès');
 
             // Crée une nouvelle entité Document
             $document = new Document();
@@ -213,17 +260,53 @@ class DocumentController extends CustomerInfoController
             $entityManager->persist($document);
             $entityManager->flush();
 
+            $logger->info('Document enregistré en base de données', [
+                'document_id' => $document->getId(),
+                'document_path' => $document->getPath()
+            ]);
+
+            // Vérifie que le fichier peut être lu
+            if (!file_exists($fullPath) || !is_readable($fullPath)) {
+                $logger->error('Le fichier final n\'existe pas ou n\'est pas lisible', [
+                    'path' => $fullPath,
+                    'exists' => file_exists($fullPath),
+                    'readable' => is_readable($fullPath)
+                ]);
+                throw new \RuntimeException('Le fichier généré n\'existe pas ou n\'est pas lisible');
+            }
+
             // Retourne le fichier
-            $response = new Response(file_get_contents($uploadDirectory . '/' . $newFilename));
+            $fileContent = file_get_contents($fullPath);
+            if ($fileContent === false) {
+                $logger->error('Impossible de lire le contenu du fichier', [
+                    'path' => $fullPath,
+                    'error' => error_get_last()
+                ]);
+                throw new \RuntimeException('Impossible de lire le contenu du fichier généré');
+            }
+
+            $response = new Response($fileContent);
             $response->headers->set('Content-Type', $template->getMimeType());
             $response->headers->set(
                 'Content-Disposition',
                 'attachment; filename="' . $newFilename . '"'
             );
 
+            $logger->info('Document généré avec succès', [
+                'file_size' => strlen($fileContent)
+            ]);
+
             return $response;
 
         } catch (\Exception $e) {
+            $logger->error('Erreur lors de la génération du document', [
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'template_id' => $template->getId(),
+                'customer_id' => $customer->getId()
+            ]);
+            
             $this->addFlash('error', 'Une erreur est survenue lors de la génération du document : ' . $e->getMessage());
             return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
         }
