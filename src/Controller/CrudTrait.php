@@ -8,13 +8,14 @@ trait CrudTrait
     {
         // Extrait le nom de la classe controller (ex: "DocumentTypeController")
         $className = basename(str_replace('\\', '/', static::class));
+
         // Retire "Controller" et convertit en snake_case
         return $this->toSnakeCase(substr($className, 0, -10));
     }
 
     protected function getRoutePrefix(): string
     {
-        return 'app_' . $this->getEntityName();
+        return 'app_'.$this->getEntityName();
     }
 
     protected function getPagePrefix(): string
@@ -23,7 +24,7 @@ trait CrudTrait
     }
 
     /**
-     * Convertit un string CamelCase en snake_case
+     * Convertit un string CamelCase en snake_case.
      */
     private function toSnakeCase(string $input): string
     {
@@ -31,6 +32,12 @@ trait CrudTrait
         return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $input));
     }
 
+    /**
+     * @param mixed       $form   Le formulaire à rendre
+     * @param object|null $entity L'entité associée au formulaire
+     *
+     * @return array<string, mixed>
+     */
     protected function getFormVars($form, ?object $entity = null): array
     {
         $routePrefix = $this->getRoutePrefix();
@@ -38,38 +45,47 @@ trait CrudTrait
         return [
             'form' => $form->createView(),
             'entity' => $entity,
-            'back_route' => $routePrefix . '_index',
-            'delete_route' => $routePrefix . '_delete',
+            'back_route' => $routePrefix.'_index',
+            'delete_route' => $routePrefix.'_delete',
             'page_prefix' => $this->getPagePrefix(),
-            'template_path' => strtolower($this->getEntityName()) . '/_form.html.twig'
+            'template_path' => strtolower($this->getEntityName()).'/_form.html.twig',
         ];
     }
 
+    /**
+     * @param mixed                            $pagination Le résultat de pagination
+     * @param array<int, array<string, mixed>> $columns    Les colonnes à afficher
+     *
+     * @return array<string, mixed>
+     */
     protected function getIndexVars($pagination, array $columns): array
     {
         return [
             'pagination' => $pagination,
             'columns' => $columns,
             'page_prefix' => $this->getPagePrefix(),
-            'page_title' =>  strtolower($this->getEntityName()).'.title',
+            'page_title' => strtolower($this->getEntityName()).'.title',
             'new_route' => $this->getNewRoute(),
-            'table_routes' => $this->getRoute()
+            'table_routes' => $this->getRoute(),
         ];
     }
 
     public function getNewRoute(): false|string
     {
-        return $this->getRoutePrefix() . '_new';
+        return $this->getRoutePrefix().'_new';
     }
 
+    /**
+     * @return array<string, string|bool|array<string, mixed>>
+     */
     protected function getRoute(): array
     {
         $routePrefix = $this->getRoutePrefix();
 
         return [
-            'edit' => $routePrefix . '_edit',
-            'delete' => $routePrefix . '_delete',
-            'show' => false
+            'edit' => $routePrefix.'_edit',
+            'delete' => $routePrefix.'_delete',
+            'show' => false,
         ];
     }
 }

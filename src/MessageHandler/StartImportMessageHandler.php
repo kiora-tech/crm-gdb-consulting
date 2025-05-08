@@ -18,7 +18,7 @@ class StartImportMessageHandler
 
     public function __construct(
         private readonly MessageBusInterface $messageBus,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -26,8 +26,8 @@ class StartImportMessageHandler
     {
         ini_set('memory_limit', '2048M');
         $filePath = $message->getFilePath();
-        $this->logger->info('Starting import of file: ' . $message->getOriginalFilename(), [
-            'file_path' => $filePath
+        $this->logger->info('Starting import of file: '.$message->getOriginalFilename(), [
+            'file_path' => $filePath,
         ]);
 
         // Utilisons le reader en mode itératif (streaming)
@@ -44,7 +44,8 @@ class StartImportMessageHandler
             $highestRow = $worksheet->getHighestDataRow();
 
             // Récupération de l'en-tête
-            $headerRow = $worksheet->rangeToArray('A1:' . $worksheet->getHighestDataColumn() . '1', null, true, false)[0];
+            /** @var array<int|string, mixed> $headerRow */
+            $headerRow = $worksheet->rangeToArray('A1:'.$worksheet->getHighestDataColumn().'1', null, true, false)[0];
 
             // Libérer des ressources
             $spreadsheet->disconnectWorksheets();
@@ -52,7 +53,7 @@ class StartImportMessageHandler
 
             $this->logger->info('File analysis complete', [
                 'rows' => $highestRow,
-                'header' => $headerRow
+                'header' => $headerRow,
             ]);
 
             // Traitement par lots
@@ -74,18 +75,18 @@ class StartImportMessageHandler
 
                 $this->logger->debug('Dispatched batch processing', [
                     'start_row' => $startRow,
-                    'end_row' => $endRow
+                    'end_row' => $endRow,
                 ]);
             }
 
             $this->logger->info('All batch jobs have been dispatched for file', [
                 'file' => $message->getOriginalFilename(),
-                'total_rows' => $highestRow - 1
+                'total_rows' => $highestRow - 1,
             ]);
         } catch (\Exception $e) {
-            $this->logger->error('Error during import initialization: ' . $e->getMessage(), [
+            $this->logger->error('Error during import initialization: '.$e->getMessage(), [
                 'file' => $message->getOriginalFilename(),
-                'exception' => $e
+                'exception' => $e,
             ]);
             throw $e;
         }

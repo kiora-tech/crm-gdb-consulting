@@ -14,24 +14,32 @@ abstract class BaseCrudController extends AbstractController
 
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
-        protected readonly PaginatorInterface $paginator
+        protected readonly PaginatorInterface $paginator,
     ) {
     }
 
     /**
      * @phpstan-return class-string
      */
-    protected abstract function getEntityClass(): string;
+    abstract protected function getEntityClass(): string;
 
     /**
-     * Replace Entity form namespace by Form
-     * @phpstan-return class-string
+     * Replace Entity form namespace by Form.
+     *
+     * @return class-string<object>
      */
     protected function getFormTypeClass(): string
     {
-        return str_replace('\Entity\\', '\Form\\', $this->getEntityClass()) . 'Type';
+        $className = str_replace('\Entity\\', '\Form\\', $this->getEntityClass()).'Type';
+
+        // Cette conversion est sûre car nous construisons le nom de classe à partir d'un nom de classe existant
+        /* @var class-string<object> */
+        return $className;
     }
 
+    /**
+     * @return ObjectRepository<object>
+     */
     protected function getRepository(): ObjectRepository
     {
         return $this->entityManager->getRepository($this->getEntityClass());
@@ -42,21 +50,27 @@ abstract class BaseCrudController extends AbstractController
         // À surcharger dans les contrôleurs enfants si besoin
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     protected function getColumns(): array
     {
         return [
-            ['field' => 'id', 'label' => 'id', 'sortable' => false]
+            ['field' => 'id', 'label' => 'id', 'sortable' => false],
         ];
     }
 
+    /**
+     * @return array<string, string|bool|array<string, mixed>>
+     */
     protected function getRoute(): array
     {
         $routePrefix = $this->getRoutePrefix();
 
         return [
-            'edit' => $routePrefix . '_edit',
-            'delete' => $routePrefix . '_delete',
-            'show' => false
+            'edit' => $routePrefix.'_edit',
+            'delete' => $routePrefix.'_delete',
+            'show' => false,
         ];
     }
 }

@@ -2,21 +2,36 @@
 
 namespace App\Twig\Components;
 
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 use Symfony\UX\TwigComponent\Attribute\PreMount;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 #[AsTwigComponent]
 class FormActions
 {
     public string $backRoute;
+
+    /**
+     * @var array<string, mixed>
+     */
     public array $backRouteParams = [];
+
     public bool $showDelete = false;
     public ?string $deleteRoute = null;
+
+    /**
+     * @var array<string, mixed>
+     */
     public array $deleteRouteParams = [];
+
     public ?string $entityId = null;
     public bool $isAdmin = false;
 
+    /**
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, mixed>
+     */
     #[PreMount]
     public function preMount(array $data): array
     {
@@ -36,7 +51,7 @@ class FormActions
             'deleteRoute' => null,
             'deleteRouteParams' => [],
             'entityId' => null,
-            'isAdmin' => false
+            'isAdmin' => false,
         ]);
 
         $resolver->setAllowedTypes('backRoute', 'string');
@@ -50,6 +65,6 @@ class FormActions
 
     public function getDeleteToken(): string
     {
-        return $this->entityId ? 'delete' . $this->entityId : '';
+        return $this->entityId ? 'delete'.$this->entityId : '';
     }
 }

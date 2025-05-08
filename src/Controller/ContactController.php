@@ -22,6 +22,12 @@ final class ContactController extends CustomerInfoController
         ]);
     }
 
+    /**
+     * @param \Knp\Component\Pager\Pagination\PaginationInterface<int, Contact> $pagination
+     * @param array<int, array<string, mixed>>                                  $columns
+     *
+     * @return array<string, mixed>
+     */
     protected function getIndexVars($pagination, array $columns = []): array
     {
         return $this->getIndexVarsTrait($pagination, [
@@ -33,6 +39,9 @@ final class ContactController extends CustomerInfoController
         ]);
     }
 
+    /**
+     * @return array<string, string|bool>
+     */
     protected function getRoute(): array
     {
         $route = parent::getRoute();
@@ -40,5 +49,4 @@ final class ContactController extends CustomerInfoController
 
         return $route;
     }
-
 }

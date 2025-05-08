@@ -29,7 +29,7 @@ class ResetPasswordController extends AbstractController
         private ResetPasswordHelperInterface $resetPasswordHelper,
         private EntityManagerInterface $entityManager,
         private string $resetPasswordEmail,
-        private string $resetPasswordSender
+        private string $resetPasswordSender,
     ) {
     }
 

@@ -19,7 +19,7 @@ class DocumentTypeController extends AbstractController
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly PaginatorInterface $paginator
+        private readonly PaginatorInterface $paginator,
     ) {
     }
 
@@ -36,7 +36,7 @@ class DocumentTypeController extends AbstractController
         return $this->render('crud/index.html.twig', $this->getIndexVars(
             $pagination,
             [
-                ['field' => 'label', 'label' => 'document_type.label', 'sortable' => true]
+                ['field' => 'label', 'label' => 'document_type.label', 'sortable' => true],
             ]
         ));
     }

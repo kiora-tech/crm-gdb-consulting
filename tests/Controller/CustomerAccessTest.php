@@ -61,14 +61,14 @@ class CustomerAccessTest extends WebTestCase
     {
         // Se connecter en tant qu'admin
         $this->loginAsAdmin();
-        
+
         // Récupérer tous les clients de la base de données pour vérifier l'accès
         $allCustomers = $this->entityManager->getRepository(Customer::class)->findAll();
-        
+
         // Vérifier que l'admin peut accéder à chaque client
         foreach ($allCustomers as $customer) {
-            $this->client->request('GET', '/customer/' . $customer->getId());
-            $this->assertResponseIsSuccessful("L'admin doit pouvoir accéder au client #" . $customer->getId());
+            $this->client->request('GET', '/customer/'.$customer->getId());
+            $this->assertResponseIsSuccessful("L'admin doit pouvoir accéder au client #".$customer->getId());
         }
     }
 
@@ -76,36 +76,29 @@ class CustomerAccessTest extends WebTestCase
     {
         // Se connecter en tant qu'utilisateur normal
         $this->loginAsUser();
-        
+
         // Récupérer l'utilisateur connecté
         $user = $this->entityManager->getRepository(User::class)
             ->findOneBy(['email' => 'user@test.com']);
-        
+
         // Récupérer tous les clients
         $allCustomers = $this->entityManager->getRepository(Customer::class)->findAll();
-        
+
         foreach ($allCustomers as $customer) {
-            $this->client->request('GET', '/customer/' . $customer->getId());
-            
+            $this->client->request('GET', '/customer/'.$customer->getId());
+
             // Si le client appartient à l'utilisateur ou n'est pas assigné, l'accès doit être autorisé
-            if ($customer->getUser() === $user || $customer->getUser() === null) {
+            if ($customer->getUser() === $user || null === $customer->getUser()) {
                 $this->assertResponseIsSuccessful(
-                    "L'utilisateur doit pouvoir accéder à son client ou à un client non assigné #" . $customer->getId()
+                    "L'utilisateur doit pouvoir accéder à son client ou à un client non assigné #".$customer->getId()
                 );
             } else {
                 // Sinon, l'accès doit être refusé (soit 403 Forbidden, soit 404 Not Found selon l'implémentation)
                 $this->assertResponseStatusCodeSame(
-                    403, 
-                    "L'utilisateur ne doit pas pouvoir accéder au client d'un autre utilisateur #" . $customer->getId()
+                    403,
+                    "L'utilisateur ne doit pas pouvoir accéder au client d'un autre utilisateur #".$customer->getId()
                 );
             }
         }
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        unset($this->databaseTool);
-        unset($this->entityManager);
     }
 }

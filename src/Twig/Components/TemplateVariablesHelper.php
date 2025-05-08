@@ -7,6 +7,9 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 #[AsTwigComponent]
 class TemplateVariablesHelper
 {
+    /**
+     * @return array<string, array<int, array<string, string>>>
+     */
     public function getVariables(): array
     {
         return [
@@ -37,7 +40,7 @@ class TemplateVariablesHelper
             'Commentaires' => [
                 ['var' => '${comments[0].note}', 'desc' => 'Texte du commentaire'],
                 ['var' => '${comments[0].createdAt}', 'desc' => 'Date du commentaire'],
-            ]
+            ],
         ];
     }
 }

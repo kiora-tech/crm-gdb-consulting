@@ -12,6 +12,6 @@ enum ProspectOrigin: string implements TranslatableInterface
 
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
-        return $translator->trans($this->value, locale:$locale);
+        return $translator->trans($this->value, locale: $locale);
     }
 }

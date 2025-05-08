@@ -32,8 +32,14 @@ class ClientSearch
             return [];
         }
 
+        $repository = $this->entityManager->getRepository(Customer::class);
+        // S'assurer que la méthode existe avant de l'appeler
+        if (!method_exists($repository, 'getQueryBuilder')) {
+            return [];
+        }
+
         /** @var Customer[] $result */
-        $result = $this->entityManager->getRepository(Customer::class)->getQueryBuilder()
+        $result = $repository->getQueryBuilder()
             ->andWhere(
                 'c.name LIKE :query OR 
                 e.type LIKE :query OR 

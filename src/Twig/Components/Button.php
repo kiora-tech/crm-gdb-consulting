@@ -2,9 +2,9 @@
 
 namespace App\Twig\Components;
 
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 use Symfony\UX\TwigComponent\Attribute\PreMount;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 #[AsTwigComponent]
 class Button
@@ -17,8 +17,16 @@ class Button
     public bool $outline = false;
     public bool $disabled = false;
     public ?string $link = null;
+    /**
+     * @var array<string, string|bool>
+     */
     public array $attributes = [];
 
+    /**
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, mixed>
+     */
     #[PreMount]
     public function preMount(array $data): array
     {
@@ -63,12 +71,12 @@ class Button
 
         // Ajouter la classe de thème
         $classes[] = $this->outline
-            ? 'btn-outline-' . $this->theme
-            : 'btn-' . $this->theme;
+            ? 'btn-outline-'.$this->theme
+            : 'btn-'.$this->theme;
 
         // Ajouter la classe de taille si définie
         if ($this->size) {
-            $classes[] = 'btn-' . $this->size;
+            $classes[] = 'btn-'.$this->size;
         }
 
         return implode(' ', $classes);
@@ -80,7 +88,7 @@ class Button
 
         // Ajouter la classe
         $attributes['class'] = isset($attributes['class'])
-            ? $attributes['class'] . ' ' . $this->getButtonClasses()
+            ? $attributes['class'].' '.$this->getButtonClasses()
             : $this->getButtonClasses();
 
         // Ajouter disabled si nécessaire
@@ -91,7 +99,10 @@ class Button
         // Construire la chaîne d'attributs
         return array_reduce(array_keys($attributes), function ($carry, $key) use ($attributes) {
             $value = $attributes[$key];
-            return $carry . ' ' . $key . '="' . htmlspecialchars($value) . '"';
+            // Convertir en chaîne avant d'appliquer htmlspecialchars
+            $stringValue = is_bool($value) ? ($value ? 'true' : 'false') : (string) $value;
+
+            return $carry.' '.$key.'="'.htmlspecialchars($stringValue).'"';
         }, '');
     }
 }

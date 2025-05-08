@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Fta;
 use App\Form\FtaType;
-use App\Repository\FTARepository;
+use App\Repository\FtaRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class FtaController extends AbstractController
 {
     #[Route(name: 'app_fta_index', methods: ['GET'])]
-    public function index(FTARepository $fTARepository): Response
+    public function index(FtaRepository $fTARepository): Response
     {
         return $this->render('fta/index.html.twig', [
             'ftas' => $fTARepository->findAll(),

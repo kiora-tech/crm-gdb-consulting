@@ -17,7 +17,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailRecipientInterface
 {
-
     public const string ROLE_USER = 'ROLE_USER';
     public const string ROLE_ADMIN = 'ROLE_ADMIN';
     #[ORM\Id]
@@ -39,7 +38,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailRe
      */
     #[ORM\Column]
     private ?string $password = null;
-
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: false)]
@@ -68,6 +66,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailRe
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(?int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getEmail(): string
@@ -225,6 +230,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailRe
 
     public function __toString(): string
     {
-        return $this->name . ' ' . $this->lastName;
+        return $this->name.' '.$this->lastName;
     }
 }

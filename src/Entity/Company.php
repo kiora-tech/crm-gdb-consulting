@@ -49,7 +49,7 @@ class Company
 
     public function setName(?string $name): static
     {
-        $this->name = (string)$name;
+        $this->name = (string) $name;
 
         return $this;
     }

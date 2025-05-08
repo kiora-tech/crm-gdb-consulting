@@ -3,22 +3,17 @@
 namespace App\Form;
 
 use App\Data\CustomerSearchData;
-use App\Entity\EnergyProvider;
 use App\Entity\ProspectOrigin;
 use App\Entity\ProspectStatus;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\DateIntervalType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
@@ -26,7 +21,6 @@ class CustomerSearchType extends AbstractType
 {
     public function __construct(private readonly RouterInterface $router, private readonly AuthorizationCheckerInterface $security)
     {
-
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -36,8 +30,8 @@ class CustomerSearchType extends AbstractType
                 'label' => false,
                 'required' => false,
                 'attr' => [
-                    'placeholder' => 'customer.name'
-                ]
+                    'placeholder' => 'customer.name',
+                ],
             ])
             ->add(
                 'status',
@@ -62,16 +56,16 @@ class CustomerSearchType extends AbstractType
                 'label' => false,
                 'required' => false,
                 'attr' => [
-                    'placeholder' => 'customer.lead_origin'
-                ]
+                    'placeholder' => 'customer.lead_origin',
+                ],
             ])
             ->add('contactName', TextType::class, [
                 'label' => false,
                 'required' => false,
 
                 'attr' => [
-                    'placeholder' => 'contact.name'
-                ]
+                    'placeholder' => 'contact.name',
+                ],
             ])
             ->add('contractEndAfter', DateType::class, [
                 'widget' => 'single_text',
@@ -88,14 +82,14 @@ class CustomerSearchType extends AbstractType
                 'required' => false,
 
                 'attr' => [
-                    'placeholder' => 'energy.code'
-                ]
+                    'placeholder' => 'energy.code',
+                ],
             ]);
         if ($this->security->isGranted('ROLE_ADMIN')) {
             $builder->add('user', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => function (User $user) {
-                    return (string)$user;
+                    return (string) $user;
                 },
                 'label' => false,
                 'placeholder' => 'user.select',

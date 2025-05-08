@@ -16,12 +16,12 @@ readonly class ImportService
         private LoggerInterface $logger,
         private SluggerInterface $slugger,
         #[Autowire('%kernel.project_dir%/var/import')]
-        private string $importDirectory
+        private string $importDirectory,
     ) {
     }
 
     /**
-     * Initie l'importation d'un fichier Excel
+     * Initie l'importation d'un fichier Excel.
      */
     public function importFromUpload(UploadedFile $file, int $userId): string
     {
@@ -38,7 +38,7 @@ readonly class ImportService
     }
 
     /**
-     * Valide que le fichier est bien un Excel
+     * Valide que le fichier est bien un Excel.
      */
     private function validateExcelFile(UploadedFile $file): void
     {
@@ -49,14 +49,12 @@ readonly class ImportService
         ];
 
         if (!in_array($file->getMimeType(), $allowedMimeTypes)) {
-            throw new \InvalidArgumentException(
-                'Le fichier doit être au format Excel (.xls, .xlsx ou .ods)'
-            );
+            throw new \InvalidArgumentException('Le fichier doit être au format Excel (.xls, .xlsx ou .ods)');
         }
     }
 
     /**
-     * Sauvegarde le fichier téléchargé dans un répertoire temporaire
+     * Sauvegarde le fichier téléchargé dans un répertoire temporaire.
      */
     private function saveUploadedFile(UploadedFile $file): string
     {
@@ -68,22 +66,22 @@ readonly class ImportService
         // Générer un nom de fichier unique
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($originalFilename);
-        $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
+        $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
 
         // Déplacer le fichier
-        $filePath = $this->importDirectory . '/' . $newFilename;
+        $filePath = $this->importDirectory.'/'.$newFilename;
         $file->move($this->importDirectory, $newFilename);
 
         $this->logger->info('Fichier importé sauvegardé', [
             'original_name' => $file->getClientOriginalName(),
-            'path' => $filePath
+            'path' => $filePath,
         ]);
 
         return $filePath;
     }
 
     /**
-     * Démarre le processus d'importation via le message bus
+     * Démarre le processus d'importation via le message bus.
      */
     private function startImportProcess(string $filePath, int $userId, string $originalFilename): void
     {
@@ -92,7 +90,7 @@ readonly class ImportService
 
         $this->logger->info('Processus d\'importation démarré', [
             'file' => $originalFilename,
-            'path' => $filePath
+            'path' => $filePath,
         ]);
     }
 }

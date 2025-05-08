@@ -11,43 +11,83 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFixtures extends Fixture implements DependentFixtureInterface
 {
+    private const USERS = [
+        'admin_user' => [
+            'name' => 'Admin',
+            'lastname' => 'User',
+            'email' => 'admin@test.com',
+            'password' => 'password',
+            'roles' => ['ROLE_USER', 'ROLE_ADMIN'],
+            'company' => 'company_1',
+        ],
+        'regular_user' => [
+            'name' => 'Regular',
+            'lastname' => 'User',
+            'email' => 'user@test.com',
+            'password' => 'password',
+            'roles' => ['ROLE_USER'],
+            'company' => 'company_1',
+        ],
+        'manager_user' => [
+            'name' => 'Jean',
+            'lastname' => 'Dupont',
+            'email' => 'jean.dupont@test.com',
+            'password' => 'password',
+            'roles' => ['ROLE_USER'],
+            'company' => 'company_2',
+        ],
+        'sales_user' => [
+            'name' => 'Marie',
+            'lastname' => 'Martin',
+            'email' => 'marie.martin@test.com',
+            'password' => 'password',
+            'roles' => ['ROLE_USER'],
+            'company' => 'company_2',
+        ],
+        'advisor_user' => [
+            'name' => 'Pierre',
+            'lastname' => 'Leclerc',
+            'email' => 'pierre.leclerc@test.com',
+            'password' => 'password',
+            'roles' => ['ROLE_USER'],
+            'company' => 'company_3',
+        ],
+        'support_user' => [
+            'name' => 'Sophie',
+            'lastname' => 'Bernard',
+            'email' => 'sophie.bernard@test.com',
+            'password' => 'password',
+            'roles' => ['ROLE_USER'],
+            'company' => 'company_4',
+        ],
+    ];
+
     public function __construct(
-        private readonly UserPasswordHasherInterface $passwordHasher
+        private readonly UserPasswordHasherInterface $passwordHasher,
     ) {
     }
 
     public function load(ObjectManager $manager): void
     {
-        // Create admin user
-        $admin = new User();
-        $admin->setName('Admin');
-        $admin->setLastname('User');
-        $admin->setEmail('admin@test.com');
-        $admin->setPassword($this->passwordHasher->hashPassword(
-            $admin,
-            'password'
-        ));
-        $admin->setCompany($this->getReference('company_1', Company::class));
-        $admin->setRoles(['ROLE_USER', 'ROLE_ADMIN']);
-        $manager->persist($admin);
-        
-        // Create regular user
-        $user = new User();
-        $user->setName('Regular');
-        $user->setLastname('User');
-        $user->setEmail('user@test.com');
-        $user->setPassword($this->passwordHasher->hashPassword(
-            $user,
-            'password'
-        ));
-        $user->setCompany($this->getReference('company_1', Company::class));
-        $user->setRoles(['ROLE_USER']);
-        $manager->persist($user);
-        
-        $manager->flush();
+        foreach (self::USERS as $reference => $userData) {
+            $user = new User();
+            $user->setName($userData['name']);
+            $user->setLastName($userData['lastname']);
+            $user->setEmail($userData['email']);
+            $user->setPassword($this->passwordHasher->hashPassword(
+                $user,
+                $userData['password']
+            ));
+            $user->setCompany($this->getReference($userData['company'], Company::class));
+            $user->setRoles($userData['roles']);
 
-        $this->setReference('admin_user', $admin);
-        $this->setReference('regular_user', $user);
+            $manager->persist($user);
+
+            // Ajouter une référence pour utilisation ultérieure
+            $this->addReference($reference, $user);
+        }
+
+        $manager->flush();
     }
 
     public function getDependencies(): array

@@ -28,7 +28,7 @@ class UserType extends AbstractType
             )
             ->add('plainPassword', PasswordType::class, [
                 'mapped' => false,
-                'required' => false
+                'required' => false,
             ])
             ->add('company', EntityType::class, [
                 'class' => Company::class,

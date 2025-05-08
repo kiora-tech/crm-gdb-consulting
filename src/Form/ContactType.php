@@ -8,14 +8,9 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Routing\RouterInterface;
 
 class ContactType extends AbstractType
 {
-    public function __construct(private readonly RouterInterface $router)
-    {
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -32,16 +27,15 @@ class ContactType extends AbstractType
                 'autocomplete' => true,
             ]);
         }
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Contact::class,
-            'customer' => null
+            'customer' => null,
         ]);
 
-        $resolver->setAllowedValues('customer', fn($value) => $value instanceof Customer || $value === null);
+        $resolver->setAllowedValues('customer', fn ($value) => $value instanceof Customer || null === $value);
     }
 }

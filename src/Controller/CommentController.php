@@ -8,8 +8,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/comment', name: 'app_comment')]
 final class CommentController extends CustomerInfoController
 {
-   public function getEntityClass(): string
-   {
-       return Comment::class;
-   }
+    public function getEntityClass(): string
+    {
+        return Comment::class;
+    }
 }

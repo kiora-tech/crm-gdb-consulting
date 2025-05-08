@@ -18,7 +18,7 @@ class HomeController extends AbstractController
     public function index(EntityManagerInterface $entityManager): Response
     {
         // Récupérer les données pour le tableau de bord
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->getUser();
         $isAdmin = $user && in_array('ROLE_ADMIN', $user->getRoles());
 
@@ -101,7 +101,6 @@ class HomeController extends AbstractController
             ->where('c.worth IS NOT NULL')
             ->getQuery()
             ->getSingleScalarResult() ?? 0;
-
 
         $monthlyWonCustomers = $customerRepo->createQueryBuilder('c')
             ->select('COUNT(c.id)')

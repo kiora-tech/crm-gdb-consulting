@@ -17,7 +17,7 @@ class DropzoneForm extends AbstractType
         $builder
             ->add('type', EntityType::class, [
                 'class' => \App\Entity\DocumentType::class,
-                'label' => 'document.type'
+                'label' => 'document.type',
             ])
             ->add('file', FileType::class, [
                 'label' => 'document.file',
@@ -27,7 +27,7 @@ class DropzoneForm extends AbstractType
 
         if (!$options['customer'] instanceof Customer) {
             $builder->add('customer', EntityType::class, [
-                'class' => Customer::class
+                'class' => Customer::class,
             ]);
         }
     }

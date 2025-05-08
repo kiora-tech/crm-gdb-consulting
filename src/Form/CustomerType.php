@@ -16,8 +16,8 @@ class CustomerType extends AbstractType
 {
     public function __construct(private readonly Security $security)
     {
-
     }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -29,23 +29,23 @@ class CustomerType extends AbstractType
             ])
             ->add('origin', EnumType::class, [
                 'class' => ProspectOrigin::class,
-                'choice_label' => fn(ProspectOrigin $origin) => $origin->value,
+                'choice_label' => fn (ProspectOrigin $origin) => $origin->value,
                 'label' => 'customer.origin',
             ])
             ->add('status', EnumType::class, [
                 'class' => ProspectStatus::class,
-                'choice_label' => fn(ProspectStatus $status) => $status->value,
+                'choice_label' => fn (ProspectStatus $status) => $status->value,
                 'label' => 'customer.status',
             ])
             ->add('canalSignature', EnumType::class, [
                 'class' => CanalSignature::class,
-                'choice_label' => fn(CanalSignature $status) => $status->value,
+                'choice_label' => fn (CanalSignature $status) => $status->value,
                 'label' => 'customer.canal_signature',
             ])
             ->add('action', null, [
                 'label' => 'customer.action',
             ])
-            ->add('worth',  null, [
+            ->add('worth', null, [
                 'label' => 'customer.worth',
             ])
             ->add('commision', null, [
@@ -61,7 +61,7 @@ class CustomerType extends AbstractType
                 'label' => 'customer.company_group',
             ]);
 
-        if($this->security->isGranted('ROLE_ADMIN')){
+        if ($this->security->isGranted('ROLE_ADMIN')) {
             $builder->add('user', null, [
                 'label' => 'customer.commercial',
             ]);

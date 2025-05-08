@@ -16,11 +16,14 @@ class EnergyProviderRepository extends ServiceEntityRepository
         parent::__construct($registry, EnergyProvider::class);
     }
 
+    /**
+     * @return EnergyProvider[] Returns an array of EnergyProvider objects
+     */
     public function findBySearchTerm(string $searchTerm): array
     {
         return $this->createQueryBuilder('p')
             ->andWhere('p.name LIKE :term')
-            ->setParameter('term', '%' . $searchTerm . '%')
+            ->setParameter('term', '%'.$searchTerm.'%')
             ->orderBy('p.name', 'ASC')
             ->getQuery()
             ->getResult();

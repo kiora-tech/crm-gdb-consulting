@@ -5,8 +5,6 @@ namespace App\Controller;
 use App\Entity\Customer;
 use App\Entity\Energy;
 use App\Entity\EnergyType;
-use Doctrine\ORM\EntityManagerInterface;
-use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,23 +13,29 @@ use Symfony\UX\Turbo\TurboBundle;
 #[Route('/energy', name: 'app_energy')]
 final class EnergyController extends CustomerInfoController
 {
-   public function getEntityClass(): string
-   {
-       return Energy::class;
-   }
+    public function getEntityClass(): string
+    {
+        return Energy::class;
+    }
 
     protected function getFormVars($form, ?object $entity = null): array
     {
         $vars = parent::getFormVars($form, $entity);
         $vars['template_path'] = 'energy/_form.html.twig';
+
         return $vars;
     }
 
+    /**
+     * @param \Symfony\Component\Form\FormInterface<mixed> $form
+     *
+     * @return array<string, mixed>
+     */
     protected function getModalFormVars($form, ?object $entity = null): array
     {
         return [
             'template_path' => 'energy/_form.html.twig',
-            'back_route' => 'app_customer_index'
+            'back_route' => 'app_customer_index',
         ];
     }
 
@@ -42,16 +46,16 @@ final class EnergyController extends CustomerInfoController
         $entity->setCustomer($customer);
 
         // Si un type d'énergie est spécifié dans la requête, on l'applique à l'entité
-        if ($this->getEntityClass() === Energy::class && $request->query->has('energyType')) {
+        if (Energy::class === $this->getEntityClass() && $request->query->has('energyType')) {
             $energyType = $request->query->get('energyType');
             if (in_array($energyType, ['ELEC', 'GAZ'])) {
-                $entity->setType(\App\Entity\EnergyType::from($energyType));
+                $entity->setType(EnergyType::from($energyType));
             }
         }
 
         $form = $this->createForm($this->getFormTypeClass(), $entity, [
             'customer' => $customer,
-            'action' => $this->generateFormAction($entity, $customer)
+            'action' => $this->generateFormAction($entity, $customer),
         ]);
         $form->handleRequest($request);
 
@@ -75,7 +79,7 @@ final class EnergyController extends CustomerInfoController
                     'customer' => $customer,
                     'template_path' => 'energy/_form.html.twig',
                 ], new Response(null, 422, [
-                    'Content-Type' => 'text/vnd.turbo-stream.html'
+                    'Content-Type' => 'text/vnd.turbo-stream.html',
                 ]));
             }
         }
@@ -90,16 +94,16 @@ final class EnergyController extends CustomerInfoController
         $entity->setCustomer($customer);
 
         // Si un type d'énergie est spécifié dans la requête, on l'applique à l'entité
-        if ($this->getEntityClass() === Energy::class && $request->query->has('energyType')) {
+        if (Energy::class === $this->getEntityClass() && $request->query->has('energyType')) {
             $energyType = $request->query->get('energyType');
             if (in_array($energyType, ['ELEC', 'GAZ'])) {
-                $entity->setType(\App\Entity\EnergyType::from($energyType));
+                $entity->setType(EnergyType::from($energyType));
             }
         }
 
         $form = $this->createForm($this->getFormTypeClass(), $entity, [
             'customer' => $customer,
-            'action' => $this->generateFormAction($entity, $customer)
+            'action' => $this->generateFormAction($entity, $customer),
         ]);
 
         // Traiter la soumission du formulaire
@@ -113,7 +117,7 @@ final class EnergyController extends CustomerInfoController
                 if ($request->isXmlHttpRequest()) {
                     return $this->json([
                         'success' => true,
-                        'redirect' => $this->generateUrl('app_customer_show', ['id' => $customer->getId()])
+                        'redirect' => $this->generateUrl('app_customer_show', ['id' => $customer->getId()]),
                     ]);
                 }
 
@@ -125,25 +129,25 @@ final class EnergyController extends CustomerInfoController
         $vars = [
             'form' => $form->createView(),
             'customer' => $customer,
-            'page_prefix' => $this->getPagePrefix()
+            'page_prefix' => $this->getPagePrefix(),
         ];
 
-        if (method_exists($this, 'getModalFormVars')) {
-            $vars = array_merge($vars, $this->getModalFormVars($form, $entity));
-        }
+        $vars = array_merge($vars, $this->getModalFormVars($form, $entity));
 
         return $this->render('crud/_modal_form.html.twig', $vars);
     }
 
     /**
-     * Méthode appelée pour préparer l'entité avant la création du formulaire
+     * Méthode appelée pour préparer l'entité avant la création du formulaire.
+     *
+     * @override
      */
-    protected function prepareEntity(Energy $entity, Request $request): void
+    protected function prepareEntityIfExists(object $entity, Request $request): void
     {
         // Si un type d'énergie est spécifié dans la requête, on l'applique à l'entité
         if ($request->query->has('energyType')) {
             $energyType = $request->query->get('energyType');
-            if (in_array($energyType, ['ELEC', 'GAZ']) && (!$entity->getId() || $entity->getType() === null)) {
+            if (in_array($energyType, ['ELEC', 'GAZ']) && (!$entity->getId() || null === $entity->getType())) {
                 $entity->setType(EnergyType::from($energyType));
             }
         }

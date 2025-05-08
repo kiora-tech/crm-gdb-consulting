@@ -15,9 +15,16 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/company')]
 class CompanyController extends AbstractController
 {
+    /**
+     * @param PaginationService<int, Company> $paginationService
+     */
     #[Route('/', name: 'app_company_index', methods: ['GET'])]
-    public function index(CompanyRepository $companyRepository, PaginationService $paginationService, Request $request): Response
-    {
+    /** @phpstan-param PaginationService<int, Company> $paginationService */
+    public function index(
+        CompanyRepository $companyRepository,
+        PaginationService $paginationService,
+        Request $request,
+    ): Response {
         $query = $companyRepository->findAll();
 
         $companies = $paginationService->paginate($query, $request);
@@ -76,7 +83,8 @@ class CompanyController extends AbstractController
     #[Route('/{id}', name: 'app_company_delete', methods: ['POST'])]
     public function delete(Request $request, Company $company, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$company->getId(), $request->request->get('_token'))) {
+        $token = $request->request->get('_token');
+        if (null !== $token && is_string($token) && $this->isCsrfTokenValid('delete'.$company->getId(), $token)) {
             $entityManager->remove($company);
             $entityManager->flush();
         }

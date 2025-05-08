@@ -9,10 +9,23 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 class Comment
 {
+    /**
+     * @var int|null ID is set by Doctrine ORM and is initially null
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    /**
+     * Setter for id - mostly used for testing or data fixtures.
+     */
+    public function setId(?int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     #[ORM\Column(type: Types::TEXT, length: 65535)]
     private ?string $note = null;
@@ -80,6 +93,7 @@ class Comment
     public function setUpdatedAt(?\DateTimeInterface $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
         return $this;
     }
 

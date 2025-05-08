@@ -8,6 +8,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Build: `make build` or `docker-compose up -d`
 - Update DB: `docker-compose exec php bin/console doctrine:migrations:migrate`
 - Load fixtures: `docker-compose exec php bin/console doctrine:fixtures:load`
+- Quality checks: `docker-compose exec php vendor/bin/grumphp run` (runs PHPStan and PHPUnit)
+
+## IMPORTANT: Always run GrumPHP after making changes
+After making any code changes, ALWAYS run GrumPHP to verify that your changes pass all quality checks:
+```
+docker-compose exec php vendor/bin/grumphp run
+```
+This will run PHPStan static analysis and PHPUnit tests to ensure code quality and prevent regressions.
 
 ## Code Style Guidelines
 - PSR-12 for formatting

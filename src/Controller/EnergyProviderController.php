@@ -11,13 +11,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+
 #[Route('/energy-provider', name: 'app_energy_provider')]
 class EnergyProviderController extends BaseCrudController
 {
     public function __construct(
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
-        private readonly RequestStack $requestStack
+        private readonly RequestStack $requestStack,
     ) {
         parent::__construct($entityManager, $paginator);
     }
@@ -60,7 +61,8 @@ class EnergyProviderController extends BaseCrudController
         $targetId = $request->request->get('target_provider');
 
         if (!$sourceId || !$targetId || $sourceId === $targetId) {
-            $this->addFlash('error','energy_provider.merge.invalid_selection');
+            $this->addFlash('error', 'energy_provider.merge.invalid_selection');
+
             return $this->redirectToRoute('app_energy_provider_merge_form');
         }
 
@@ -69,6 +71,7 @@ class EnergyProviderController extends BaseCrudController
 
         if (!$sourceProvider || !$targetProvider) {
             $this->addFlash('error', 'energy_provider.merge.provider_not_found');
+
             return $this->redirectToRoute('app_energy_provider_merge_form');
         }
 
@@ -88,7 +91,7 @@ class EnergyProviderController extends BaseCrudController
             $this->addFlash('success', 'energy_provider.merge.success');
         } catch (\Exception $e) {
             $this->entityManager->rollback();
-            $this->addFlash('error','energy_provider.merge.error');
+            $this->addFlash('error', 'energy_provider.merge.error');
         }
 
         return $this->redirectToRoute('app_energy_provider_index');
@@ -159,8 +162,9 @@ class EnergyProviderController extends BaseCrudController
             if (!$energyProvider->getEnergies()->isEmpty()) {
                 $this->addFlash(
                     'error',
-                        'energy_provider.delete.error_in_use'
+                    'energy_provider.delete.error_in_use'
                 );
+
                 return $this->redirectToRoute('app_energy_provider_index');
             }
 
@@ -188,10 +192,10 @@ class EnergyProviderController extends BaseCrudController
         return [
             'form' => $form->createView(),
             'entity' => $entity,
-            'back_route' => $routePrefix . '_index',
-            'delete_route' => $routePrefix . '_delete',
+            'back_route' => $routePrefix.'_index',
+            'delete_route' => $routePrefix.'_delete',
             'page_prefix' => $this->getPagePrefix(),
-            'template_path' => null
+            'template_path' => null,
         ];
     }
 
@@ -206,9 +210,9 @@ class EnergyProviderController extends BaseCrudController
         $sort = $this->getRequestSort();
         $order = $this->getRequestOrder();
 
-        if ($sort === 'name') {
+        if ('name' === $sort) {
             $qb->orderBy('e.name', $order);
-        } elseif ($sort === 'energies.count') {
+        } elseif ('energies.count' === $sort) {
             $qb->orderBy('energiesCount', $order);
         } else {
             // Tri par défaut
@@ -227,12 +231,14 @@ class EnergyProviderController extends BaseCrudController
     private function getRequestSort(): string
     {
         $request = $this->requestStack->getCurrentRequest();
+
         return $request ? $request->query->get('sort', 'name') : 'name';
     }
 
     private function getRequestOrder(): string
     {
         $request = $this->requestStack->getCurrentRequest();
+
         return $request ? strtoupper($request->query->get('order', 'ASC')) : 'ASC';
     }
 }

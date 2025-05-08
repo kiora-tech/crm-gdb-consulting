@@ -9,9 +9,9 @@ use App\Entity\Energy;
 use App\Entity\EnergyProvider;
 use App\Entity\EnergyType;
 use App\Entity\ProspectOrigin;
-use App\Entity\ProspectStatus;
 use App\Entity\User;
 use App\Message\ProcessExcelBatchMessage;
+use App\Repository\ContactRepository;
 use App\Service\ExcelBatchReadFilter;
 use App\Service\ImportErrorTracker;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,7 +19,6 @@ use Doctrine\Persistence\ManagerRegistry;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -33,7 +32,7 @@ class ProcessExcelBatchMessageHandler
         private readonly ManagerRegistry $doctrine,
         private readonly LoggerInterface $logger,
         private readonly ImportErrorTracker $errorTracker,
-        private readonly ValidatorInterface $validator
+        private readonly ValidatorInterface $validator,
     ) {
     }
 
@@ -49,7 +48,7 @@ class ProcessExcelBatchMessageHandler
         $this->logger->info('Processing batch', [
             'file' => $filePath,
             'start_row' => $startRow,
-            'end_row' => $endRow
+            'end_row' => $endRow,
         ]);
 
         try {
@@ -65,27 +64,27 @@ class ProcessExcelBatchMessageHandler
 
             // Obtenir toutes les données des lignes et les mettre en mémoire
             $rowsData = [];
-            for ($rowIndex = $startRow; $rowIndex <= $endRow; $rowIndex++) {
+            for ($rowIndex = $startRow; $rowIndex <= $endRow; ++$rowIndex) {
                 try {
                     // Récupérer les données brutes AVANT le filtrage
                     $rawRowData = $worksheet->rangeToArray(
-                        'A' . $rowIndex . ':' . $worksheet->getHighestColumn() . $rowIndex,
+                        'A'.$rowIndex.':'.$worksheet->getHighestColumn().$rowIndex,
                         null,
                         true,
                         false
                     )[0];
 
-                    $rowData = $this->getRowData($worksheet, $rowIndex, $headerRow);
+                    $rowData = $this->getRowData($worksheet, $rowIndex, $message->getHeaderRow());
 
                     if (!empty($rowData['name'])) {
                         $rowsData[] = [
                             'rowIndex' => $rowIndex,
-                            'data' => $rowData
+                            'data' => $rowData,
                         ];
                     } else {
                         $this->logger->warning('Skipping row due to missing name', [
                             'row' => $rowIndex,
-                            'raw_data' => $rawRowData
+                            'raw_data' => $rawRowData,
                         ]);
                         // Enregistrer comme warning avec les données brutes
                         $this->errorTracker->trackWarning(
@@ -95,13 +94,13 @@ class ProcessExcelBatchMessageHandler
                         );
                     }
                 } catch (\Exception $e) {
-                    $this->logger->error('Error getting row data: ' . $e->getMessage(), [
+                    $this->logger->error('Error getting row data: '.$e->getMessage(), [
                         'row' => $rowIndex,
-                        'exception' => $e
+                        'exception' => $e,
                     ]);
                     // Enregistrer l'erreur avec les données brutes disponibles
                     $rawData = $worksheet->rangeToArray(
-                        'A' . $rowIndex . ':' . $worksheet->getHighestColumn() . $rowIndex,
+                        'A'.$rowIndex.':'.$worksheet->getHighestColumn().$rowIndex,
                         null,
                         true,
                         false
@@ -109,7 +108,7 @@ class ProcessExcelBatchMessageHandler
                     $this->errorTracker->trackException(
                         $rowIndex,
                         ['raw_data' => $rawData],
-                        'Erreur lors de l\'extraction des données de la ligne: ' . $e->getMessage(),
+                        'Erreur lors de l\'extraction des données de la ligne: '.$e->getMessage(),
                         $e
                     );
                 }
@@ -131,45 +130,48 @@ class ProcessExcelBatchMessageHandler
                 $errorFilePath = $this->errorTracker->exportErrorReport();
                 $this->logger->info('Error report generated', [
                     'error_file' => $errorFilePath,
-                    'errors' => $errorSummary
+                    'errors' => $errorSummary,
                 ]);
             }
 
             $this->logger->info('Batch processed successfully', [
                 'start_row' => $startRow,
                 'end_row' => $endRow,
-                'errors_found' => $errorSummary['total_errors']
+                'errors_found' => $errorSummary['total_errors'],
             ]);
         } catch (\Exception $e) {
-            $this->logger->error('Error processing batch: ' . $e->getMessage(), [
+            $this->logger->error('Error processing batch: '.$e->getMessage(), [
                 'start_row' => $startRow,
                 'end_row' => $endRow,
-                'exception' => $e
+                'exception' => $e,
             ]);
             throw $e;
         }
     }
 
     /**
-     * Traite un lot de lignes avec un EntityManager frais
+     * Traite un lot de lignes avec un EntityManager frais.
+     *
+     * @param array<int, array{rowIndex: int, data: array<string, mixed>}> $rows
      */
     private function processBatch(array $rows, int $userId): void
     {
-
         try {
             // Pour chaque groupe de lignes
             foreach ($rows as $row) {
                 // Obtenir un EntityManager frais pour chaque ligne problématique
+                /** @var EntityManagerInterface $entityManager */
                 $entityManager = $this->doctrine->getManager();
 
-                if (!$entityManager->isOpen()) {
+                if (!$this->isEntityManagerOpen($entityManager)) {
                     $this->doctrine->resetManager();
+                    /** @var EntityManagerInterface $entityManager */
                     $entityManager = $this->doctrine->getManager();
                 }
 
                 $this->logger->debug('Processing batch', [
                     'row' => $row['rowIndex'],
-                    'data' => $row['data']
+                    'data' => $row['data'],
                 ]);
 
                 try {
@@ -178,28 +180,27 @@ class ProcessExcelBatchMessageHandler
                     // Flush après chaque ligne réussie pour éviter de perdre le travail déjà fait
                     $entityManager->flush();
                 } catch (\Exception $e) {
-
                     // Log et tracking de l'erreur
-                    $this->logger->error('Error processing row: ' . $e->getMessage(), [
+                    $this->logger->error('Error processing row: '.$e->getMessage(), [
                         'row' => $row['rowIndex'],
                         'data' => $row['data'],
-                        'exception' => $e
+                        'exception' => $e,
                     ]);
 
                     $this->errorTracker->trackException(
                         $row['rowIndex'],
                         $row['data'],
-                        'Erreur lors du traitement de la ligne: ' . $e->getMessage() . ' ('.$e->getCode().')',
+                        'Erreur lors du traitement de la ligne: '.$e->getMessage().' ('.$e->getCode().')',
                         $e
                     );
 
                     // Annuler la transaction si active
-                    if ($entityManager->isOpen() && $entityManager->getConnection()->isTransactionActive()) {
+                    if ($this->isTransactionActive($entityManager)) {
                         $entityManager->getConnection()->rollBack();
                     }
 
                     // Nettoyer l'EM et le réinitialiser
-                    if ($entityManager->isOpen()) {
+                    if ($this->isEntityManagerOpen($entityManager)) {
                         $entityManager->clear();
                     }
 
@@ -209,21 +210,24 @@ class ProcessExcelBatchMessageHandler
             }
         } catch (\Exception $e) {
             // Log l'erreur au niveau du lot
-            $this->logger->error('Error processing batch: ' . $e->getMessage(), [
+            $this->logger->error('Error processing batch: '.$e->getMessage(), [
                 'exception' => $e,
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             // S'assurer que l'erreur est bien enregistrée dans le rapport
             $this->errorTracker->trackException(
                 0, // Ligne inconnue pour une erreur de lot
                 ['batch_error' => true],
-                'Erreur lors du traitement du lot: ' . $e->getMessage(),
+                'Erreur lors du traitement du lot: '.$e->getMessage(),
                 $e
             );
         }
     }
 
+    /**
+     * @param array<string, mixed> $rowData
+     */
     private function processRow(EntityManagerInterface $entityManager, int $rowIndex, array $rowData, int $userId): void
     {
         // Log pour déboguer
@@ -231,7 +235,7 @@ class ProcessExcelBatchMessageHandler
 
         // Vérifier que les données minimales sont présentes
         if (empty($rowData['name'])) {
-            throw new \InvalidArgumentException("Le nom du client est obligatoire");
+            throw new \InvalidArgumentException('Le nom du client est obligatoire');
         }
 
         // Transaction pour cette ligne uniquement
@@ -239,11 +243,10 @@ class ProcessExcelBatchMessageHandler
         $connection->beginTransaction();
 
         try {
-
             // Créer ou récupérer le client
             $customer = $this->getOrCreateCustomer($entityManager, $rowData['name'], (string) $rowData['siret'], $rowData['lead_origin'] ?? '', $userId);
 
-            if(!empty($rowData['contact'])){
+            if (!empty($rowData['contact'])) {
                 $this->processContact($entityManager, $customer, $rowData);
             }
 
@@ -262,9 +265,9 @@ class ProcessExcelBatchMessageHandler
             if (count($violations) > 0) {
                 $errorMessages = [];
                 foreach ($violations as $violation) {
-                    $errorMessages[] = $violation->getPropertyPath() . ': ' . $violation->getMessage();
+                    $errorMessages[] = $violation->getPropertyPath().': '.$violation->getMessage();
                 }
-                throw new \InvalidArgumentException('Validation failed: ' . implode(', ', $errorMessages));
+                throw new \InvalidArgumentException('Validation failed: '.implode(', ', $errorMessages));
             }
 
             // Commettre la transaction
@@ -280,11 +283,16 @@ class ProcessExcelBatchMessageHandler
         }
     }
 
+    /**
+     * @param array<int|string, mixed> $headerRow
+     *
+     * @return array<string, mixed>
+     */
     private function getRowData(Worksheet $worksheet, int $rowIndex, array $headerRow): array
     {
         // Récupérer les données de la ligne
         $rowArray = $worksheet->rangeToArray(
-            'A' . $rowIndex . ':' . $worksheet->getHighestColumn() . $rowIndex,
+            'A'.$rowIndex.':'.$worksheet->getHighestColumn().$rowIndex,
             null,
             true,
             false
@@ -294,15 +302,18 @@ class ProcessExcelBatchMessageHandler
         $rowData = [];
         foreach ($headerRow as $colIndex => $headerName) {
             // Sauter les cellules vides dans l'en-tête
-            if (empty($headerName) || !is_string($headerName)) {
+            if (empty($headerName)) {
                 continue;
             }
 
-            $normalizedKey = $this->normalizeHeaderKey($headerName);
+            // Convertir en chaîne si ce n'est pas déjà une chaîne
+            $headerStr = is_string($headerName) ? $headerName : (string) $headerName;
+
+            $normalizedKey = $this->normalizeHeaderKey($headerStr);
             $value = $rowArray[$colIndex] ?? null;
 
             // Traitement spécifique des valeurs
-            if ($normalizedKey === 'contract_end' && is_numeric($value)) {
+            if ('contract_end' === $normalizedKey && is_numeric($value)) {
                 // Convertir les dates Excel (nombre de jours depuis 1900-01-01)
                 $value = $this->convertExcelDate($value);
             }
@@ -311,13 +322,16 @@ class ProcessExcelBatchMessageHandler
         }
         $this->logger->debug('Row data', [
             'row_index' => $rowIndex,
-            'data' => $rowData
+            'data' => $rowData,
         ]);
+
         return $rowData;
     }
 
     /**
-     * Convertit un nombre Excel en objet DateTime
+     * Convertit un nombre Excel en objet DateTime.
+     *
+     * @param int|float|string|null $excelDate
      */
     private function convertExcelDate($excelDate): ?\DateTime
     {
@@ -330,11 +344,13 @@ class ProcessExcelBatchMessageHandler
             $unixTimestamp = ($excelDate - 25569) * 86400;
             $date = new \DateTime();
             $date->setTimestamp($unixTimestamp);
+
             return $date;
         } catch (\Exception $e) {
-            $this->logger->warning('Impossible de convertir la date Excel: ' . $excelDate, [
-                'error' => $e->getMessage()
+            $this->logger->warning('Impossible de convertir la date Excel: '.$excelDate, [
+                'error' => $e->getMessage(),
             ]);
+
             return null;
         }
     }
@@ -388,15 +404,15 @@ class ProcessExcelBatchMessageHandler
 
         // Limiter la taille si nécessaire
         if (strlen($name) > 255) {
-            $name = substr($name, 0, 252) . '...';
+            $name = substr($name, 0, 252).'...';
         }
 
         $siret = str_replace(' ', '', $siret);
 
-        if(!empty($siret)){
+        if (!empty($siret)) {
             $customer = $entityManager->getRepository(Customer::class)
                 ->findOneBy(['siret' => $siret]);
-        }else{
+        } else {
             $customer = $entityManager->getRepository(Customer::class)
                 ->findOneBy(['name' => $name]);
         }
@@ -415,29 +431,33 @@ class ProcessExcelBatchMessageHandler
         return $customer;
     }
 
-
+    /**
+     * @param array<string, mixed> $rowData
+     */
     private function processContact(EntityManagerInterface $entityManager, Customer $customer, array $rowData): void
     {
-        $existingContact = $entityManager->getRepository(Contact::class)
-            ->findContactByCustomerAndEmailOrNumber(
-                $customer,
-                $rowData['contact'] ?? '',
-                $rowData['email'] ?? null,
-                $rowData['phone'] ?? null
-            );
+        /** @var ContactRepository $contactRepository */
+        $contactRepository = $entityManager->getRepository(Contact::class);
+
+        $existingContact = $contactRepository->findContactByCustomerAndEmailOrNumber(
+            $customer,
+            $rowData['contact'] ?? '',
+            $rowData['email'] ?? null,
+            $rowData['phone'] ?? null
+        );
 
         if (!$existingContact) {
             $contact = new Contact();
-            $contact->setEmail($rowData['email']?? null);
-            $contact->setPhone($rowData['phone']?? null);
+            $contact->setEmail($rowData['email'] ?? null);
+            $contact->setPhone($rowData['phone'] ?? null);
 
             // Valeurs par défaut pour éviter les contraintes NOT NULL
             $contactName = trim($rowData['contact']);
-            //si le contact n'a pas " " alors on met le nom complet dans le nom
-            if(!str_contains($contactName, ' ')){
+            // si le contact n'a pas " " alors on met le nom complet dans le nom
+            if (!str_contains($contactName, ' ')) {
                 $contact->setFirstName($contactName);
                 $contact->setLastName('');
-            }else {
+            } else {
                 [$firstName, $lastName] = explode(' ', $contactName, 2);
                 $contact->setFirstName($firstName);
                 $contact->setLastName($lastName);
@@ -469,6 +489,9 @@ class ProcessExcelBatchMessageHandler
         }
     }
 
+    /**
+     * @param array<string, mixed> $rowData
+     */
     private function processEnergy(EntityManagerInterface $entityManager, Customer $customer, array $rowData): void
     {
         // Extraire la valeur de code PDL/PCE
@@ -476,7 +499,7 @@ class ProcessExcelBatchMessageHandler
         $pceCode = null;
 
         if (is_numeric($pceValue) && $pceValue > 0) {
-            $pceCode = (int)$pceValue;
+            $pceCode = (int) $pceValue;
         }
 
         // Chercher une énergie existante
@@ -514,7 +537,7 @@ class ProcessExcelBatchMessageHandler
 
             // Définir le code PDL/PCE si disponible
             if ($pceCode) {
-                $energy->setCode($pceCode);
+                $energy->setCode((string) $pceCode);
             }
 
             $energy->setCustomer($customer);
@@ -565,7 +588,27 @@ class ProcessExcelBatchMessageHandler
 
         return match ($typeStr) {
             'GAZ', 'GAS', 'G' => EnergyType::GAZ,
-            default => EnergyType::ELEC
+            default => EnergyType::ELEC,
         };
+    }
+
+    /**
+     * Vérifie si l'EntityManager est ouvert.
+     */
+    private function isEntityManagerOpen(EntityManagerInterface $entityManager): bool
+    {
+        return $entityManager->isOpen();
+    }
+
+    /**
+     * Vérifie si une transaction est active dans l'EntityManager.
+     */
+    private function isTransactionActive(EntityManagerInterface $entityManager): bool
+    {
+        if (!$this->isEntityManagerOpen($entityManager)) {
+            return false;
+        }
+
+        return $entityManager->getConnection()->isTransactionActive();
     }
 }

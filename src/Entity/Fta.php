@@ -2,18 +2,31 @@
 
 namespace App\Entity;
 
-use App\Repository\FTARepository;
+use App\Repository\FtaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: FTARepository::class)]
+#[ORM\Entity(repositoryClass: FtaRepository::class)]
 class Fta
 {
+    /**
+     * @var int|null ID is set by Doctrine ORM and is initially null
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    /**
+     * Setter for id - mostly used for testing or data fixtures.
+     */
+    public function setId(?int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     #[ORM\Column(length: 255)]
     private ?string $label = null;
@@ -51,6 +64,9 @@ class Fta
     #[ORM\Column]
     private ?float $consumptionHCE = null;
 
+    /**
+     * @var Collection<int, Energy>
+     */
     #[ORM\OneToMany(targetEntity: Energy::class, mappedBy: 'fta')]
     private Collection $energies;
 
@@ -73,6 +89,7 @@ class Fta
     public function setLabel(string $label): static
     {
         $this->label = $label;
+
         return $this;
     }
 
@@ -84,6 +101,7 @@ class Fta
     public function setFixedCost(float $fixedCost): static
     {
         $this->fixedCost = $fixedCost;
+
         return $this;
     }
 
@@ -95,6 +113,7 @@ class Fta
     public function setPowerReservationPeak(float $powerReservationPeak): static
     {
         $this->powerReservationPeak = $powerReservationPeak;
+
         return $this;
     }
 
@@ -106,6 +125,7 @@ class Fta
     public function setPowerReservationHPH(float $powerReservationHPH): static
     {
         $this->powerReservationHPH = $powerReservationHPH;
+
         return $this;
     }
 
@@ -117,6 +137,7 @@ class Fta
     public function setPowerReservationHCH(float $powerReservationHCH): static
     {
         $this->powerReservationHCH = $powerReservationHCH;
+
         return $this;
     }
 
@@ -128,6 +149,7 @@ class Fta
     public function setPowerReservationHPE(float $powerReservationHPE): static
     {
         $this->powerReservationHPE = $powerReservationHPE;
+
         return $this;
     }
 
@@ -139,6 +161,7 @@ class Fta
     public function setPowerReservationHCE(float $powerReservationHCE): static
     {
         $this->powerReservationHCE = $powerReservationHCE;
+
         return $this;
     }
 
@@ -150,6 +173,7 @@ class Fta
     public function setConsumptionPeak(float $consumptionPeak): static
     {
         $this->consumptionPeak = $consumptionPeak;
+
         return $this;
     }
 
@@ -161,6 +185,7 @@ class Fta
     public function setConsumptionHPH(float $consumptionHPH): static
     {
         $this->consumptionHPH = $consumptionHPH;
+
         return $this;
     }
 
@@ -172,6 +197,7 @@ class Fta
     public function setConsumptionHCH(float $consumptionHCH): static
     {
         $this->consumptionHCH = $consumptionHCH;
+
         return $this;
     }
 
@@ -183,6 +209,7 @@ class Fta
     public function setConsumptionHPE(float $consumptionHPE): static
     {
         $this->consumptionHPE = $consumptionHPE;
+
         return $this;
     }
 
@@ -194,6 +221,7 @@ class Fta
     public function setConsumptionHCE(float $consumptionHCE): static
     {
         $this->consumptionHCE = $consumptionHCE;
+
         return $this;
     }
 
@@ -202,6 +230,9 @@ class Fta
         return $this->label;
     }
 
+    /**
+     * @return Collection<int, Energy>
+     */
     public function getEnergies(): Collection
     {
         return $this->energies;
@@ -228,9 +259,13 @@ class Fta
         return $this;
     }
 
+    /**
+     * @param Collection<int, Energy> $energies
+     */
     public function setEnergies(Collection $energies): static
     {
         $this->energies = $energies;
+
         return $this;
     }
 }

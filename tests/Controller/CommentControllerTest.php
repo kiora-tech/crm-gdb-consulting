@@ -12,6 +12,9 @@ final class CommentControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
     private EntityManagerInterface $manager;
+    /**
+     * @var EntityRepository<Comment>
+     */
     private EntityRepository $repository;
     private string $path = '/comment/';
 
@@ -34,8 +37,5 @@ final class CommentControllerTest extends WebTestCase
         $crawler = $this->client->request('GET', $this->path);
 
         self::assertResponseStatusCodeSame(200);
-
-        // Use the $crawler to perform additional assertions e.g.
-        // self::assertSame('Some text on the page', $crawler->filter('.p')->first());
     }
 }

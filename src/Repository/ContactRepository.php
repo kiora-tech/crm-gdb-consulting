@@ -18,16 +18,13 @@ class ContactRepository extends ServiceEntityRepository
     }
 
     /**
-     * find a contact by email or number link to a customer
-     * @param Customer $customer
+     * find a contact by email or number link to a customer.
+     *
      * @param string $contactName (firstName and lastName contatenated)
-     * @param ?string $email
-     * @param ?string $number
-     * @return Contact
      */
-    public function findContactByCustomerAndEmailOrNumber(Customer $customer,string $contactName, ?string $email, ?string $number): ?Contact
+    public function findContactByCustomerAndEmailOrNumber(Customer $customer, string $contactName, ?string $email, ?string $number): ?Contact
     {
-        if ($customer->getId() === null) {
+        if (null === $customer->getId()) {
             return null; // Ou gérez cette situation différemment
         }
 

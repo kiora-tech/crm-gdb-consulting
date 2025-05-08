@@ -12,10 +12,23 @@ class ResetPasswordRequest implements ResetPasswordRequestInterface
 {
     use ResetPasswordRequestTrait;
 
+    /**
+     * @var int|null ID is set by Doctrine ORM and is initially null
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    /**
+     * Setter for id - mostly used for testing or data fixtures.
+     */
+    public function setId(?int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]

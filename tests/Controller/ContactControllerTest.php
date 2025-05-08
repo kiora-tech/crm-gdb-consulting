@@ -12,6 +12,10 @@ final class ContactControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
     private EntityManagerInterface $manager;
+
+    /**
+     * @var EntityRepository<Contact>
+     */
     private EntityRepository $repository;
     private string $path = '/contact/';
 

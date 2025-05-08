@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\UX\Turbo\TurboBundle;
+
 use function Symfony\Component\String\u;
 
 abstract class CustomerInfoController extends AbstractController
@@ -25,29 +26,28 @@ abstract class CustomerInfoController extends AbstractController
 
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
-        protected readonly PaginatorInterface $paginator
+        protected readonly PaginatorInterface $paginator,
     ) {
     }
 
     /**
      * @phpstan-return class-string
-     * @return string
      */
-    protected abstract function getEntityClass(): string;
+    abstract protected function getEntityClass(): string;
 
     /**
-     * Replace Entity form namespace by Form
+     * Replace Entity form namespace by Form.
+     *
      * @phpstan-return class-string
-     * @return string
      */
     protected function getFormTypeClass(): string
     {
-        return str_replace('\Entity\\', '\Form\\', $this->getEntityClass()) . 'Type';
+        return str_replace('\Entity\\', '\Form\\', $this->getEntityClass()).'Type';
     }
 
     public function getBaseRouteName(): string
     {
-        return 'app_' . $this->getName();
+        return 'app_'.$this->getName();
     }
 
     protected function getName(): string
@@ -57,7 +57,9 @@ abstract class CustomerInfoController extends AbstractController
         return u($shortName)->snake()->toString();
     }
 
-
+    /**
+     * @phpstan-return ObjectRepository<object>
+     */
     protected function getRepository(): ObjectRepository
     {
         return $this->entityManager->getRepository($this->getEntityClass());
@@ -70,13 +72,11 @@ abstract class CustomerInfoController extends AbstractController
         $entity->setCustomer($customer);
 
         // Permet aux contrôleurs enfants de personnaliser l'entité avant la création du formulaire
-        if (method_exists($this, 'prepareEntity')) {
-            $this->prepareEntity($entity, $request);
-        }
+        $this->prepareEntityIfExists($entity, $request);
 
         $form = $this->createForm($this->getFormTypeClass(), $entity, [
             'customer' => $customer,
-            'action' => $this->generateFormAction($entity, $customer)
+            'action' => $this->generateFormAction($entity, $customer),
         ]);
         $form->handleRequest($request);
 
@@ -98,7 +98,7 @@ abstract class CustomerInfoController extends AbstractController
                 $vars['customer'] = $customer;
 
                 return $this->render('crud/_form_stream.html.twig', $vars, new Response(null, 422, [
-                    'Content-Type' => 'text/vnd.turbo-stream.html'
+                    'Content-Type' => 'text/vnd.turbo-stream.html',
                 ]));
             }
         }
@@ -116,13 +116,11 @@ abstract class CustomerInfoController extends AbstractController
         }
 
         // Permet aux contrôleurs enfants de personnaliser l'entité avant la création du formulaire
-        if (method_exists($this, 'prepareEntity')) {
-            $this->prepareEntity($entity, $request);
-        }
+        $this->prepareEntityIfExists($entity, $request);
 
         $form = $this->createForm($this->getFormTypeClass(), $entity, [
             'customer' => $customer,
-            'action' => $this->generateFormAction($entity, $customer)
+            'action' => $this->generateFormAction($entity, $customer),
         ]);
         $form->handleRequest($request);
 
@@ -143,7 +141,7 @@ abstract class CustomerInfoController extends AbstractController
                 $vars['customer'] = $customer;
 
                 return $this->render('crud/_form_stream.html.twig', $vars, new Response(null, 422, [
-                    'Content-Type' => 'text/vnd.turbo-stream.html'
+                    'Content-Type' => 'text/vnd.turbo-stream.html',
                 ]));
             }
         }
@@ -158,13 +156,11 @@ abstract class CustomerInfoController extends AbstractController
         $entity->setCustomer($customer);
 
         // Permet aux contrôleurs enfants de personnaliser l'entité
-        if (method_exists($this, 'prepareEntity')) {
-            $this->prepareEntity($entity, $request);
-        }
+        $this->prepareEntityIfExists($entity, $request);
 
         $form = $this->createForm($this->getFormTypeClass(), $entity, [
             'customer' => $customer,
-            'action' => $this->generateFormAction($entity, $customer)
+            'action' => $this->generateFormAction($entity, $customer),
         ]);
 
         // Traiter la soumission du formulaire
@@ -178,7 +174,7 @@ abstract class CustomerInfoController extends AbstractController
                 if ($request->isXmlHttpRequest()) {
                     return $this->json([
                         'success' => true,
-                        'redirect' => $this->generateUrl('app_customer_show', ['id' => $customer->getId()])
+                        'redirect' => $this->generateUrl('app_customer_show', ['id' => $customer->getId()]),
                     ]);
                 }
 
@@ -191,15 +187,13 @@ abstract class CustomerInfoController extends AbstractController
                     'form' => $form,
                     'entity' => $entity,
                     'customer' => $customer,
-                    'page_prefix' => $this->getPagePrefix()
+                    'page_prefix' => $this->getPagePrefix(),
                 ];
 
-                if (method_exists($this, 'getModalFormVars')) {
-                    $vars = array_merge($vars, $this->getModalFormVars($form, $entity));
-                }
+                $vars = array_merge($vars, $this->getModalFormVars($form, $entity));
 
                 return $this->render('crud/_form_stream.html.twig', $vars, new Response(null, 422, [
-                    'Content-Type' => 'text/vnd.turbo-stream.html'
+                    'Content-Type' => 'text/vnd.turbo-stream.html',
                 ]));
             }
         }
@@ -208,12 +202,10 @@ abstract class CustomerInfoController extends AbstractController
         $vars = [
             'form' => $form->createView(),
             'customer' => $customer,
-            'page_prefix' => $this->getPagePrefix()
+            'page_prefix' => $this->getPagePrefix(),
         ];
 
-        if (method_exists($this, 'getModalFormVars')) {
-            $vars = array_merge($vars, $this->getModalFormVars($form, $entity));
-        }
+        $vars = array_merge($vars, $this->getModalFormVars($form, $entity));
 
         return $this->render('crud/_modal_form.html.twig', $vars);
     }
@@ -228,13 +220,11 @@ abstract class CustomerInfoController extends AbstractController
         }
 
         // Permet aux contrôleurs enfants de personnaliser l'entité
-        if (method_exists($this, 'prepareEntity')) {
-            $this->prepareEntity($entity, $request);
-        }
+        $this->prepareEntityIfExists($entity, $request);
 
         $form = $this->createForm($this->getFormTypeClass(), $entity, [
             'customer' => $customer,
-            'action' => $this->generateFormAction($entity, $customer)
+            'action' => $this->generateFormAction($entity, $customer),
         ]);
 
         $form->handleRequest($request);
@@ -246,7 +236,7 @@ abstract class CustomerInfoController extends AbstractController
             if ($request->isXmlHttpRequest()) {
                 return new JsonResponse([
                     'success' => true,
-                    'redirect' => $this->generateUrl('app_customer_show', ['id' => $customer->getId()])
+                    'redirect' => $this->generateUrl('app_customer_show', ['id' => $customer->getId()]),
                 ]);
             }
 
@@ -259,15 +249,15 @@ abstract class CustomerInfoController extends AbstractController
                 'form' => $form,
                 'entity' => $entity,
                 'customer' => $customer,
-                'page_prefix' => $this->getPagePrefix()
+                'page_prefix' => $this->getPagePrefix(),
             ];
 
-            if (method_exists($this, 'getModalFormVars')) {
-                $vars = array_merge($vars, $this->getModalFormVars($form, $entity));
-            }
+            $modalFormVars = $this->getModalFormVars($form, $entity);
+
+            $vars = array_merge($vars, $modalFormVars);
 
             return $this->render('crud/_form_stream.html.twig', $vars, new Response(null, 422, [
-                'Content-Type' => 'text/vnd.turbo-stream.html'
+                'Content-Type' => 'text/vnd.turbo-stream.html',
             ]));
         }
 
@@ -275,24 +265,27 @@ abstract class CustomerInfoController extends AbstractController
             'form' => $form->createView(),
             'customer' => $customer,
             'entity' => $entity,
-            'page_prefix' => $this->getPagePrefix()
+            'page_prefix' => $this->getPagePrefix(),
         ];
 
         // Permettre aux contrôleurs enfants de personnaliser le template
-        if (method_exists($this, 'getModalFormVars')) {
-            $vars = array_merge($vars, $this->getModalFormVars($form, $entity));
-        }
+        $vars = array_merge($vars, $this->getModalFormVars($form, $entity));
 
         return $this->render('crud/_modal_form.html.twig', $vars);
     }
 
+    /**
+     * @param \Symfony\Component\Form\FormInterface<mixed> $form
+     *
+     * @return array<string, mixed>
+     */
     protected function getModalFormVars($form, ?object $entity = null): array
     {
         return [];
     }
 
     /**
-     * Personnalise la QueryBuilder pour l'index
+     * Personnalise la QueryBuilder pour l'index.
      */
     protected function customizeQueryBuilder(QueryBuilder $qb): void
     {
@@ -319,21 +312,27 @@ abstract class CustomerInfoController extends AbstractController
         ));
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     protected function getColumns(): array
     {
         return [
-            ['field' => 'id', 'label' => 'id', 'sortable' => false]
+            ['field' => 'id', 'label' => 'id', 'sortable' => false],
         ];
     }
 
+    /**
+     * @return array<string, string|bool>
+     */
     protected function getRoute(): array
     {
         $routePrefix = $this->getRoutePrefix();
 
         return [
-            'edit' => $routePrefix . '_edit',
-            'delete' => $routePrefix . '_delete',
-            'show' => false
+            'edit' => $routePrefix.'_edit',
+            'delete' => $routePrefix.'_delete',
+            'show' => false,
         ];
     }
 
@@ -344,10 +343,10 @@ abstract class CustomerInfoController extends AbstractController
         if ($customer) {
             $entity->setCustomer($customer);
         }
-        //if ($this->isCsrfTokenValid('delete'.$id, $request->getPayload()->getString('_token'))) {
-            $this->entityManager->remove($entity);
-            $this->entityManager->flush();
-        //}
+        // if ($this->isCsrfTokenValid('delete'.$id, $request->getPayload()->getString('_token'))) {
+        $this->entityManager->remove($entity);
+        $this->entityManager->flush();
+        // }
 
         if ($customer) {
             return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()], Response::HTTP_SEE_OTHER);
@@ -357,13 +356,21 @@ abstract class CustomerInfoController extends AbstractController
     }
 
     /**
-     * Generate the form action URL based on the entity and customer
+     * Calls prepareEntity if the method exists in child class.
+     */
+    protected function prepareEntityIfExists(object $entity, Request $request): void
+    {
+        // Cette méthode est vide par défaut, les contrôleurs enfants peuvent la surcharger
+    }
+
+    /**
+     * Generate the form action URL based on the entity and customer.
      */
     protected function generateFormAction(object $entity, ?Customer $customer): string
     {
         $route = method_exists($entity, 'getId') && $entity->getId()
-            ? $this->getBaseRouteName() . '_edit'
-            : $this->getBaseRouteName() . '_new';
+            ? $this->getBaseRouteName().'_edit'
+            : $this->getBaseRouteName().'_new';
 
         $parameters = [];
         if ($customer) {
@@ -376,5 +383,4 @@ abstract class CustomerInfoController extends AbstractController
 
         return $this->generateUrl($route, $parameters);
     }
-
 }

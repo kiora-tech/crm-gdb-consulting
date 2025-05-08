@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Customer;
 use App\Entity\Energy;
+use App\Entity\EnergyType as EnergyTypeEnum;
 use App\Entity\Fta;
 use App\Entity\GasTransportRate;
 use App\Entity\Segment;
@@ -13,22 +14,20 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use App\Entity\EnergyType as EnergyTypeEnum;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\Routing\RouterInterface;
 
 class EnergyType extends AbstractType
 {
     public function __construct(private readonly RouterInterface $router)
     {
-
     }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         // Capture l'entité originale pour une vérification ultérieure
@@ -38,14 +37,14 @@ class EnergyType extends AbstractType
         $builder
             ->add('type', EnumType::class, [
                 'class' => EnergyTypeEnum::class,
-                'choice_label' => fn(EnergyTypeEnum $type) => $type->value,
+                'choice_label' => fn (EnergyTypeEnum $type) => $type->value,
                 'label' => 'energy.type',
                 'placeholder' => 'placeholder.choose_option',
                 // Rendre le champ en lecture seule si on édite une entité existante
-                'disabled' => $originalEnergy && $originalEnergy->getId() !== null,
+                'disabled' => $originalEnergy && null !== $originalEnergy->getId(),
                 // Ajouter une classe CSS pour mettre en évidence le statut en lecture seule
                 'attr' => [
-                    'class' => $originalEnergy && $originalEnergy->getId() ? 'bg-light' : ''
+                    'class' => $originalEnergy && $originalEnergy->getId() ? 'bg-light' : '',
                 ],
                 'help' => $originalEnergy && $originalEnergy->getId() ? 'Le type d\'énergie ne peut pas être modifié après création' : null,
             ]);
@@ -56,7 +55,7 @@ class EnergyType extends AbstractType
             $form = $event->getForm();
 
             // Si l'entité existait déjà et que le type a été modifié, ajout d'une erreur
-            if ($originalType !== null && $energy->getType() !== $originalType) {
+            if (null !== $originalType && $energy->getType() !== $originalType) {
                 $form->get('type')->addError(new FormError('Le type d\'énergie ne peut pas être modifié après création.'));
             }
         });
@@ -67,7 +66,7 @@ class EnergyType extends AbstractType
             $form = $event->getForm();
 
             // Si on édite une entité existante, forcer le type original dans les données
-            if ($originalType !== null) {
+            if (null !== $originalType) {
                 $data['type'] = $originalType->value;
                 $event->setData($data);
             }
@@ -75,7 +74,7 @@ class EnergyType extends AbstractType
             // Champs communs
             $form
                 ->add('code', TextType::class, [
-                    'label' => isset($data['type']) && $data['type'] === 'ELEC' ? 'energy.pdl' : 'energy.pce',
+                    'label' => isset($data['type']) && 'ELEC' === $data['type'] ? 'energy.pdl' : 'energy.pce',
                     'required' => false,
                 ])
                 ->add('energyProvider', EnergyProviderAutocompleteType::class, [
@@ -97,9 +96,9 @@ class EnergyType extends AbstractType
             $typeToUse = $originalType ? $originalType->value : ($data['type'] ?? null);
 
             if ($typeToUse) {
-                if ($typeToUse === 'ELEC') {
+                if ('ELEC' === $typeToUse) {
                     $this->addElectricityFields($form);
-                } elseif ($typeToUse === 'GAZ') {
+                } elseif ('GAZ' === $typeToUse) {
                     $this->addGasFields($form);
                 }
             }
@@ -113,7 +112,7 @@ class EnergyType extends AbstractType
             // Champs communs avec les valeurs initiales
             $form
                 ->add('code', TextType::class, [
-                    'label' => $energy && $energy->getType() === EnergyTypeEnum::ELEC ? 'energy.pdl' : 'energy.pce',
+                    'label' => $energy && EnergyTypeEnum::ELEC === $energy->getType() ? 'energy.pdl' : 'energy.pce',
                     'required' => false,
                 ])
                 ->add('energyProvider', EnergyProviderAutocompleteType::class, [
@@ -133,9 +132,9 @@ class EnergyType extends AbstractType
                 ]);
 
             if ($energy && $energy->getType()) {
-                if ($energy->getType() === EnergyTypeEnum::ELEC) {
+                if (EnergyTypeEnum::ELEC === $energy->getType()) {
                     $this->addElectricityFields($form);
-                } elseif ($energy->getType() === EnergyTypeEnum::GAZ) {
+                } elseif (EnergyTypeEnum::GAZ === $energy->getType()) {
                     $this->addGasFields($form);
                 }
             }
@@ -241,6 +240,6 @@ class EnergyType extends AbstractType
             'customer' => null,
         ]);
 
-        $resolver->setAllowedValues('customer', fn($value) => $value instanceof Customer || $value === null);
+        $resolver->setAllowedValues('customer', fn ($value) => $value instanceof Customer || null === $value);
     }
 }

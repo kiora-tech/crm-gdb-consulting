@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Data\CustomerSearchData;
+use App\Entity\Company;
 use App\Entity\Customer;
 use App\Entity\Document;
 use App\Entity\ProspectStatus;
@@ -16,7 +17,6 @@ use App\Service\PaginationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,8 +25,12 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/customer', name: 'app_customer')]
 class CustomerController extends AbstractController
 {
+    /**
+     * @param PaginationService<int, Company> $paginationService
+     */
     #[Route('/', name: '_index', methods: ['GET'])]
-    public function index(CustomerRepository $customerRepository, PaginationService $paginationService, Request $request, Security $security): Response
+    /** @phpstan-param PaginationService<int, Customer> $paginationService */
+    public function index(CustomerRepository $customerRepository, PaginationService $paginationService, Request $request): Response
     {
         $data = new CustomerSearchData();
         $form = $this->createForm(CustomerSearchType::class, $data);
@@ -36,12 +40,12 @@ class CustomerController extends AbstractController
 
         $customers = $paginationService->paginate($query, $request);
 
-        $importErrorDirectory = $this->getParameter('kernel.project_dir') . '/var/import/errors';
+        $importErrorDirectory = $this->getParameter('kernel.project_dir').'/var/import/errors';
         $errorFiles = [];
         if (is_dir($importErrorDirectory)) {
             $errorFiles = array_filter(
                 scandir($importErrorDirectory),
-                fn($file) => $file !== '.' && $file !== '..' && pathinfo($file, PATHINFO_EXTENSION) === 'xlsx'
+                fn ($file) => '.' !== $file && '..' !== $file && 'xlsx' === pathinfo($file, PATHINFO_EXTENSION)
             );
         }
 
@@ -52,13 +56,12 @@ class CustomerController extends AbstractController
         ]);
     }
 
-
     #[Route('/import-error-file', name: '_import_error_file', methods: ['GET'])]
     public function downloadImportErrorFile(Request $request): Response
     {
         $filename = $request->query->get('filename');
-        $importErrorDirectory = $this->getParameter('kernel.project_dir') . '/var/import/errors';
-        $filePath = $importErrorDirectory . '/' . $filename;
+        $importErrorDirectory = $this->getParameter('kernel.project_dir').'/var/import/errors';
+        $filePath = $importErrorDirectory.'/'.$filename;
 
         if (!file_exists($filePath)) {
             throw $this->createNotFoundException('Le fichier d\'erreur n\'existe pas.');
@@ -77,15 +80,15 @@ class CustomerController extends AbstractController
     public function deleteImportErrorFile(Request $request, LoggerInterface $logger): Response
     {
         $filename = $request->request->get('filename');
-        $importErrorDirectory = $this->getParameter('kernel.project_dir') . '/var/import/errors';
-        $filePath = $importErrorDirectory . '/' . $filename;
+        $importErrorDirectory = $this->getParameter('kernel.project_dir').'/var/import/errors';
+        $filePath = $importErrorDirectory.'/'.$filename;
 
         if (file_exists($filePath)) {
             try {
                 unlink($filePath);
                 $this->addFlash('success', 'Fichier d\'erreur supprimé avec succès.');
             } catch (\Exception $e) {
-                $logger->error('Impossible de supprimer le fichier d\'erreur : ' . $e->getMessage());
+                $logger->error('Impossible de supprimer le fichier d\'erreur : '.$e->getMessage());
                 $this->addFlash('error', 'Impossible de supprimer le fichier d\'erreur.');
             }
         } else {
@@ -102,21 +105,24 @@ class CustomerController extends AbstractController
         $customer->setStatus($newStatus);
         $entityManager->flush();
 
-        if ($request->isXmlHttpRequest() && $newStatus === ProspectStatus::LOST) {
+        if ($request->isXmlHttpRequest() && ProspectStatus::LOST === $newStatus) {
             return $this->json([
                 'success' => true,
                 'status' => $status,
-                'customerId' => $customer->getId()
+                'customerId' => $customer->getId(),
             ]);
         }
 
         return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
     }
+
     #[Route('/new', name: '_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $customer = new Customer();
-        $customer->setUser($this->getUser());
+        /** @var \App\Entity\User|null $user */
+        $user = $this->getUser();
+        $customer->setUser($user);
         $form = $this->createForm(CustomerType::class, $customer);
         $form->handleRequest($request);
 
@@ -124,7 +130,7 @@ class CustomerController extends AbstractController
             $entityManager->persist($customer);
             $entityManager->flush();
 
-            return  $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
+            return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
         }
 
         return $this->render('customer/new.html.twig', [
@@ -137,11 +143,12 @@ class CustomerController extends AbstractController
     public function upload(Request $request, ImportService $importService): Response
     {
         if ($request->isMethod('POST')) {
-            /** @var UploadedFile $file */
             $file = $request->files->get('file');
 
-            if ($file && $file->isValid()) {
-                $importService->importFromUpload($file, $this->getUser()->getId());
+            if ($file instanceof UploadedFile && $file->isValid()) {
+                /** @var \App\Entity\User $user */
+                $user = $this->getUser();
+                $importService->importFromUpload($file, $user->getId());
 
                 $this->addFlash('success', 'File uploaded and import data started.');
 
@@ -159,7 +166,7 @@ class CustomerController extends AbstractController
     {
         // Vérifier si l'utilisateur a le droit de voir ce client
         $this->denyAccessUnlessGranted('view', $customer);
-        
+
         $document = new Document();
         $document->setCustomer($customer);
         $formDocument = $this->createForm(DropzoneForm::class, $document, ['customer' => $customer]);
@@ -168,24 +175,23 @@ class CustomerController extends AbstractController
         return $this->render('customer/show.html.twig', [
             'customer' => $customer,
             'formDocument' => $formDocument->createView(),
-            'templates' => $templates
+            'templates' => $templates,
         ]);
     }
-
 
     #[Route('/{id}/edit', name: '_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Customer $customer, EntityManagerInterface $entityManager): Response
     {
         // Vérifier si l'utilisateur a le droit de modifier ce client
         $this->denyAccessUnlessGranted('edit', $customer);
-        
+
         $form = $this->createForm(CustomerType::class, $customer);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return  $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
+            return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
         }
 
         return $this->render('customer/edit.html.twig', [

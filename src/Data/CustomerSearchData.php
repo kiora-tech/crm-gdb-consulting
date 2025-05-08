@@ -22,11 +22,11 @@ class CustomerSearchData
     public ?string $contactName = '';
 
     public ?User $user = null;
-    
+
     public bool $unassigned = false;
 
     public ?string $leadOrigin = '';
-    
+
     public ?ProspectOrigin $origin = null;
 
     public ?EnergyProvider $energyProvider = null;

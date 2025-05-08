@@ -2,21 +2,31 @@
 
 namespace App\Twig\Components;
 
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 use Symfony\UX\TwigComponent\Attribute\PreMount;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 #[AsTwigComponent]
 class DeleteButton
 {
     public string $deleteRoute;
+
+    /**
+     * @var array<string, mixed>
+     */
     public array $deleteRouteParams = [];
+
     public ?string $entityId = null;
     public ?string $confirmationMessage = null;
     public bool $showLabel = false;
     public string $size = '';
     public bool $outline = false;
 
+    /**
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, mixed>
+     */
     #[PreMount]
     public function preMount(array $data): array
     {
@@ -36,7 +46,7 @@ class DeleteButton
             'showLabel' => false,
             'size' => '',
             'outline' => false,
-            'attributes' => []
+            'attributes' => [],
         ]);
 
         $resolver->setAllowedTypes('deleteRoute', 'string');
@@ -52,6 +62,6 @@ class DeleteButton
 
     public function getDeleteToken(): string
     {
-        return 'delete' . $this->entityId;
+        return 'delete'.$this->entityId;
     }
 }

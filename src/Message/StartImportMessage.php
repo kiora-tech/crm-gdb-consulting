@@ -7,8 +7,7 @@ readonly class StartImportMessage
     public function __construct(
         private string $filePath,
         private int $userId,
-        private string $originalFilename
-
+        private string $originalFilename,
     ) {
     }
 

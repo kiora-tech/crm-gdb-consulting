@@ -10,10 +10,23 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: DocumentTypeRepository::class)]
 class DocumentType
 {
+    /**
+     * @var int|null ID is set by Doctrine ORM and is initially null
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    /**
+     * Setter for id - mostly used for testing or data fixtures.
+     */
+    public function setId(?int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     #[ORM\Column(length: 255)]
     private ?string $label = null;
@@ -83,6 +96,9 @@ class DocumentType
         return $this;
     }
 
+    /**
+     * @return Collection<int, Template>
+     */
     public function getTemplates(): Collection
     {
         return $this->templates;
@@ -93,16 +109,20 @@ class DocumentType
         if (!$this->templates->contains($template)) {
             $this->templates->add($template);
         }
+
         return $this;
     }
 
     public function removeTemplate(Template $template): static
     {
         if ($this->templates->removeElement($template)) {
-            if ($template->getType() === $this) {
-                $template->setType(null);
+            // Check if this DocumentType is associated with the template
+            // Note: Template has a documentType (DocumentType) and type (TemplateType) property
+            if ($template->getDocumentType() === $this) {
+                $template->setDocumentType(null);
             }
         }
+
         return $this;
     }
 

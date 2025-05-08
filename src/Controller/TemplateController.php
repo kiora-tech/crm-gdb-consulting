@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Template;
 use App\Entity\TemplateType;
 use App\Form\TemplateType as TemplateFormType;
-use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\MimeTypesInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use Psr\Log\LoggerInterface;
 
 #[Route('/template')]
 class TemplateController extends BaseCrudController
@@ -37,7 +36,7 @@ class TemplateController extends BaseCrudController
             'page_prefix' => $this->getPagePrefix(),
             'page_title' => 'template.title',
             'new_route' => $this->getNewRoute(),
-            'table_routes' => $this->getRoute()
+            'table_routes' => $this->getRoute(),
         ]);
     }
 
@@ -53,20 +52,20 @@ class TemplateController extends BaseCrudController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $file */
+            /** @var UploadedFile|null $file */
             $file = $form->get('file')->getData();
 
             if ($file) {
                 $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
 
                 try {
                     $template->setType(TemplateType::fromMimeType($file->getMimeType()));
                     $template->setMimeType($file->getMimeType());
                     $file->move($uploadDirectory, $newFilename);
 
-                    $template->setPath('templates/' . $newFilename);
+                    $template->setPath('templates/'.$newFilename);
                     $template->setOriginalFilename($file->getClientOriginalName());
 
                     $this->entityManager->persist($template);
@@ -74,7 +73,7 @@ class TemplateController extends BaseCrudController
 
                     return $this->redirectToRoute('app_template_index');
                 } catch (FileException $e) {
-                    $logger->error('Upload error: ' . $e->getMessage());
+                    $logger->error('Upload error: '.$e->getMessage());
                     $this->addFlash('error', 'template.upload.error');
                 }
             }
@@ -95,17 +94,17 @@ class TemplateController extends BaseCrudController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $file */
+            /** @var UploadedFile|null $file */
             $file = $form->get('file')->getData();
 
             if ($file) {
                 $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
 
                 try {
                     // Supprimer l'ancien fichier
-                    $oldPath = $this->getParameter('kernel.project_dir') . '/public/uploads/' . $template->getPath();
+                    $oldPath = $this->getParameter('kernel.project_dir').'/public/uploads/'.$template->getPath();
                     if (file_exists($oldPath)) {
                         unlink($oldPath);
                     }
@@ -114,15 +113,14 @@ class TemplateController extends BaseCrudController
 
                     $file->move($uploadDirectory, $newFilename);
 
-
-                    $template->setPath('templates/' . $newFilename);
+                    $template->setPath('templates/'.$newFilename);
                     $template->setOriginalFilename($file->getClientOriginalName());
 
                     $this->entityManager->flush();
 
                     return $this->redirectToRoute('app_template_index');
                 } catch (FileException $e) {
-                    $logger->error('Upload error: ' . $e->getMessage());
+                    $logger->error('Upload error: '.$e->getMessage());
                     $this->addFlash('error', 'template.upload.error');
                 }
             }
@@ -134,10 +132,10 @@ class TemplateController extends BaseCrudController
     #[Route('/{id}/download', name: 'app_template_download', methods: ['GET'])]
     public function download(
         Template $template,
-        MimeTypesInterface $mimeTypes
+        MimeTypesInterface $mimeTypes,
     ): Response {
         $response = new Response();
-        $filePath = $this->getParameter('kernel.project_dir') . '/public/' . $template->getPath();
+        $filePath = $this->getParameter('kernel.project_dir').'/public/'.$template->getPath();
 
         if (!file_exists($filePath)) {
             throw $this->createNotFoundException('Le fichier demandé n\'existe pas');
@@ -147,7 +145,7 @@ class TemplateController extends BaseCrudController
         $baseName = $template->getOriginalFilename();
 
         $response->headers->set('Content-Type', $typeMime);
-        $response->headers->set('Content-Disposition', 'attachment; filename="' . $baseName . '"');
+        $response->headers->set('Content-Disposition', 'attachment; filename="'.$baseName.'"');
         $response->setContent(file_get_contents($filePath));
 
         return $response;
@@ -157,7 +155,7 @@ class TemplateController extends BaseCrudController
     public function delete(Request $request, Template $template): Response
     {
         if ($this->isCsrfTokenValid('delete'.$template->getId(), $request->request->get('_token'))) {
-            $filePath = $this->getParameter('kernel.project_dir') . '/public/' . $template->getPath();
+            $filePath = $this->getParameter('kernel.project_dir').'/public/'.$template->getPath();
 
             if (file_exists($filePath)) {
                 unlink($filePath);
@@ -183,7 +181,7 @@ class TemplateController extends BaseCrudController
         return [
             'edit' => 'app_template_edit',
             'delete' => 'app_template_delete',
-            'show' => 'app_template_download'
+            'show' => 'app_template_download',
         ];
     }
 
@@ -199,10 +197,10 @@ class TemplateController extends BaseCrudController
         return [
             'form' => $form->createView(),
             'entity' => $entity,
-            'back_route' => $routePrefix . '_index',
-            'delete_route' => $routePrefix . '_delete',
+            'back_route' => $routePrefix.'_index',
+            'delete_route' => $routePrefix.'_delete',
             'page_prefix' => $this->getPagePrefix(),
-            'template_path' => null
+            'template_path' => null,
         ];
     }
 }

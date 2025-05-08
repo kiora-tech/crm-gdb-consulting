@@ -6,10 +6,9 @@ use App\Repository\EnergyRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EnergyRepository::class)]
-#[UniqueEntity(['code','type'], message: 'Ce code est déjà utilisé pour ce type d\'énergie')]
+#[UniqueEntity(['code', 'type'], message: 'Ce code est déjà utilisé pour ce type d\'énergie')]
 class Energy
 {
     #[ORM\Id]
@@ -39,6 +38,18 @@ class Energy
     #[ORM\Column(type: Types::STRING, nullable: true, enumType: Segment::class)]
     private ?Segment $segment = null;
 
+    public function getSegment(): ?Segment
+    {
+        return $this->segment;
+    }
+
+    public function setSegment(?Segment $segment): static
+    {
+        $this->segment = $segment;
+
+        return $this;
+    }
+
     #[ORM\Column(nullable: true)]
     private ?float $peakConsumption = null;  // Conso pointe
 
@@ -67,7 +78,7 @@ class Energy
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $profile = null;
 
-    #[ORM\Column(type: Types::STRING, enumType: GasTransportRate::class, nullable: true)]
+    #[ORM\Column(type: Types::STRING, nullable: true, enumType: GasTransportRate::class)]
     private ?GasTransportRate $transportRate = null;  // Tarif acheminement
 
     #[ORM\Column(nullable: true)]
@@ -82,12 +93,19 @@ class Energy
         return $this->id;
     }
 
-    public function getCustomer(): ?customer
+    public function setId(?int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function getCustomer(): ?Customer
     {
         return $this->customer;
     }
 
-    public function setCustomer(?customer $customer): static
+    public function setCustomer(?Customer $customer): static
     {
         $this->customer = $customer;
 
@@ -130,126 +148,6 @@ class Energy
         return $this;
     }
 
-    public function getPower(): ?string
-    {
-        return $this->power;
-    }
-
-    public function setPower(?string $power): static
-    {
-        $this->power = $power;
-
-        return $this;
-    }
-
-    public function getBasePrice(): ?string
-    {
-        return $this->basePrice;
-    }
-
-    public function setBasePrice(?string $basePrice): static
-    {
-        $this->basePrice = $basePrice;
-
-        return $this;
-    }
-
-    public function getSegment(): ?Segment
-    {
-        return $this->segment;
-    }
-
-    public function setSegment(?Segment $segment): static
-    {
-        $this->segment = $segment;
-
-        return $this;
-    }
-
-    public function getPeakHour(): ?string
-    {
-        return $this->peakHour;
-    }
-
-    public function setPeakHour(?string $peakHour): static
-    {
-        $this->peakHour = $peakHour;
-
-        return $this;
-    }
-
-    public function getOffPeakHour(): ?string
-    {
-        return $this->offPeakHour;
-    }
-
-    public function setOffPeakHour(?string $offPeakHour): static
-    {
-        $this->offPeakHour = $offPeakHour;
-
-        return $this;
-    }
-
-    public function getHoroSeason(): ?string
-    {
-        return $this->horoSeason;
-    }
-
-    public function setHoroSeason(?string $horoSeason): static
-    {
-        $this->horoSeason = $horoSeason;
-
-        return $this;
-    }
-
-    public function getPeakHourWinter(): ?string
-    {
-        return $this->peakHourWinter;
-    }
-
-    public function setPeakHourWinter(?string $peakHourWinter): static
-    {
-        $this->peakHourWinter = $peakHourWinter;
-
-        return $this;
-    }
-
-    public function getPeakHourSummer(): ?string
-    {
-        return $this->peakHourSummer;
-    }
-
-    public function setPeakHourSummer(?string $peakHourSummer): static
-    {
-        $this->peakHourSummer = $peakHourSummer;
-
-        return $this;
-    }
-
-    public function getOffPeakHourWinter(): ?string
-    {
-        return $this->offPeakHourWinter;
-    }
-
-    public function setOffPeakHourWinter(string $offPeakHourWinter): static
-    {
-        $this->offPeakHourWinter = $offPeakHourWinter;
-
-        return $this;
-    }
-
-    public function getOffPeakHourSummer(): ?string
-    {
-        return $this->offPeakHourSummer;
-    }
-
-    public function setOffPeakHourSummer(?string $offPeakHourSummer): static
-    {
-        $this->offPeakHourSummer = $offPeakHourSummer;
-
-        return $this;
-    }
-
     public function getPowerKva(): ?int
     {
         return $this->powerKva;
@@ -258,6 +156,7 @@ class Energy
     public function setPowerKva(?int $powerKva): Energy
     {
         $this->powerKva = $powerKva;
+
         return $this;
     }
 
@@ -269,6 +168,7 @@ class Energy
     public function setFta(?Fta $fta): Energy
     {
         $this->fta = $fta;
+
         return $this;
     }
 
@@ -280,6 +180,7 @@ class Energy
     public function setPeakConsumption(?float $peakConsumption): Energy
     {
         $this->peakConsumption = $peakConsumption;
+
         return $this;
     }
 
@@ -291,6 +192,7 @@ class Energy
     public function setHphConsumption(?float $hphConsumption): Energy
     {
         $this->hphConsumption = $hphConsumption;
+
         return $this;
     }
 
@@ -302,6 +204,7 @@ class Energy
     public function setHchConsumption(?float $hchConsumption): Energy
     {
         $this->hchConsumption = $hchConsumption;
+
         return $this;
     }
 
@@ -313,6 +216,7 @@ class Energy
     public function setHpeConsumption(?float $hpeConsumption): Energy
     {
         $this->hpeConsumption = $hpeConsumption;
+
         return $this;
     }
 
@@ -324,6 +228,7 @@ class Energy
     public function setHceConsumption(?float $hceConsumption): Energy
     {
         $this->hceConsumption = $hceConsumption;
+
         return $this;
     }
 
@@ -335,6 +240,7 @@ class Energy
     public function setBaseConsumption(?float $baseConsumption): Energy
     {
         $this->baseConsumption = $baseConsumption;
+
         return $this;
     }
 
@@ -346,6 +252,7 @@ class Energy
     public function setHpConsumption(?float $hpConsumption): Energy
     {
         $this->hpConsumption = $hpConsumption;
+
         return $this;
     }
 
@@ -357,6 +264,7 @@ class Energy
     public function setHcConsumption(?float $hcConsumption): Energy
     {
         $this->hcConsumption = $hcConsumption;
+
         return $this;
     }
 
@@ -368,6 +276,7 @@ class Energy
     public function setProfile(?string $profile): Energy
     {
         $this->profile = $profile;
+
         return $this;
     }
 
@@ -379,6 +288,7 @@ class Energy
     public function setTransportRate(?GasTransportRate $transportRate): Energy
     {
         $this->transportRate = $transportRate;
+
         return $this;
     }
 
@@ -390,6 +300,7 @@ class Energy
     public function setTotalConsumption(?float $totalConsumption): Energy
     {
         $this->totalConsumption = $totalConsumption;
+
         return $this;
     }
 

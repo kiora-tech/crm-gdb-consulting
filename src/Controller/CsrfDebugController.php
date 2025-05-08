@@ -20,10 +20,10 @@ class CsrfDebugController extends AbstractController
     {
         // Limiter l'accès aux administrateurs uniquement
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        
+
         // Générer un token CSRF pour le test
         $token = $csrfTokenManager->getToken('debug');
-        
+
         // Collecter des informations sur la requête et l'environnement
         $info = [
             'request' => [
@@ -44,66 +44,66 @@ class CsrfDebugController extends AbstractController
             'trusted_headers' => $_ENV['SYMFONY_TRUSTED_HEADERS'] ?? 'Non défini',
             'csrf_test_token' => $token->getValue(),
         ];
-        
+
         // Collecter tous les en-têtes
         foreach ($request->headers->all() as $name => $value) {
             $info['headers'][$name] = $value;
         }
-        
+
         // Collecter les variables serveur pertinentes
         $serverKeys = [
             'REMOTE_ADDR', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED_HOST',
             'HTTP_X_FORWARDED_PORT', 'HTTP_X_FORWARDED_PROTO', 'SERVER_NAME',
-            'SERVER_PORT', 'SERVER_ADDR', 'HTTPS'
+            'SERVER_PORT', 'SERVER_ADDR', 'HTTPS',
         ];
-        
+
         foreach ($serverKeys as $key) {
             $info['server'][$key] = $_SERVER[$key] ?? 'Non défini';
         }
-        
+
         // Collecter les cookies
         foreach ($request->cookies as $name => $value) {
-            $info['cookies'][$name] = substr($value, 0, 10) . '...'; // Tronquer pour la sécurité
+            $info['cookies'][$name] = substr($value, 0, 10).'...'; // Tronquer pour la sécurité
         }
-        
+
         return $this->render('debug/csrf_info.html.twig', [
             'info' => $info,
         ]);
     }
-    
+
     #[Route('/csrf-test', name: 'csrf_test', methods: ['GET'])]
     public function csrfTestForm(CsrfTokenManagerInterface $csrfTokenManager): Response
     {
         // Limiter l'accès aux administrateurs uniquement
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        
+
         // Générer un token CSRF pour le test
         $token = $csrfTokenManager->getToken('csrf_test');
-        
+
         return $this->render('debug/csrf_test_form.html.twig', [
             'token' => $token->getValue(),
         ]);
     }
-    
+
     #[Route('/csrf-test', name: 'csrf_test_submit', methods: ['POST'])]
     public function csrfTestSubmit(Request $request, CsrfTokenManagerInterface $csrfTokenManager): Response
     {
         // Limiter l'accès aux administrateurs uniquement
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        
+
         // Vérifier le token CSRF
         $submittedToken = $request->request->get('_csrf_token');
         $headerToken = $request->headers->get('X-CSRF-TOKEN');
         $hasHeaderToken = $request->headers->has('X-CSRF-TOKEN');
-        
+
         // Vérifier si le token est déjà stocké dans les attributs de requête par le subscriber
         $attributeToken = $request->attributes->get('_csrf_token_csrf_test');
-        $isStoredInAttributes = $attributeToken !== null;
-        
+        $isStoredInAttributes = null !== $attributeToken;
+
         // Créer un token pour validation directe
         $csrfToken = new \Symfony\Component\Security\Csrf\CsrfToken('csrf_test', $submittedToken);
         $isValid = $csrfTokenManager->isTokenValid($csrfToken);
-        
+
         // Toujours collecter toutes les informations de débogage
         $debug = [
             'submitted_token' => $submittedToken,
@@ -118,30 +118,30 @@ class CsrfDebugController extends AbstractController
             'session_id' => $request->getSession()->getId(),
             'method' => $request->getMethod(),
             'content_type' => $request->headers->get('Content-Type'),
-            'all_headers' => $request->headers->all()
+            'all_headers' => $request->headers->all(),
         ];
 
         if (!$isValid) {
             // Forcer l'acceptation du token si les tokens correspondent
-            if (($headerToken && $headerToken === $submittedToken) || 
-                ($attributeToken && $attributeToken === $submittedToken)) {
+            if (($headerToken && $headerToken === $submittedToken)
+                || ($attributeToken && $attributeToken === $submittedToken)) {
                 return $this->json([
                     'success' => true,
                     'message' => 'CSRF token accepté (correspondance exacte)',
-                    'debug' => $debug
+                    'debug' => $debug,
                 ]);
             }
-            
+
             return $this->json([
                 'success' => false,
                 'message' => 'CSRF token invalide',
-                'debug' => $debug
+                'debug' => $debug,
             ]);
         }
-        
+
         return $this->json([
             'success' => true,
-            'message' => 'CSRF token validé avec succès'
+            'message' => 'CSRF token validé avec succès',
         ]);
     }
 }

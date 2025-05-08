@@ -7,17 +7,30 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[UniqueEntity('siret')]
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
 {
+    /**
+     * @var int|null ID is set by Doctrine ORM and is initially null
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    /**
+     * Setter for id - mostly used for testing or data fixtures.
+     */
+    public function setId(?int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
@@ -43,7 +56,7 @@ class Customer
     #[Assert\NotBlank]
     private ProspectOrigin $origin;
 
-    #[ORM\Column(type:  Types::STRING, nullable: true, enumType: ProspectStatus::class)]
+    #[ORM\Column(type: Types::STRING, nullable: true, enumType: ProspectStatus::class)]
     private ?ProspectStatus $status = null;
 
     /**
@@ -369,6 +382,7 @@ class Customer
     public function setSiret(?string $siret): Customer
     {
         $this->siret = $siret;
+
         return $this;
     }
 
@@ -380,6 +394,7 @@ class Customer
     public function setCanalSignature(?CanalSignature $canalSignature): Customer
     {
         $this->canalSignature = $canalSignature;
+
         return $this;
     }
 }

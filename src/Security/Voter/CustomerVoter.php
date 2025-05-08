@@ -8,6 +8,9 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+/**
+ * @extends Voter<string, Customer>
+ */
 class CustomerVoter extends Voter
 {
     public const VIEW = 'view';
@@ -35,6 +38,11 @@ class CustomerVoter extends Voter
             return true;
         }
 
+        // Si l'utilisateur n'est pas un type User, refuser l'accès
+        if (!$user instanceof User) {
+            return false;
+        }
+
         // Les cas selon les attributs
         return match ($attribute) {
             self::VIEW => $this->canView($customer, $user),
@@ -46,7 +54,7 @@ class CustomerVoter extends Voter
     private function canView(Customer $customer, User $user): bool
     {
         // Un utilisateur peut voir un client s'il lui est assigné ou s'il n'est assigné à personne
-        return $customer->getUser() === $user || $customer->getUser() === null;
+        return $customer->getUser() === $user || null === $customer->getUser();
     }
 
     private function canEdit(Customer $customer, User $user): bool

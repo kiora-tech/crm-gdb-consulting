@@ -10,10 +10,23 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: TemplateRepository::class)]
 class Template
 {
+    /**
+     * @var int|null ID is set by Doctrine ORM and is initially null
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    /**
+     * Setter for id - mostly used for testing or data fixtures.
+     */
+    public function setId(?int $id): static
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
@@ -47,6 +60,7 @@ class Template
     public function setLabel(string $label): static
     {
         $this->label = $label;
+
         return $this;
     }
 
@@ -58,6 +72,7 @@ class Template
     public function setPath(string $path): static
     {
         $this->path = $path;
+
         return $this;
     }
 
@@ -69,6 +84,7 @@ class Template
     public function setType(?TemplateType $type): static
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -80,6 +96,7 @@ class Template
     public function setOriginalFilename(string $originalFilename): static
     {
         $this->originalFilename = $originalFilename;
+
         return $this;
     }
 
@@ -91,6 +108,7 @@ class Template
     public function setMimeType(string $mimeType): static
     {
         $this->mimeType = $mimeType;
+
         return $this;
     }
 
@@ -99,9 +117,10 @@ class Template
         return $this->documentType;
     }
 
-    public function setDocumentType(DocumentType $documentType): static
+    public function setDocumentType(?DocumentType $documentType): static
     {
         $this->documentType = $documentType;
+
         return $this;
     }
 }

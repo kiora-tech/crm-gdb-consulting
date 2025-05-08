@@ -33,23 +33,15 @@ class CustomerControllerTest extends WebTestCase
         $this->databaseTool = self::getContainer()->get(DatabaseToolCollection::class)->get();
 
         $this->databaseTool->loadFixtures([
-            CustomerFixtures::class
+            CustomerFixtures::class,
         ]);
     }
 
     public function testIndex(): void
     {
-
         $this->client->followRedirects();
         $this->client->request('GET', $this->path);
 
         self::assertResponseStatusCodeSame(200);
-
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        unset($this->databaseTool);
     }
 }
