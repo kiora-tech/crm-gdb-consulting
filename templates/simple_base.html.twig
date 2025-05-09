@@ -67,17 +67,6 @@
 										<li>
 											<hr class="dropdown-divider">
 										</li>
-										{% if is_granted('ROLE_COMPANY_ADMIN') %}
-											<li>
-												<a class="dropdown-item d-flex align-items-center" href="{{ path('app_company_show', { 'id': app.user.company.id }) }}">
-													<i class="bi bi-gear"></i>
-													<span>{{ 'header.company.settings'|trans }}</span>
-												</a>
-											</li>
-											<li>
-												<hr class="dropdown-divider">
-											</li>
-										{% endif %}
 										<li>
 											<a class="dropdown-item d-flex align-items-center" href="{{ path('app_logout') }}">
 												<i class="bi bi-box-arrow-right"></i>

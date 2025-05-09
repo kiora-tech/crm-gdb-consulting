@@ -108,12 +108,16 @@ password: "Mot de passe"
 company: Entreprise
 clients: Clients
 user:
+    index: Liste des utilisateurs
     name: Nom
     last_name: "Nom de famille"
     email: Email
     roles: Rôles
     select: Sélectionner un utilisateur
     create: Ajout
+    impersonate: Utiliser ce compte
+    impersonating: Vous utilisez actuellement le compte de %user%
+    exit_impersonation: Revenir à mon compte
 update: Modification
 deletedAt: "Date de suppression"
 reset_password:
@@ -241,6 +245,7 @@ contact:
     new:
         title: Nouveau contact
 energy:
+    provider_placeholder: Choisir un fournisseur
     code: PDL/PCE
     title: Énergies
     new:

@@ -80,9 +80,7 @@ class TemplateFixtures extends Fixture implements DependentFixtureInterface
             $template->setOriginalFilename($templateData['originalFilename']);
             $template->setMimeType($templateData['mimeType']);
 
-            if (isset($templateData['documentType'])) {
-                $template->setDocumentType($this->getReference($templateData['documentType'], DocumentType::class));
-            }
+            $template->setDocumentType($this->getReference($templateData['documentType'], DocumentType::class));
 
             $manager->persist($template);
 

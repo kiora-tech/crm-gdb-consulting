@@ -49,16 +49,24 @@
 
                             {% if options.showActions %}
                                 <td class="text-end">
-                                    <twig:Actions
-                                            :entity="entity"
-                                            :showRoute="options.routes.show"
-                                            :editRoute="options.routes.edit"
-                                            :deleteRoute="options.routes.delete"
-                                            :canShow="options.actions.show"
-                                            :canEdit="options.actions.edit"
-                                            :canDelete="options.actions.delete"
-                                            :actionAttributes="options.actionAttributes"
-                                    />
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <twig:Actions
+                                                :entity="entity"
+                                                :showRoute="options.routes.show"
+                                                :editRoute="options.routes.edit"
+                                                :deleteRoute="options.routes.delete"
+                                                :canShow="options.actions.show"
+                                                :canEdit="options.actions.edit"
+                                                :canDelete="options.actions.delete"
+                                                :actionAttributes="options.actionAttributes"
+                                        />
+                                        
+                                        {% if options.actions.custom|default(false) %}
+                                            {% if block('custom_actions') is defined %}
+                                                {{ block('custom_actions') }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
                                 </td>
                             {% endif %}
                         </tr>

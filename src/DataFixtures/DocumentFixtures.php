@@ -114,10 +114,7 @@ class DocumentFixtures extends Fixture implements DependentFixtureInterface
             $document->setName($documentData['name']);
             $document->setPath($documentData['path']);
             $document->setCustomer($this->getReference($documentData['customer'], Customer::class));
-
-            if (isset($documentData['type'])) {
-                $document->setType($this->getReference($documentData['type'], DocumentType::class));
-            }
+            $document->setType($this->getReference($documentData['type'], DocumentType::class));
 
             $manager->persist($document);
 

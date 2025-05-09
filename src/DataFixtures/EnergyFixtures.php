@@ -253,9 +253,7 @@ class EnergyFixtures extends Fixture implements DependentFixtureInterface
             $energy->setType($energyData['type']);
             $energy->setCode($energyData['code']);
 
-            if ($energyData['contractEnd']) {
-                $energy->setContractEnd(new \DateTime($energyData['contractEnd']));
-            }
+            $energy->setContractEnd(new \DateTime($energyData['contractEnd']));
 
             if ($energyData['powerKva']) {
                 $energy->setPowerKva($energyData['powerKva']);
@@ -269,9 +267,7 @@ class EnergyFixtures extends Fixture implements DependentFixtureInterface
                 $energy->setSegment($energyData['segment']);
             }
 
-            if ($energyData['provider']) {
-                $energy->setEnergyProvider($this->getReference($energyData['provider'], EnergyProvider::class));
-            }
+            $energy->setEnergyProvider($this->getReference($energyData['provider'], EnergyProvider::class));
 
             if (isset($energyData['profile'])) {
                 $energy->setProfile($energyData['profile']);
@@ -281,42 +277,23 @@ class EnergyFixtures extends Fixture implements DependentFixtureInterface
                 $energy->setTransportRate($energyData['transportRate']);
             }
 
-            // Consommation
-            if (isset($energyData['consumption']['peak']) && null !== $energyData['consumption']['peak']) {
-                $energy->setPeakConsumption($energyData['consumption']['peak']);
-            }
+            $energy->setPeakConsumption($energyData['consumption']['peak']);
 
-            if (isset($energyData['consumption']['hph']) && null !== $energyData['consumption']['hph']) {
-                $energy->setHphConsumption($energyData['consumption']['hph']);
-            }
+            $energy->setHphConsumption($energyData['consumption']['hph']);
 
-            if (isset($energyData['consumption']['hch']) && null !== $energyData['consumption']['hch']) {
-                $energy->setHchConsumption($energyData['consumption']['hch']);
-            }
+            $energy->setHchConsumption($energyData['consumption']['hch']);
 
-            if (isset($energyData['consumption']['hpe']) && null !== $energyData['consumption']['hpe']) {
-                $energy->setHpeConsumption($energyData['consumption']['hpe']);
-            }
+            $energy->setHpeConsumption($energyData['consumption']['hpe']);
 
-            if (isset($energyData['consumption']['hce']) && null !== $energyData['consumption']['hce']) {
-                $energy->setHceConsumption($energyData['consumption']['hce']);
-            }
+            $energy->setHceConsumption($energyData['consumption']['hce']);
 
-            if (isset($energyData['consumption']['base']) && null !== $energyData['consumption']['base']) {
-                $energy->setBaseConsumption($energyData['consumption']['base']);
-            }
+            $energy->setBaseConsumption($energyData['consumption']['base']);
 
-            if (isset($energyData['consumption']['hp']) && null !== $energyData['consumption']['hp']) {
-                $energy->setHpConsumption($energyData['consumption']['hp']);
-            }
+            $energy->setHpConsumption($energyData['consumption']['hp']);
 
-            if (isset($energyData['consumption']['hc']) && null !== $energyData['consumption']['hc']) {
-                $energy->setHcConsumption($energyData['consumption']['hc']);
-            }
+            $energy->setHcConsumption($energyData['consumption']['hc']);
 
-            if (isset($energyData['consumption']['total']) && null !== $energyData['consumption']['total']) {
-                $energy->setTotalConsumption($energyData['consumption']['total']);
-            }
+            $energy->setTotalConsumption($energyData['consumption']['total']);
 
             $manager->persist($energy);
 
