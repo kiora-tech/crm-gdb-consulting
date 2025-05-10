@@ -18,7 +18,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.labels.role == database
+          - node.hostname == raspberrypi5peo16
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -39,7 +39,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.labels.memory == medium
+          - node.hostname == raspberrypi5peo16
       restart_policy:
         condition: none
   php:
@@ -61,7 +61,7 @@ services:
       replicas: 2
       placement:
         constraints:
-          - node.labels.memory == medium
+          - node.hostname == raspberrypi5peo16
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -80,7 +80,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.labels.memory == medium
+          - node.hostname == raspberrypi5peo16
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -103,7 +103,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.labels.memory == high
+          - node.hostname == raspberrypi5peo16
       restart_policy:
         condition: any
         delay: 15s
