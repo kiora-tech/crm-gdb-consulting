@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[UniqueEntity('siret')]
+#[UniqueEntity(fields: 'siret', ignoreNull: true)]
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
 {

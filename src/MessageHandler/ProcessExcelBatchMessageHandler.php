@@ -420,7 +420,9 @@ class ProcessExcelBatchMessageHandler
         if (!$customer) {
             $customer = new Customer();
             $customer->setName($name);
-            $customer->setSiret($siret);
+            if (!empty($siret)) {
+                $customer->setSiret(str_replace(' ','',$siret));
+            }
             $customer->setLeadOrigin($leadOrigin ?: 'Import Excel');
             $customer->setOrigin(ProspectOrigin::ACQUISITION);
             $entityManager->persist($customer);

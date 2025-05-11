@@ -33,36 +33,29 @@ when@test:
 when@prod:
     monolog:
         handlers:
-            # Ce handler capture uniquement les erreurs et exceptions pour Sentry
-            sentry:
-                type: sentry
-                level: error # Uniquement les erreurs sont envoyées à Sentry
-                hub_id: Sentry\State\HubInterface
-                channels: ["!deprecation"] # Exclure les dépréciations
-
-            # Ce handler utilise fingers_crossed pour capturer le contexte autour des erreurs
+            # Handler principal qui capture le contexte des erreurs
             main:
                 type: fingers_crossed
                 action_level: error
                 handler: grouped
                 excluded_http_codes: [404, 405]
                 buffer_size: 50
-                channels: ["!sentry"] # Éviter la duplication avec le handler sentry
 
-            # Groupe de handlers pour les logs locaux
+            # Groupe les handlers de sortie
             grouped:
                 type: group
-                members: [file, stderr]
+                members: [rotating_file, docker_output]
 
-            # Logs dans un fichier
-            file:
-                type: stream
+            # Rotation des logs sur 5 fichiers
+            rotating_file:
+                type: rotating_file
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
+                max_files: 5
                 formatter: monolog.formatter.json
 
-            # Logs pour Docker/Stdout
-            stderr:
+            # Sortie vers Docker (stdout/stderr)
+            docker_output:
                 type: stream
                 path: php://stderr
                 level: debug
@@ -80,6 +73,13 @@ when@prod:
                 channels: [deprecation]
                 path: php://stderr
                 formatter: monolog.formatter.json
+
+            # Handler Sentry (si vous utilisez Sentry)
+            sentry:
+                type: sentry
+                level: error
+                hub_id: Sentry\State\HubInterface
+                channels: ["!deprecation"]
 
 services:
     # Processer les placeholders PSR-3 pour Sentry
