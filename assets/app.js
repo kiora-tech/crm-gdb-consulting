@@ -1,3 +1,4 @@
+import './bootstrap.js';
 import './styles/ColorPicker.css';
 import 'bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.min.css';
