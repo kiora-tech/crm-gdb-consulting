@@ -90,14 +90,7 @@
 
             <div class="col-md-3">
                 <div class="form-floating">
-                    {{ form_widget(form.energyProvider, {
-                        attr: {
-                            class: 'form-control',
-                            id: 'floatingProvider',
-                            'data-controller': 'energy-provider-autocomplete',
-                            'data-energy-provider-autocomplete-url-value': path('app_energy_provider_new_ajax')
-                        }
-                    }) }}
+                    {{ form_widget(form.energyProvider) }}
                     <label for="floatingProvider">{{ 'energy.provider'|trans }}</label>
                     {{ form_errors(form.energyProvider) }}
                 </div>

@@ -53,13 +53,11 @@ class CustomerVoter extends Voter
 
     private function canView(Customer $customer, User $user): bool
     {
-        // Un utilisateur peut voir un client s'il lui est assigné ou s'il n'est assigné à personne
         return $customer->getUser() === $user || null === $customer->getUser();
     }
 
     private function canEdit(Customer $customer, User $user): bool
     {
-        // Un utilisateur ne peut modifier que ses propres clients
-        return $customer->getUser() === $user;
+        return $customer->getUser() === $user || null === $customer->getUser();
     }
 }

@@ -338,3 +338,7 @@ a form {
 .sidebar-footer {
     margin-top: auto;
 }
+
+.ts-control .item {
+    margin-top: 15px;
+}

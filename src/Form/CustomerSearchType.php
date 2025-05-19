@@ -105,7 +105,7 @@ class CustomerSearchType extends AbstractType
             'required' => false,
             'attr' => [
                 'class' => 'form-control',
-                'placeholder' => 'energy.provider',
+                'placeholder' => 'energy.provider_placeholder',
                 'data-controller' => 'energy-provider-autocomplete',
                 'data-energy-provider-autocomplete-url-value' => $this->router->generate('app_energy_provider_new_ajax'),
             ],

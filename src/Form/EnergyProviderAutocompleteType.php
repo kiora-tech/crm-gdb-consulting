@@ -16,7 +16,7 @@ class EnergyProviderAutocompleteType extends AbstractType
     {
         $resolver->setDefaults([
             'class' => EnergyProvider::class,
-            'placeholder' => 'Choisir un fournisseur',
+            'placeholder' => 'energy.provider_placeholder',
             'choice_label' => 'name',
             'query_builder' => function (EnergyProviderRepository $repository) {
                 return $repository->createQueryBuilder('p')
