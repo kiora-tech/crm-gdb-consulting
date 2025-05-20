@@ -5,6 +5,9 @@ namespace App\Controller;
 use App\Entity\Template;
 use App\Entity\TemplateType;
 use App\Form\TemplateType as TemplateFormType;
+use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
+use League\Flysystem\FilesystemOperator;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -18,6 +21,14 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route('/template')]
 class TemplateController extends BaseCrudController
 {
+    public function __construct(
+        #[Autowire(service: 'templates.storage')]
+        private readonly FilesystemOperator $templatesStorage,
+        EntityManagerInterface $entityManager,
+        PaginatorInterface $paginator,
+    ) {
+        parent::__construct($entityManager, $paginator);
+    }
     #[Route('/', name: 'app_template_index', methods: ['GET'])]
     public function index(Request $request): Response
     {
@@ -44,8 +55,7 @@ class TemplateController extends BaseCrudController
     public function new(
         Request $request,
         SluggerInterface $slugger,
-        LoggerInterface $logger,
-        #[Autowire('%kernel.project_dir%/public/uploads/templates')] string $uploadDirectory,
+        LoggerInterface $logger
     ): Response {
         $template = new Template();
         $form = $this->createForm(TemplateFormType::class, $template);
@@ -63,9 +73,14 @@ class TemplateController extends BaseCrudController
                 try {
                     $template->setType(TemplateType::fromMimeType($file->getMimeType()));
                     $template->setMimeType($file->getMimeType());
-                    $file->move($uploadDirectory, $newFilename);
 
-                    $template->setPath('templates/'.$newFilename);
+                    $stream = fopen($file->getRealPath(), 'r');
+                    $this->templatesStorage->writeStream($newFilename, $stream);
+                    if (is_resource($stream)) {
+                        fclose($stream);
+                    }
+
+                    $template->setPath($newFilename);
                     $template->setOriginalFilename($file->getClientOriginalName());
 
                     $this->entityManager->persist($template);
@@ -87,8 +102,7 @@ class TemplateController extends BaseCrudController
         Request $request,
         Template $template,
         SluggerInterface $slugger,
-        LoggerInterface $logger,
-        #[Autowire('%kernel.project_dir%/public/uploads/templates')] string $uploadDirectory,
+        LoggerInterface $logger
     ): Response {
         $form = $this->createForm(TemplateFormType::class, $template);
         $form->handleRequest($request);
@@ -104,16 +118,20 @@ class TemplateController extends BaseCrudController
 
                 try {
                     // Supprimer l'ancien fichier
-                    $oldPath = $this->getParameter('kernel.project_dir').'/public/uploads/'.$template->getPath();
-                    if (file_exists($oldPath)) {
-                        unlink($oldPath);
+                    $oldPath = $template->getPath();
+                    if ($oldPath && $this->templatesStorage->fileExists($oldPath)) {
+                        $this->templatesStorage->delete($oldPath);
                     }
                     $template->setType(TemplateType::fromMimeType($file->getMimeType()));
                     $template->setMimeType($file->getMimeType());
 
-                    $file->move($uploadDirectory, $newFilename);
+                    $stream = fopen($file->getRealPath(), 'r');
+                    $this->templatesStorage->writeStream($newFilename, $stream);
+                    if (is_resource($stream)) {
+                        fclose($stream);
+                    }
 
-                    $template->setPath('templates/'.$newFilename);
+                    $template->setPath($newFilename);
                     $template->setOriginalFilename($file->getClientOriginalName());
 
                     $this->entityManager->flush();
@@ -132,33 +150,36 @@ class TemplateController extends BaseCrudController
     #[Route('/{id}/download', name: 'app_template_download', methods: ['GET'])]
     public function download(
         Template $template,
-        MimeTypesInterface $mimeTypes,
     ): Response {
         $response = new Response();
-        $filePath = $this->getParameter('kernel.project_dir').'/public/'.$template->getPath();
+        $filePath = $template->getPath();
 
-        if (!file_exists($filePath)) {
+        if (!$filePath || !$this->templatesStorage->fileExists($filePath)) {
             throw $this->createNotFoundException('Le fichier demandé n\'existe pas');
         }
 
-        $typeMime = $mimeTypes->guessMimeType($filePath);
+        $mimeType = $this->templatesStorage->mimeType($filePath);
         $baseName = $template->getOriginalFilename();
 
-        $response->headers->set('Content-Type', $typeMime);
+        $response->headers->set('Content-Type', $mimeType);
         $response->headers->set('Content-Disposition', 'attachment; filename="'.$baseName.'"');
-        $response->setContent(file_get_contents($filePath));
+        $response->setContent($this->templatesStorage->read($filePath));
 
         return $response;
     }
 
     #[Route('/{id}', name: 'app_template_delete', methods: ['POST'])]
-    public function delete(Request $request, Template $template): Response
-    {
+    public function delete(
+        Request $request,
+        Template $template,
+    ): Response {
+        /** @var FilesystemOperator */
+        $templatesStorage = $this->container->get('templates.storage');
         if ($this->isCsrfTokenValid('delete'.$template->getId(), $request->request->get('_token'))) {
-            $filePath = $this->getParameter('kernel.project_dir').'/public/'.$template->getPath();
+            $filePath = $template->getPath();
 
-            if (file_exists($filePath)) {
-                unlink($filePath);
+            if ($filePath && $templatesStorage->fileExists($filePath)) {
+                $templatesStorage->delete($filePath);
             }
 
             $this->entityManager->remove($template);

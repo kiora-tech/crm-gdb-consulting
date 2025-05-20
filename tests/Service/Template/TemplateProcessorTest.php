@@ -10,6 +10,7 @@ use App\Entity\EnergyType;
 use App\Entity\ProspectStatus;
 use App\Entity\Template;
 use App\Service\Template\TemplateProcessor;
+use League\Flysystem\FilesystemOperator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -88,22 +89,24 @@ class TemplateProcessorTest extends TestCase
             ->method('critical');
 
         // This test verifies that the logger is called when the path is invalid
-        $templateProcessor = new class($mockLogger) extends TemplateProcessor {
+        $mockStorage = $this->createMock(FilesystemOperator::class);
+        $mockStorage->method('fileExists')->willReturn(false);
+
+        $templateProcessor = new class($mockStorage, $mockLogger) extends TemplateProcessor {
             private LoggerInterface $logger;
 
-            public function __construct(LoggerInterface $logger)
+            public function __construct(FilesystemOperator $storage, LoggerInterface $logger)
             {
                 $this->logger = $logger;
-                // Call parent constructor with dummy values
-                parent::__construct('/var/www/public', $logger);
+                // Call parent constructor with mock services
+                parent::__construct($storage, $logger);
             }
 
             public function processTemplate(Template $template, Customer $customer): string
             {
                 // Mock implementation to avoid file system access
                 $this->logger->critical('Fichier template introuvable', [
-                    'path' => 'invalid/path',
-                    'directory_exists' => false,
+                    'path' => $template->getPath(),
                 ]);
 
                 return '/tmp/mock-output.docx';
@@ -144,9 +147,10 @@ class TemplateProcessorTest extends TestCase
     private function getMockTemplateProcessor(): TemplateProcessor&MockObject
     {
         $mockLogger = $this->createMock(LoggerInterface::class);
+        $mockStorage = $this->createMock(FilesystemOperator::class);
 
         return $this->getMockBuilder(TemplateProcessor::class)
-            ->setConstructorArgs(['/var/www/public', $mockLogger])
+            ->setConstructorArgs([$mockStorage, $mockLogger])
             ->onlyMethods(['processTemplate'])
             ->getMock();
     }

@@ -9,6 +9,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Update DB: `docker-compose exec php bin/console doctrine:migrations:migrate`
 - Load fixtures: `docker-compose exec php bin/console doctrine:fixtures:load`
 - Quality checks: `docker-compose exec php vendor/bin/grumphp run` (runs PHPStan and PHPUnit)
+- Reset database: `make reset-db`
+- Access PHP container: `make php`
+- Compile assets: `make ready`
+- Initialize project: `make init` (builds Docker images)
+- Install Symfony: `make install_symfony` (creates DB, runs migrations, loads fixtures)
 
 ## IMPORTANT: Always run GrumPHP after making changes
 After making any code changes, ALWAYS run GrumPHP to verify that your changes pass all quality checks:
@@ -16,6 +21,21 @@ After making any code changes, ALWAYS run GrumPHP to verify that your changes pa
 docker-compose exec php vendor/bin/grumphp run
 ```
 This will run PHPStan static analysis and PHPUnit tests to ensure code quality and prevent regressions.
+
+## Project Architecture
+- Symfony 7.2 application with PHP 8.4
+- Docker-based development environment with PHP, MySQL, Nginx
+- Core entities: Customer (central entity), Energy, Document, Contact, Comment
+- Key components:
+  - BaseCrudController: Abstract controller for standard CRUD operations
+  - Twig components (Button, Table, DeleteButton, FormActions, ClientSearch)
+  - ImportService: Handles batch Excel imports via message queue
+  - TemplateProcessor: Generates documents from templates
+
+## Development URLs
+- Application: http://localhost:8080
+- MailHog (email testing): http://localhost:8025
+- MySQL: localhost:3306
 
 ## Code Style Guidelines
 - PSR-12 for formatting
@@ -29,3 +49,11 @@ This will run PHPStan static analysis and PHPUnit tests to ensure code quality a
 - Repository classes for DB queries, no direct query in controllers
 - TWIG templates use snake_case variables, kebab-case classes
 - Translations stored in YAML format, accessed via trans filter in templates
+
+## Core Development Patterns
+- Use BaseCrudController for entity CRUD operations
+- Use CustomerInfoController for customer-related entities
+- Implement Twig components for UI elements
+- PaginationService for handling pagination
+- ImportService and message queue for batch operations
+- TemplateProcessor for document generation from templates

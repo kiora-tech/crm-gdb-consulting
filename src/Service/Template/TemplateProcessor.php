@@ -5,6 +5,7 @@ namespace App\Service\Template;
 use App\Entity\Customer;
 use App\Entity\Template;
 use Doctrine\Common\Collections\Collection;
+use League\Flysystem\FilesystemOperator;
 use PhpOffice\PhpWord\TemplateProcessor as PhpWordProcessor;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -16,8 +17,8 @@ class TemplateProcessor
     private PropertyAccessor $propertyAccessor;
 
     public function __construct(
-        #[Autowire('%kernel.project_dir%/public')]
-        private readonly string $publicDir,
+        #[Autowire(service: 'templates.storage')]
+        private readonly FilesystemOperator $templatesStorage,
         private readonly LoggerInterface $logger,
     ) {
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
@@ -43,34 +44,36 @@ class TemplateProcessor
             'template_path' => $template->getPath(),
         ]);
 
-        $templatePath = $this->publicDir.'/'.ltrim($template->getPath(), '/');
-        $this->logger->debug('Chemin complet du template', ['full_path' => $templatePath]);
+        $templatePath = $template->getPath();
+        $this->logger->debug('Chemin du template', ['path' => $templatePath]);
 
         // Vérification que le fichier existe
-        if (!file_exists($templatePath)) {
+        if (!$this->templatesStorage->fileExists($templatePath)) {
             $this->logger->critical('Fichier template introuvable', [
                 'path' => $templatePath,
-                'directory_exists' => is_dir(dirname($templatePath)),
-                'directory_readable' => is_readable(dirname($templatePath)),
-                'directory_content' => scandir(dirname($templatePath)),
             ]);
             throw new \RuntimeException("Template file not found: $templatePath");
         }
 
-        // Vérification que le fichier est lisible
-        if (!is_readable($templatePath)) {
-            $this->logger->critical('Fichier template non lisible', [
+        // Créer un fichier temporaire pour y copier le contenu du template
+        $tempDir = sys_get_temp_dir();
+        $tempTemplatePath = tempnam($tempDir, 'template_');
+
+        // Écrire le contenu du template dans le fichier temporaire
+        $templateContent = $this->templatesStorage->read($templatePath);
+        if (empty($templateContent)) {
+            $this->logger->critical('Impossible de lire le contenu du template', [
                 'path' => $templatePath,
-                'permissions' => substr(sprintf('%o', fileperms($templatePath)), -4),
-                'file_size' => filesize($templatePath),
             ]);
-            throw new \RuntimeException("Template file not readable: $templatePath");
+            throw new \RuntimeException("Unable to read template content: $templatePath");
         }
+
+        file_put_contents($tempTemplatePath, $templateContent);
 
         try {
             // Crée le processeur de template
-            $this->logger->debug('Création du processeur de template');
-            $processor = new PhpWordProcessor($templatePath);
+            $this->logger->debug('Création du processeur de template', ['temp_path' => $tempTemplatePath]);
+            $processor = new PhpWordProcessor($tempTemplatePath);
             $this->logger->debug('Processeur de template créé avec succès');
 
             // Récupère toutes les variables du template
@@ -127,6 +130,11 @@ class TemplateProcessor
                 throw new \RuntimeException("Failed to create temporary file: $tempFile");
             }
 
+            // Nettoyer le fichier temporaire du template
+            if (file_exists($tempTemplatePath)) {
+                unlink($tempTemplatePath);
+            }
+
             $this->logger->info('Fichier temporaire créé avec succès', [
                 'temp_file' => $tempFile,
                 'file_size' => filesize($tempFile),
@@ -153,7 +161,7 @@ class TemplateProcessor
                 'memory_usage' => memory_get_usage(true),
                 'memory_limit' => ini_get('memory_limit'),
                 'tempdir_writable' => is_writable(sys_get_temp_dir()) ? 'yes' : 'no',
-                'directory_structure' => is_dir($this->publicDir) ? scandir($this->publicDir) : [],
+                'template_path' => $templatePath,
             ]);
             throw $e;
         }

@@ -9,6 +9,8 @@ use App\Form\DropzoneForm;
 use App\Service\Template\TemplateProcessor;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use Knp\Component\Pager\PaginatorInterface;
+use League\Flysystem\FilesystemOperator;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -23,14 +25,21 @@ use Symfony\UX\Turbo\TurboBundle;
 #[Route('/document', name: 'app_document')]
 class DocumentController extends CustomerInfoController
 {
+    public function __construct(
+        #[Autowire(service: 'documents.storage')]
+        private readonly FilesystemOperator $documentsStorage,
+        EntityManagerInterface $entityManager,
+        PaginatorInterface $paginator,
+    )
+    {
+        parent::__construct($entityManager, $paginator);
+    }
     #[Route('/new/{customer?}', name: '_new', methods: ['GET', 'POST'], priority: 999)]
     public function uploadDocument(
         Request $request,
         SluggerInterface $slugger,
         LoggerInterface $logger,
         EntityManagerInterface $entityManager,
-        #[Autowire('%kernel.project_dir%/public/uploads/documents')]
-        string $uploadDirectory,
         ?Customer $customer = null,
     ): Response {
         $document = new Document();
@@ -49,9 +58,14 @@ class DocumentController extends CustomerInfoController
                     $newFilename = $safeFilename.'-'.uniqid().'.'.$documentFile->guessExtension();
 
                     try {
-                        $documentFile->move($uploadDirectory, $newFilename);
+                        $stream = fopen($documentFile->getRealPath(), 'r');
+                        $this->documentsStorage->writeStream($newFilename, $stream);
+                        if (is_resource($stream)) {
+                            fclose($stream);
+                        }
+
                         $document->setName($originalFilename);
-                        $document->setPath($uploadDirectory.'/'.$newFilename);
+                        $document->setPath($newFilename);
                         if ($customer) {
                             $document->setCustomer($customer);
                         }
@@ -143,23 +157,22 @@ class DocumentController extends CustomerInfoController
     #[Route('/{id}/download', name: '_download', methods: ['GET'])]
     public function downloadDocument(
         Document $document,
-        MimeTypesInterface $mimeTypes,
     ): Response {
         $response = new Response();
 
         $filePath = $document->getPath();
-        if (!$filePath || !file_exists($filePath)) {
+        if (!$filePath || !$this->documentsStorage->fileExists($filePath)) {
             throw $this->createNotFoundException('Le fichier demandé n\'existe pas');
         }
 
-        // gettype
-        $typeMime = $mimeTypes->guessMimeType($filePath);
+        // Lire les métadonnées du fichier pour déterminer le type MIME
+        $mimeType = $this->documentsStorage->mimeType($filePath);
         $baseName = basename($filePath);
-        $response->headers->set('Content-Type', $typeMime);
+        $response->headers->set('Content-Type', $mimeType);
         $response->headers->set('Content-Disposition', 'attachment; filename="'.$baseName.'"');
 
-        $fileContent = file_get_contents($filePath);
-        if (false === $fileContent) {
+        $fileContent = $this->documentsStorage->read($filePath);
+        if (empty($fileContent)) {
             throw $this->createNotFoundException('Impossible de lire le fichier');
         }
 
@@ -168,7 +181,7 @@ class DocumentController extends CustomerInfoController
         return $response;
     }
 
-    #[Route('/{id}', name: '_delete', methods: ['POST'])]
+    #[Route('/{id}/{customer?}', name: '_delete', methods: ['POST'])]
     public function delete(Request $request, int $id, ?Customer $customer = null): Response
     {
         if ($this->isCsrfTokenValid('delete'.$id, $request->getPayload()->getString('_token'))) {
@@ -179,8 +192,8 @@ class DocumentController extends CustomerInfoController
             }
 
             $path = $document->getPath();
-            if ($path && file_exists($path)) {
-                unlink($path);
+            if ($path && $this->documentsStorage->fileExists($path)) {
+                $this->documentsStorage->delete($path);
             }
 
             /** @var Customer|null $customer */
@@ -206,8 +219,6 @@ class DocumentController extends CustomerInfoController
         Template $template,
         Customer $customer,
         TemplateProcessor $templateProcessor,
-        #[Autowire('%kernel.project_dir%/public/uploads/documents')]
-        string $uploadDirectory,
         SluggerInterface $slugger,
         EntityManagerInterface $entityManager,
         LoggerInterface $logger,
@@ -234,25 +245,7 @@ class DocumentController extends CustomerInfoController
                 'template_label' => $template->getLabel(),
                 'customer_id' => $customer->getId(),
                 'customer_name' => $customer->getName(),
-                'upload_directory' => $uploadDirectory,
             ]);
-
-            // Vérifier l'existence du répertoire d'upload
-            if (!is_dir($uploadDirectory)) {
-                $logger->critical('Le répertoire d\'upload n\'existe pas', [
-                    'directory' => $uploadDirectory,
-                ]);
-                throw new \RuntimeException('Le répertoire d\'upload n\'existe pas: '.$uploadDirectory);
-            }
-
-            // Vérifier les permissions d'écriture
-            if (!is_writable($uploadDirectory)) {
-                $logger->critical('Le répertoire d\'upload n\'est pas accessible en écriture', [
-                    'directory' => $uploadDirectory,
-                    'permissions' => substr(sprintf('%o', fileperms($uploadDirectory)), -4),
-                ]);
-                throw new \RuntimeException('Le répertoire d\'upload n\'est pas accessible en écriture: '.$uploadDirectory);
-            }
 
             // Génère le document à partir du template
             $logger->info('Traitement du template', [
@@ -274,22 +267,29 @@ class DocumentController extends CustomerInfoController
             $extension = pathinfo($originalFilenameRaw, PATHINFO_EXTENSION);
             $safeFilename = $slugger->slug($originalFilename.'_'.$customer->getName());
             $newFilename = $safeFilename.'-'.uniqid().'.'.$extension;
-            $fullPath = $uploadDirectory.'/'.$newFilename;
 
             $logger->info('Déplacement du fichier temporaire', [
                 'from' => $tempFile,
-                'to' => $fullPath,
+                'to' => $newFilename,
             ]);
 
-            // Déplace le fichier dans le répertoire uploads
-            if (!rename($tempFile, $fullPath)) {
-                $logger->error('Échec du déplacement du fichier', [
-                    'source' => $tempFile,
-                    'destination' => $fullPath,
+            // Copie le fichier temporaire vers le stockage Flysystem
+            $stream = fopen($tempFile, 'r');
+            if (!$stream) {
+                $logger->error('Impossible d\'ouvrir le fichier temporaire', [
+                    'file' => $tempFile,
                     'error' => error_get_last(),
                 ]);
-                throw new \RuntimeException('Impossible de déplacer le fichier temporaire vers la destination finale');
+                throw new \RuntimeException('Impossible d\'ouvrir le fichier temporaire');
             }
+
+            $this->documentsStorage->writeStream($newFilename, $stream);
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+
+            // Supprime le fichier temporaire
+            unlink($tempFile);
 
             $logger->info('Fichier déplacé avec succès');
 
@@ -297,7 +297,7 @@ class DocumentController extends CustomerInfoController
             $document = new Document();
             $document->setCustomer($customer);
             $document->setName($originalFilename.' - '.$customer->getName());
-            $document->setPath('uploads/documents/'.$newFilename);
+            $document->setPath($newFilename);
             $document->setType($template->getDocumentType());
 
             // Persiste le nouveau document
@@ -310,20 +310,18 @@ class DocumentController extends CustomerInfoController
             ]);
 
             // Vérifie que le fichier peut être lu
-            if (!file_exists($fullPath) || !is_readable($fullPath)) {
-                $logger->error('Le fichier final n\'existe pas ou n\'est pas lisible', [
-                    'path' => $fullPath,
-                    'exists' => file_exists($fullPath),
-                    'readable' => is_readable($fullPath),
+            if (!$this->documentsStorage->fileExists($newFilename)) {
+                $logger->error('Le fichier final n\'existe pas', [
+                    'path' => $newFilename,
                 ]);
-                throw new \RuntimeException('Le fichier généré n\'existe pas ou n\'est pas lisible');
+                throw new \RuntimeException('Le fichier généré n\'existe pas');
             }
 
             // Retourne le fichier
-            $fileContent = file_get_contents($fullPath);
-            if (false === $fileContent) {
+            $fileContent = $this->documentsStorage->read($newFilename);
+            if (empty($fileContent)) {
                 $logger->error('Impossible de lire le contenu du fichier', [
-                    'path' => $fullPath,
+                    'path' => $newFilename,
                     'error' => error_get_last(),
                 ]);
                 throw new \RuntimeException('Impossible de lire le contenu du fichier généré');
@@ -385,7 +383,7 @@ class DocumentController extends CustomerInfoController
                     'message' => $t->getMessage(),
                 ]);
 
-                return $this->redirectToRoute('app_home');
+                return $this->redirectToRoute('homepage');
             }
         }
     }
