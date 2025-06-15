@@ -13,26 +13,40 @@
     <div class="card-body pb-0">
         <h5 class="card-title">{{ 'dashboard.contracts_to_renew'|trans }}</h5>
 
-        {% for contract in expiringContracts %}
-            <div class="news">
-                <div class="post-item clearfix">
-                    <div class="d-flex align-items-center">
-                        <i class="bi {{ contract.type.value == 'ELEC' ? 'bi-lightning-charge-fill text-warning' : 'bi-fire text-danger' }} me-3 fs-3"></i>
-                        <div>
-                            <span>
+        <div class="table-responsive">
+            <table class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th>{{ 'customer.name'|trans }}</th>
+                        <th>{{ 'energy.type'|trans }}</th>
+                        <th>{{ 'energy.contract_end'|trans }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contract in expiringContracts %}
+                        <tr>
+                            <td>
                                 <a href="{{ path('app_customer_show', {'id': contract.customer.id}) }}">{{ contract.customer.name }}</a>
-                            </span><br />
-                            <span>{{ contract.type.value }} - {{ contract.contractEnd|date('d/m/Y') }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% else %}
-            <div class="news">
-                <div class="post-item clearfix">
-                    <p class="text-center">{{ 'dashboard.no_expiring_contracts'|trans }}</p>
-                </div>
-            </div>
-        {% endfor %}
+                            </td>
+                            <td>
+                                <i class="bi {{ contract.type.value == 'ELEC' ? 'bi-lightning-charge-fill text-warning' : 'bi-fire text-danger' }}"></i>
+                                {{ contract.type.value }}
+                            </td>
+                            <td>{{ contract.contractEnd|date('d/m/Y') }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center">{{ 'dashboard.no_expiring_contracts'|trans }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="text-center mt-3 mb-3">
+            <a href="{{ path('app_customer_index', {'expiringContracts': '1'}) }}" class="btn btn-primary btn-sm">
+                {{ 'dashboard.view_all'|trans }}
+            </a>
+        </div>
     </div>
 </div>

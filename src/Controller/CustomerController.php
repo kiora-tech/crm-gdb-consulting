@@ -21,6 +21,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/customer', name: 'app_customer')]
 class CustomerController extends AbstractController
@@ -30,14 +32,53 @@ class CustomerController extends AbstractController
      */
     #[Route('/', name: '_index', methods: ['GET'])]
     /** @phpstan-param PaginationService<int, Customer> $paginationService */
-    public function index(CustomerRepository $customerRepository, PaginationService $paginationService, Request $request): Response
-    {
-        $data = new CustomerSearchData();
+    public function index(
+        CustomerRepository $customerRepository,
+        PaginationService $paginationService,
+        Request $request,
+        SerializerInterface $serializer,
+    ): Response {
+        $session = $request->getSession();
+        $resetFilter = $request->query->has('reset');
+
+        // Initialiser les données de recherche
+        if ($resetFilter) {
+            // Réinitialiser les filtres si demandé
+            $session->remove('customer_search');
+            $data = new CustomerSearchData();
+        } elseif (!$request->query->count() && $session->has('customer_search')) {
+            // Récupérer les données de session si aucun paramètre n'est fourni
+            try {
+                $data = $serializer->deserialize(
+                    $session->get('customer_search'),
+                    CustomerSearchData::class,
+                    'json'
+                );
+            } catch (\Exception $e) {
+                // En cas d'erreur, utiliser une nouvelle instance
+                $data = new CustomerSearchData();
+            }
+        } else {
+            // Nouvelle recherche
+            $data = new CustomerSearchData();
+        }
+
         $form = $this->createForm(CustomerSearchType::class, $data);
         $form->handleRequest($request);
 
-        $query = $customerRepository->search($data);
+        // Si le formulaire est soumis, sauvegarder en session
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $serializedData = $serializer->serialize($data, 'json', [
+                    AbstractNormalizer::IGNORED_ATTRIBUTES => ['page', 'sort', 'order'],
+                ]);
+                $session->set('customer_search', $serializedData);
+            } catch (\Exception $e) {
+                // Gérer l'erreur de sérialisation
+            }
+        }
 
+        $query = $customerRepository->search($data);
         $customers = $paginationService->paginate($query, $request);
 
         $importErrorDirectory = $this->getParameter('kernel.project_dir').'/var/import/errors';

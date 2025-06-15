@@ -34,7 +34,8 @@
             options: {
                 routes: table_routes,
                 tableClass: 'table table-hover',
-                theadClass: 'table-primary'
+                theadClass: 'table-primary',
+                actionAttributes: table_routes.actionAttributes|default({})
             }
         }) }}
     </section>

@@ -82,7 +82,7 @@ class HomeController extends AbstractController
             ->setParameter('now', $now)
             ->setParameter('threeMonths', $threeMonthsLater)
             ->orderBy('e.contractEnd', 'ASC')
-            ->setMaxResults(5)
+            ->setMaxResults(10) // Doublé le nombre de contrats affichés
             ->getQuery()
             ->getResult();
 

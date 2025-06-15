@@ -199,10 +199,15 @@ class TemplateController extends BaseCrudController
 
     protected function getRoute(): array
     {
+        $routePrefix = $this->getRoutePrefix();
+
         return [
-            'edit' => 'app_template_edit',
-            'delete' => 'app_template_delete',
-            'show' => 'app_template_download',
+            'edit' => $routePrefix.'_edit',
+            'delete' => $routePrefix.'_delete',
+            'show' => $routePrefix.'_download',
+            'actionAttributes' => [
+                'show' => ['data-turbo' => 'false'],
+            ],
         ];
     }
 
