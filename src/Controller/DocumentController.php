@@ -17,7 +17,6 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mime\MimeTypesInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\UX\Turbo\TurboBundle;
@@ -30,10 +29,10 @@ class DocumentController extends CustomerInfoController
         private readonly FilesystemOperator $documentsStorage,
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
-    )
-    {
+    ) {
         parent::__construct($entityManager, $paginator);
     }
+
     #[Route('/new/{customer?}', name: '_new', methods: ['GET', 'POST'], priority: 999)]
     public function uploadDocument(
         Request $request,

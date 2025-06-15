@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mime\MimeTypesInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -29,6 +28,7 @@ class TemplateController extends BaseCrudController
     ) {
         parent::__construct($entityManager, $paginator);
     }
+
     #[Route('/', name: 'app_template_index', methods: ['GET'])]
     public function index(Request $request): Response
     {
@@ -55,7 +55,7 @@ class TemplateController extends BaseCrudController
     public function new(
         Request $request,
         SluggerInterface $slugger,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ): Response {
         $template = new Template();
         $form = $this->createForm(TemplateFormType::class, $template);
@@ -102,7 +102,7 @@ class TemplateController extends BaseCrudController
         Request $request,
         Template $template,
         SluggerInterface $slugger,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ): Response {
         $form = $this->createForm(TemplateFormType::class, $template);
         $form->handleRequest($request);

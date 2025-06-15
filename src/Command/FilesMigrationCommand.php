@@ -22,7 +22,7 @@ class FilesMigrationCommand extends Command
         private readonly FilesystemOperator $documentsStorage,
         private readonly FilesystemOperator $templatesStorage,
         #[Autowire('%kernel.project_dir%')]
-        private readonly string $projectDir
+        private readonly string $projectDir,
     ) {
         parent::__construct();
     }
@@ -42,27 +42,27 @@ class FilesMigrationCommand extends Command
         $type = $input->getOption('type');
 
         $io->title('Starting file migration from local filesystem to MinIO storage');
-        
+
         if ($dryRun) {
             $io->warning('Running in dry-run mode. No files will be migrated.');
         }
 
-        if ($type === 'all' || $type === 'documents') {
+        if ('all' === $type || 'documents' === $type) {
             $this->migrateFiles(
-                $io, 
-                $this->documentsStorage, 
-                $this->projectDir . '/public/uploads/documents', 
-                'documents', 
+                $io,
+                $this->documentsStorage,
+                $this->projectDir.'/public/uploads/documents',
+                'documents',
                 $dryRun
             );
         }
 
-        if ($type === 'all' || $type === 'templates') {
+        if ('all' === $type || 'templates' === $type) {
             $this->migrateFiles(
-                $io, 
-                $this->templatesStorage, 
-                $this->projectDir . '/public/uploads/templates', 
-                'templates', 
+                $io,
+                $this->templatesStorage,
+                $this->projectDir.'/public/uploads/templates',
+                'templates',
                 $dryRun
             );
         }
@@ -77,10 +77,11 @@ class FilesMigrationCommand extends Command
         FilesystemOperator $storage,
         string $sourcePath,
         string $type,
-        bool $dryRun
+        bool $dryRun,
     ): void {
         if (!is_dir($sourcePath)) {
             $io->warning(sprintf('Source directory %s does not exist. Skipping.', $sourcePath));
+
             return;
         }
 
@@ -88,7 +89,7 @@ class FilesMigrationCommand extends Command
 
         $finder = new Finder();
         $finder->files()->in($sourcePath);
-        
+
         $totalFiles = count($finder);
         $io->progressStart($totalFiles);
         $migratedCount = 0;
@@ -96,17 +97,17 @@ class FilesMigrationCommand extends Command
         foreach ($finder as $file) {
             $relativePath = $file->getRelativePathname();
             $content = file_get_contents($file->getRealPath());
-            
+
             if (!$dryRun) {
                 $storage->write($relativePath, $content);
             }
-            
-            $migratedCount++;
+
+            ++$migratedCount;
             $io->progressAdvance();
         }
 
         $io->progressFinish();
-        $io->info(sprintf('%s %s files %s', 
+        $io->info(sprintf('%s %s files %s',
             $dryRun ? 'Would migrate' : 'Migrated',
             $migratedCount,
             $dryRun ? 'if not in dry-run mode' : 'successfully'

@@ -14,6 +14,7 @@ use App\Form\DropzoneForm;
 use App\Repository\CustomerRepository;
 use App\Service\ImportService;
 use App\Service\PaginationService;
+use App\Service\SearchFilterService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,8 +22,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/customer', name: 'app_customer')]
 class CustomerController extends AbstractController
@@ -36,28 +35,27 @@ class CustomerController extends AbstractController
         CustomerRepository $customerRepository,
         PaginationService $paginationService,
         Request $request,
-        SerializerInterface $serializer,
+        SearchFilterService $searchFilterService,
+        LoggerInterface $logger,
     ): Response {
         $session = $request->getSession();
         $resetFilter = $request->query->has('reset');
 
+        $logger->info('CustomerController: Session started', [
+            'session_id' => $session->getId(),
+            'reset_filter' => $resetFilter,
+            'query_count' => $request->query->count(),
+            'has_customer_search' => $session->has('customer_search'),
+        ]);
+
         // Initialiser les données de recherche
         if ($resetFilter) {
             // Réinitialiser les filtres si demandé
-            $session->remove('customer_search');
+            $searchFilterService->clearSearchData($session);
             $data = new CustomerSearchData();
         } elseif (!$request->query->count() && $session->has('customer_search')) {
             // Récupérer les données de session si aucun paramètre n'est fourni
-            try {
-                $data = $serializer->deserialize(
-                    $session->get('customer_search'),
-                    CustomerSearchData::class,
-                    'json'
-                );
-            } catch (\Exception $e) {
-                // En cas d'erreur, utiliser une nouvelle instance
-                $data = new CustomerSearchData();
-            }
+            $data = $searchFilterService->loadSearchData($session);
         } else {
             // Nouvelle recherche
             $data = new CustomerSearchData();
@@ -68,14 +66,7 @@ class CustomerController extends AbstractController
 
         // Si le formulaire est soumis, sauvegarder en session
         if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                $serializedData = $serializer->serialize($data, 'json', [
-                    AbstractNormalizer::IGNORED_ATTRIBUTES => ['page', 'sort', 'order'],
-                ]);
-                $session->set('customer_search', $serializedData);
-            } catch (\Exception $e) {
-                // Gérer l'erreur de sérialisation
-            }
+            $searchFilterService->saveSearchData($session, $data);
         }
 
         $query = $customerRepository->search($data);
