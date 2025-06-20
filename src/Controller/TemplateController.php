@@ -173,13 +173,11 @@ class TemplateController extends BaseCrudController
         Request $request,
         Template $template,
     ): Response {
-        /** @var FilesystemOperator */
-        $templatesStorage = $this->container->get('templates.storage');
         if ($this->isCsrfTokenValid('delete'.$template->getId(), $request->request->get('_token'))) {
             $filePath = $template->getPath();
 
-            if ($filePath && $templatesStorage->fileExists($filePath)) {
-                $templatesStorage->delete($filePath);
+            if ($filePath && $this->templatesStorage->fileExists($filePath)) {
+                $this->templatesStorage->delete($filePath);
             }
 
             $this->entityManager->remove($template);
