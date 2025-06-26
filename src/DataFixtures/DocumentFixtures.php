@@ -19,11 +19,11 @@ class DocumentFixtures extends Fixture implements DependentFixtureInterface
             'customer' => 'customer_admin_1',
             'type' => 'document_type_contract',
         ],
-        'document_admin_1_attestation' => [
-            'name' => 'Attestation de fourniture BioEnergie',
-            'path' => 'uploads/documents/bioenergie_attestation.pdf',
+        'document_admin_1_invoice' => [
+            'name' => 'Facture BioEnergie SA - Janvier 2023',
+            'path' => 'uploads/documents/bioenergie_invoice_01_2023.pdf',
             'customer' => 'customer_admin_1',
-            'type' => 'document_type_attestation',
+            'type' => 'document_type_facture',
         ],
 
         // Documents pour le deuxième client de l'admin
@@ -45,11 +45,11 @@ class DocumentFixtures extends Fixture implements DependentFixtureInterface
             'customer' => 'customer_admin_2',
             'type' => 'document_type_facture',
         ],
-        'document_admin_2_consumption' => [
-            'name' => 'Rapport consommation 2023 Industrie Moderne',
-            'path' => 'uploads/documents/industrie_moderne_consumption.xlsx',
+        'document_admin_2_invoice_3' => [
+            'name' => 'Facture 2023-03 Industrie Moderne',
+            'path' => 'uploads/documents/industrie_moderne_invoice_03.pdf',
             'customer' => 'customer_admin_2',
-            'type' => 'document_type_consumption',
+            'type' => 'document_type_facture',
         ],
 
         // Documents pour le client de l'utilisateur manager
@@ -59,31 +59,31 @@ class DocumentFixtures extends Fixture implements DependentFixtureInterface
             'customer' => 'customer_manager_1',
             'type' => 'document_type_contract',
         ],
-        'document_manager_1_attestation' => [
-            'name' => 'Attestation SuperMarché Plus',
-            'path' => 'uploads/documents/supermarche_attestation.pdf',
+        'document_manager_1_invoice_1' => [
+            'name' => 'Facture SuperMarché Plus - Janvier 2023',
+            'path' => 'uploads/documents/supermarche_invoice_01_2023.pdf',
             'customer' => 'customer_manager_1',
-            'type' => 'document_type_attestation',
+            'type' => 'document_type_facture',
         ],
-        'document_manager_1_audit' => [
-            'name' => 'Audit énergétique SuperMarché Plus',
-            'path' => 'uploads/documents/supermarche_audit.pdf',
+        'document_manager_1_invoice_2' => [
+            'name' => 'Facture SuperMarché Plus - Février 2023',
+            'path' => 'uploads/documents/supermarche_invoice_02_2023.pdf',
             'customer' => 'customer_manager_1',
-            'type' => 'document_type_audit',
+            'type' => 'document_type_facture',
         ],
 
         // Documents pour le premier client de l'utilisateur commercial
-        'document_sales_1_quote' => [
-            'name' => 'Devis Cabinet Medical Central',
-            'path' => 'uploads/documents/cabinet_medical_quote.pdf',
+        'document_sales_1_contract' => [
+            'name' => 'Contrat Cabinet Medical Central',
+            'path' => 'uploads/documents/cabinet_medical_contract.pdf',
             'customer' => 'customer_sales_1',
-            'type' => 'document_type_devis',
+            'type' => 'document_type_contract',
         ],
-        'document_sales_1_audit' => [
-            'name' => 'Audit énergétique Cabinet Medical',
-            'path' => 'uploads/documents/cabinet_medical_audit.pdf',
+        'document_sales_1_invoice' => [
+            'name' => 'Facture Cabinet Medical - Mars 2023',
+            'path' => 'uploads/documents/cabinet_medical_invoice_03_2023.pdf',
             'customer' => 'customer_sales_1',
-            'type' => 'document_type_audit',
+            'type' => 'document_type_facture',
         ],
 
         // Documents pour le deuxième client de l'utilisateur commercial
@@ -93,17 +93,17 @@ class DocumentFixtures extends Fixture implements DependentFixtureInterface
             'customer' => 'customer_sales_2',
             'type' => 'document_type_contract',
         ],
-        'document_sales_2_quote' => [
-            'name' => 'Devis renouvellement Hotel Luxe Palace',
-            'path' => 'uploads/documents/hotel_quote_renewal.pdf',
+        'document_sales_2_contract_new' => [
+            'name' => 'Nouveau contrat Hotel Luxe Palace',
+            'path' => 'uploads/documents/hotel_contract_new.pdf',
             'customer' => 'customer_sales_2',
-            'type' => 'document_type_devis',
+            'type' => 'document_type_contract',
         ],
-        'document_sales_2_consumption' => [
-            'name' => 'Historique consommation Hotel Luxe Palace',
-            'path' => 'uploads/documents/hotel_consumption.xlsx',
+        'document_sales_2_invoice' => [
+            'name' => 'Facture Hotel Luxe Palace - Avril 2023',
+            'path' => 'uploads/documents/hotel_invoice_04_2023.pdf',
             'customer' => 'customer_sales_2',
-            'type' => 'document_type_consumption',
+            'type' => 'document_type_facture',
         ],
     ];
 
