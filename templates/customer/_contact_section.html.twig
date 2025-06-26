@@ -19,6 +19,7 @@
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
                     <tr class="table-primary">
+                        <th scope="col" class="text-center" width="50"><i class="bi bi-star" title="{{ "contact.is_primary"|trans }}"></i></th>
                         <th scope="col" class="text-start">{{ "contact.name"|trans }}</th>
                         <th scope="col" class="text-start">{{ "contact.position"|trans }}</th>
                         <th scope="col" class="text-start">{{ "contact.email"|trans }}</th>
@@ -30,6 +31,11 @@
                     <tbody>
                     {% for contact in customer.contacts %}
                         <tr>
+                            <td class="text-center">
+                                {% if contact.isPrimary %}
+                                    <i class="bi bi-star-fill text-warning" title="{{ "contact.is_primary"|trans }}"></i>
+                                {% endif %}
+                            </td>
                             <td>{{ contact }}</td>
                             <td>{{ contact.position }}</td>
                             <td>
@@ -69,7 +75,7 @@
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="6" class="text-center">{{ "table.no_data"|trans }}</td>
+                            <td colspan="7" class="text-center">{{ "table.no_data"|trans }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

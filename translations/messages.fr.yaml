@@ -224,6 +224,12 @@ customer:
     action: Action
     canal_signature: Signature Canal
     origin: Origine
+    address: Adresse
+    address_number: Numéro
+    address_street: Rue
+    address_postal_code: Code postal
+    address_city: Ville
+    legal_form: Forme juridique
     placeholder:
         action: Action a mener
         worth: Valeur du contrat
@@ -239,6 +245,11 @@ contact:
     phone: Tél. fixe
     mobile_phone: Tél. portable
     address: Adresse
+    address_number: Numéro
+    address_street: Rue
+    address_postal_code: Code postal
+    address_city: Ville
+    is_primary: Contact principal
     last_name: Nom
     edit:
         title: Modifier le contact

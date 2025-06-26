@@ -20,7 +20,6 @@ class ContactType extends AbstractType
             ->add('email')
             ->add('phone')
             ->add('mobilePhone')
-            ->add('address')
             ->add('addressNumber')
             ->add('addressStreet')
             ->add('addressPostalCode')
