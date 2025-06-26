@@ -75,6 +75,9 @@ class MassCustomerFixtures extends Fixture implements DependentFixtureInterface
                           $this->faker->randomElement($companyTypes).' '.
                           $this->faker->randomElement($companySuffixes);
             $customer->setName($companyName);
+            
+            // Forme juridique
+            $customer->setLegalForm($this->faker->randomElement($companySuffixes));
 
             // Assigner un utilisateur (20% de chance d'être non assigné)
             if ($this->faker->numberBetween(1, 100) > 20) {
@@ -89,11 +92,18 @@ class MassCustomerFixtures extends Fixture implements DependentFixtureInterface
             $customer->setSiret($this->faker->numerify('##############'));
 
             // Adresse
-            $customer->setAddress(
-                $this->faker->streetAddress().', '.
-                $this->faker->postcode().' '.
-                $this->faker->city()
-            );
+            $streetAddress = $this->faker->streetAddress();
+            $postalCode = $this->faker->postcode();
+            $city = $this->faker->city();
+            
+            // Ancien format (pour compatibilité)
+            $customer->setAddress($streetAddress.', '.$postalCode.' '.$city);
+            
+            // Nouveaux champs détaillés
+            $customer->setAddressNumber($this->faker->buildingNumber());
+            $customer->setAddressStreet($this->faker->streetName());
+            $customer->setAddressPostalCode($postalCode);
+            $customer->setAddressCity($city);
 
             // Action commerciale
             $actions = [

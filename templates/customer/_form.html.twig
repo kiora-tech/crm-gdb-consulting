@@ -36,6 +36,13 @@
                     {{ form_errors(form.companyGroup) }}
                 </div>
 
+                <!-- Forme juridique -->
+                <div class="mb-3">
+                    {{ form_label(form.legalForm, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.legalForm, {'attr': {'class': 'form-control', 'placeholder': 'SARL, SAS, SA...'}}) }}
+                    {{ form_errors(form.legalForm) }}
+                </div>
+
                 <!-- Origine du Lead -->
                 <div class="mb-3">
                     {{ form_label(form.leadOrigin, null, {'label_attr': {'class': 'form-label'}}) }}
@@ -108,6 +115,56 @@
                     {{ form_label(form.margin, null, {'label_attr': {'class': 'form-label'}}) }}
                     {{ form_widget(form.margin, {'attr': {'class': 'form-control'}}) }}
                     {{ form_errors(form.margin) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section Adresse -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">{{ 'customer.address'|trans }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Numéro -->
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            {{ form_label(form.addressNumber, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.addressNumber, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.addressNumber) }}
+                        </div>
+                    </div>
+                    
+                    <!-- Rue -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form_label(form.addressStreet, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.addressStreet, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.addressStreet) }}
+                        </div>
+                    </div>
+                    
+                    <!-- Code postal -->
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            {{ form_label(form.addressPostalCode, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.addressPostalCode, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.addressPostalCode) }}
+                        </div>
+                    </div>
+                    
+                    <!-- Ville -->
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            {{ form_label(form.addressCity, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.addressCity, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.addressCity) }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
