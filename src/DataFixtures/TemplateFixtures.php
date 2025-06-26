@@ -28,14 +28,6 @@ class TemplateFixtures extends Fixture implements DependentFixtureInterface
             'mimeType' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             'documentType' => 'document_type_contract',
         ],
-        'template_attestation' => [
-            'label' => 'Attestation de fourniture',
-            'path' => 'templates/attestation.docx',
-            'type' => TemplateType::DOCUMENT,
-            'originalFilename' => 'attestation_template.docx',
-            'mimeType' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'documentType' => 'document_type_attestation',
-        ],
         'template_invoice' => [
             'label' => 'Facture standard',
             'path' => 'templates/invoice.docx',
@@ -43,30 +35,6 @@ class TemplateFixtures extends Fixture implements DependentFixtureInterface
             'originalFilename' => 'invoice_template.docx',
             'mimeType' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             'documentType' => 'document_type_facture',
-        ],
-        'template_consumption_report' => [
-            'label' => 'Rapport de consommation',
-            'path' => 'templates/consumption_report.xlsx',
-            'type' => TemplateType::EXCEL,
-            'originalFilename' => 'consumption_report_template.xlsx',
-            'mimeType' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'documentType' => 'document_type_consumption',
-        ],
-        'template_audit' => [
-            'label' => 'Audit énergétique',
-            'path' => 'templates/audit.xlsx',
-            'type' => TemplateType::EXCEL,
-            'originalFilename' => 'audit_template.xlsx',
-            'mimeType' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'documentType' => 'document_type_audit',
-        ],
-        'template_quote' => [
-            'label' => 'Devis standard',
-            'path' => 'templates/quote.docx',
-            'type' => TemplateType::DOCUMENT,
-            'originalFilename' => 'quote_template.docx',
-            'mimeType' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'documentType' => 'document_type_devis',
         ],
     ];
 

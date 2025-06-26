@@ -421,11 +421,16 @@ class ProcessExcelBatchMessageHandler
             $customer = new Customer();
             $customer->setName($name);
             if (!empty($siret)) {
-                $customer->setSiret(str_replace(' ', '', $siret));
+                $customer->setSiret($siret);
             }
             $customer->setLeadOrigin($leadOrigin ?: 'Import Excel');
             $customer->setOrigin(ProspectOrigin::ACQUISITION);
             $entityManager->persist($customer);
+        } else {
+            // Ne mettre à jour le SIRET que s'il n'est pas vide et si le client n'a pas déjà un SIRET
+            if (!empty($siret) && empty($customer->getSiret())) {
+                $customer->setSiret($siret);
+            }
         }
 
         $customer->setUser($entityManager->getReference(User::class, $userId));
@@ -614,3 +619,5 @@ class ProcessExcelBatchMessageHandler
         return $entityManager->getConnection()->isTransactionActive();
     }
 }
+
+

@@ -10,13 +10,7 @@ class DocumentTypeFixtures extends Fixture
 {
     private const DOCUMENT_TYPES = [
         'document_type_contract' => 'Contrat',
-        'document_type_attestation' => 'Attestation',
         'document_type_facture' => 'Facture',
-        'document_type_devis' => 'Devis',
-        'document_type_audit' => 'Audit énergétique',
-        'document_type_consumption' => 'Rapport de consommation',
-        'document_type_identity' => 'Pièce d\'identité',
-        'document_type_other' => 'Autre',
     ];
 
     public function load(ObjectManager $manager): void

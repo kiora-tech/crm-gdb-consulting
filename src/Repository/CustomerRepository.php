@@ -135,18 +135,47 @@ class CustomerRepository extends ServiceEntityRepository
         }
 
         // Filtre par contrats expirants
-        if ($search->contractEndBefore) {
-            $query->andWhere('e.contractEnd IS NOT NULL')
-                ->andWhere('e.contractEnd <= :expirationDateBefore')
-                ->setParameter('expirationDateBefore', $search->contractEndBefore)
-                ->orderBy('e.contractEnd', 'ASC');
-        }
+        // Logique intelligente :
+        // - Si on cherche dans le futur uniquement : on ne montre que les contrats actifs
+        // - Si on cherche dans le passé : on montre tous les contrats
+        // - Si on cherche une période mixte : on montre tout
+        if ($search->contractEndBefore || $search->contractEndAfter) {
+            $query->andWhere('e.contractEnd IS NOT NULL');
 
-        if ($search->contractEndAfter) {
-            $query->andWhere('e.contractEnd IS NOT NULL')
-                ->andWhere('e.contractEnd >= :expirationDateAfter')
-                ->setParameter('expirationDateAfter', $search->contractEndAfter)
-                ->orderBy('e.contractEnd', 'ASC');
+            $now = new \DateTime();
+            $searchingFutureOnly = false;
+
+            // Déterminer si on cherche uniquement dans le futur
+            if ($search->contractEndAfter && $search->contractEndAfter > $now) {
+                // Si la date de début est dans le futur
+                $searchingFutureOnly = true;
+            } elseif ($search->contractEndAfter && $search->contractEndBefore) {
+                // Si on a les deux dates et que la période est entièrement dans le futur
+                if ($search->contractEndAfter > $now && $search->contractEndBefore > $now) {
+                    $searchingFutureOnly = true;
+                }
+            } elseif (!$search->contractEndAfter && $search->contractEndBefore && $search->contractEndBefore > $now) {
+                // Si on a seulement une date de fin dans le futur
+                $searchingFutureOnly = true;
+            }
+
+            // Appliquer le filtre des contrats actifs uniquement si on cherche dans le futur
+            if ($searchingFutureOnly) {
+                $query->andWhere('e.contractEnd > :now')
+                    ->setParameter('now', $now);
+            }
+
+            if ($search->contractEndBefore) {
+                $query->andWhere('e.contractEnd <= :expirationDateBefore')
+                    ->setParameter('expirationDateBefore', $search->contractEndBefore);
+            }
+
+            if ($search->contractEndAfter) {
+                $query->andWhere('e.contractEnd >= :expirationDateAfter')
+                    ->setParameter('expirationDateAfter', $search->contractEndAfter);
+            }
+
+            $query->orderBy('e.contractEnd', 'ASC');
         }
 
         if (!empty($search->code)) {

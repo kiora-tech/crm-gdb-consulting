@@ -118,6 +118,7 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^4.0",
+        "fakerphp/faker": "^1.24",
         "friendsofphp/php-cs-fixer": "^3.75",
         "liip/test-fixtures-bundle": "^3.2",
         "phpro/grumphp": "^2.12",
