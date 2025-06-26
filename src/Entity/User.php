@@ -52,6 +52,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailRe
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $lastName = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $firstName = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $phone = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $title = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $signature = null;
+
     /**
      * @var Collection<int, Customer>
      */
@@ -224,6 +236,54 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailRe
                 $customer->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(?string $firstName): static
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): static
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(?string $title): static
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getSignature(): ?string
+    {
+        return $this->signature;
+    }
+
+    public function setSignature(?string $signature): static
+    {
+        $this->signature = $signature;
 
         return $this;
     }

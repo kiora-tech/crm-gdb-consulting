@@ -59,165 +59,91 @@ Le système de templates permet de générer automatiquement des documents (Word
 
 #### Sur le Client
 **À ajouter** :
-- `siretFormatted` : SIRET avec espaces pour meilleure lisibilité
 - `addressFull` : Adresse complète sur une ligne
 - `addressMultiline` : Adresse formatée sur plusieurs lignes
 - `legalForm` : Forme juridique (SARL, SAS, etc.)
-- `capitalSocial` : Capital social de l'entreprise
 
 **Justification** :
 - Documents officiels nécessitent ces informations
 - Évite la ressaisie manuelle
 - Conformité légale des documents générés
 
-#### Sur le Contrat
-**À ajouter** :
-- `daysUntilEnd` : Nombre de jours avant échéance
-- `monthsUntilEnd` : Nombre de mois avant échéance
-- `endDateFormatted` : Date de fin formatée en français
-- `isExpiringSoon` : Booléen si expire dans moins de 3 mois
-- `renewalDeadline` : Date limite pour renouveler sans interruption
+## État actuel et modifications nécessaires
 
-**Justification** :
-- Facilite la création de courriers de relance pertinents
-- Permet des messages adaptés selon l'urgence
-- Calculs automatiques évitent les erreurs
+### 1. Entité Contact
+**État actuel** :
+- Possède : firstName, lastName, email, phone, mobilePhone, address, position
+- **Manque** : champ `isPrimary` (boolean) pour identifier le contact principal
 
-### 5. Variables calculées pour les offres
+**Modifications nécessaires** :
+- Ajouter propriété `isPrimary` (boolean, nullable: false, default: false)
+- Ajouter méthode dans Customer pour récupérer/définir le contact principal
+- **Important** : Garantir qu'il y ait toujours exactement un contact principal par client
+- **Logique métier automatique** :
+  - Si un client n'a qu'un seul contact, il est automatiquement principal
+  - Lors de l'ajout du premier contact à un client, il devient automatiquement principal
+  - Lors de la suppression du contact principal, le premier des contacts restants devient automatiquement principal
+  - Lors du changement de contact principal, l'ancien perd automatiquement son statut
+- **Migration** : Définir automatiquement le premier contact de chaque client comme principal pour éviter au client de devoir le faire manuellement
 
-**À ajouter** :
-- `${contract.monthlyAmount}` : Montant mensuel estimé
-- `${contract.dailyCost}` : Coût journalier
-- `${contract.savingsAmount}` : Économie réalisée vs tarif réglementé
-- `${contract.savingsPercentage}` : Pourcentage d'économie
+### 2. Entité User
+**État actuel** :
+- Possède : email, name, lastName, profilePicture
+- **Manque** : phone, title (fonction), firstName séparé, signature
 
-**Justification** :
-- Arguments commerciaux dans les propositions
-- Aide à la décision pour le client
-- Comparaisons facilitées
+**Modifications nécessaires** :
+- Ajouter propriété `firstName` (string, nullable: true)
+- Ajouter propriété `phone` (string, nullable: true)
+- Ajouter propriété `title` (string, nullable: true) pour la fonction
+- Ajouter propriété `signature` (text, nullable: true) pour bloc signature
 
-### 6. Impact sur la liste des templates
+### 3. Entité Customer
+**État actuel** :
+- Possède : name, address, siret, leadOrigin, origin, status, etc.
+- **Manque** : legalForm, méthodes pour formatter l'adresse
 
-**Filtrage intelligent des templates** :
+**Modifications nécessaires** :
+- Ajouter propriété `legalForm` (string, nullable: true)
+- Ajouter méthode `getAddressFull()` : retourne l'adresse sur une ligne
+- Ajouter méthode `getAddressMultiline()` : retourne l'adresse formatée sur plusieurs lignes
+- Ajouter méthode `getPrimaryContact()` : retourne le contact principal ou null
 
-Les templates affichés doivent être filtrés selon le contexte :
+### 4. Service TemplateProcessor
+**Modifications nécessaires** :
+- Implémenter les nouvelles variables de date/heure
+- Ajouter les variables utilisateur connecté
+- Utiliser le contact principal dans les templates
+- Supporter les nouvelles propriétés des entités
 
-1. **Si le contrat expire dans moins de 3 mois** :
-   - Afficher en priorité : "Proposition de renouvellement", "Comparatif tarifs", "Alerte fin de contrat"
-   
-2. **Si nouveau client (sans contrat)** :
-   - Afficher : "Proposition commerciale", "Présentation services"
-   
-3. **Si contrat récent (moins de 6 mois)** :
-   - Masquer les templates de renouvellement
-   - Afficher : "Bilan consommation", "Optimisation"
+## Plan d'implémentation
 
-4. **Selon le type d'énergie** :
-   - Filtrer les templates électricité/gaz selon le client
+### Phase 1 : Modifications des entités
+1. Migration pour ajouter `isPrimary` sur Contact avec initialisation automatique
+2. Migration pour ajouter les champs manquants sur User
+3. Migration pour ajouter `legalForm` sur Customer
+4. Mise à jour des entités avec les nouvelles propriétés et méthodes
 
-**Justification** :
-- Évite les erreurs (envoyer un renouvellement à un nouveau client)
-- Guide l'utilisateur vers le bon document
-- Gain de temps dans la sélection
+### Phase 2 : Logique métier
+1. Implémentation de la logique automatique pour maintenir un contact principal
+2. Interface de gestion du contact principal (bouton radio ou switch)
+3. Méthodes de formatage d'adresse sur Customer
+4. Validation côté serveur pour garantir l'intégrité des données
 
-### 7. Catégorisation des templates
+### Phase 3 : Intégration templates
+1. Mise à jour du TemplateProcessor
+2. Ajout des nouvelles variables
+3. Documentation des variables disponibles
+4. Tests des templates avec les nouvelles données
 
-**Catégories à créer** :
-1. **Acquisition** : Nouveaux clients
-2. **Renouvellement** : Clients en fin de contrat
-3. **Gestion courante** : Suivi, modifications
-4. **Administratif** : Autorisations, RGPD
-5. **Facturation** : Devis, factures
+## Contraintes techniques
 
-**Organisation** :
-- Icône distinctive par catégorie
-- Tri par pertinence selon le contexte client
-- Favoris personnels par utilisateur
+### Contact principal
+- Un et un seul contact principal par client (contrainte base de données)
+- Gestion automatique pour éviter les états incohérents
+- Migration qui initialise les données existantes
+- Interface utilisateur intuitive (radio button ou toggle)
 
-### 8. Validation et aperçu
-
-**Fonctionnalités nécessaires** :
-1. **Aperçu avant génération** :
-   - Voir le document avec les vraies données
-   - Identifier les variables manquantes en rouge
-   - Suggérer des valeurs par défaut
-
-2. **Gestion des données manquantes** :
-   - Si contact principal absent → utiliser le premier contact
-   - Si date échéance absente → afficher "[Date à définir]"
-   - Formulaire pour compléter les données manquantes
-
-3. **Historique de génération** :
-   - Qui a généré quoi et quand
-   - Possibilité de regénérer avec les mêmes paramètres
-   - Archivage automatique
-
-### 9. Templates intelligents
-
-**Adaptations automatiques** :
-
-1. **Selon la période** :
-   - Décembre : inclure automatiquement les vœux
-   - Été : adapter le ton (période creuse)
-   
-2. **Selon l'historique client** :
-   - Client fidèle : mentionner l'ancienneté
-   - Nouveau client : ton plus pédagogique
-
-3. **Selon les performances** :
-   - Si économies réalisées : les mettre en avant
-   - Si consommation optimisée : le souligner
-
-### 10. Formation et documentation
-
-**Éléments à fournir** :
-1. **Guide des variables** :
-   - Liste exhaustive avec exemples
-   - Cas d'usage pour chaque variable
-   - Bonnes pratiques de rédaction
-
-2. **Templates exemples** :
-   - Un template par catégorie pré-configuré
-   - Commentaires explicatifs inclus
-   - Versions Word et Excel
-
-3. **Vidéos tutorielles** :
-   - Créer son premier template (5 min)
-   - Variables avancées (5 min)
-   - Gestion des cas particuliers (3 min)
-
-## Processus de mise en œuvre
-
-### Phase 1 : Préparation des données (1 semaine)
-- Audit des données existantes
-- Ajout des champs manquants
-- Migration des contacts (désigner les principaux)
-
-### Phase 2 : Développement (2-3 semaines)
-- Système de templates
-- Interface de gestion
-- Moteur de génération
-
-### Phase 3 : Formation (1 semaine)
-- Création des templates standards
-- Formation des utilisateurs
-- Documentation
-
-### Phase 4 : Déploiement progressif
-- Test avec un groupe pilote
-- Ajustements selon retours
-- Déploiement général
-
-## Indicateurs de succès
-
-1. **Gain de temps** : -80% sur la génération de documents
-2. **Taux d'erreur** : <1% sur les données dans les documents
-3. **Adoption** : 100% des utilisateurs après 1 mois
-4. **Satisfaction** : Note >4/5 sur l'utilité de l'outil
-
-## Points d'attention
-
-1. **RGPD** : S'assurer que les données personnelles sont utilisées conformément
-2. **Archivage** : Tous les documents générés doivent être conservés
-3. **Versioning** : Garder l'historique des modifications de templates
-4. **Sécurité** : Qui peut créer/modifier/utiliser quels templates
+### Performance
+- Les méthodes de formatage d'adresse doivent être optimisées
+- Cache des données utilisateur pour éviter les requêtes multiples
+- Lazy loading des relations quand possible

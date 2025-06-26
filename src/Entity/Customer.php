@@ -99,6 +99,9 @@ class Customer
     #[ORM\Column(type: Types::STRING, nullable: true, enumType: CanalSignature::class)]
     private ?CanalSignature $canalSignature = null;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $legalForm = null;
+
     public function __construct()
     {
         $this->energies = new ArrayCollection();
@@ -184,6 +187,11 @@ class Customer
         if (!$this->contacts->contains($contact)) {
             $this->contacts->add($contact);
             $contact->setCustomer($this);
+
+            // Si c'est le premier contact, le définir comme principal
+            if (1 === $this->contacts->count()) {
+                $contact->setIsPrimary(true);
+            }
         }
 
         return $this;
@@ -195,6 +203,11 @@ class Customer
             // set the owning side to null (unless already changed)
             if ($contact->getCustomer() === $this) {
                 $contact->setCustomer(null);
+            }
+
+            // Si c'était le contact principal et qu'il reste d'autres contacts
+            if ($contact->isPrimary() && !$this->contacts->isEmpty()) {
+                $this->ensurePrimaryContact();
             }
         }
 
@@ -396,5 +409,87 @@ class Customer
         $this->canalSignature = $canalSignature;
 
         return $this;
+    }
+
+    public function getLegalForm(): ?string
+    {
+        return $this->legalForm;
+    }
+
+    public function setLegalForm(?string $legalForm): static
+    {
+        $this->legalForm = $legalForm;
+
+        return $this;
+    }
+
+    public function getAddressFull(): ?string
+    {
+        return $this->address;
+    }
+
+    public function getAddressMultiline(): ?string
+    {
+        if (!$this->address) {
+            return null;
+        }
+
+        // Remplacer les virgules par des retours à la ligne pour un format multiligne
+        return str_replace(', ', "\n", $this->address);
+    }
+
+    public function getPrimaryContact(): ?Contact
+    {
+        foreach ($this->contacts as $contact) {
+            if ($contact->isPrimary()) {
+                return $contact;
+            }
+        }
+
+        // Si aucun contact principal n'est défini, retourner le premier contact
+        return $this->contacts->first() ?: null;
+    }
+
+    public function setPrimaryContact(Contact $newPrimaryContact): static
+    {
+        // S'assurer que le contact appartient à ce client
+        if (!$this->contacts->contains($newPrimaryContact)) {
+            throw new \InvalidArgumentException('Le contact doit appartenir à ce client');
+        }
+
+        // Retirer le statut principal de tous les autres contacts
+        foreach ($this->contacts as $contact) {
+            if ($contact !== $newPrimaryContact && $contact->isPrimary()) {
+                $contact->setIsPrimary(false);
+            }
+        }
+
+        // Définir le nouveau contact principal
+        $newPrimaryContact->setIsPrimary(true);
+
+        return $this;
+    }
+
+    /**
+     * Assure qu'il y a toujours un contact principal.
+     */
+    public function ensurePrimaryContact(): void
+    {
+        if ($this->contacts->isEmpty()) {
+            return;
+        }
+
+        $hasPrimary = false;
+        foreach ($this->contacts as $contact) {
+            if ($contact->isPrimary()) {
+                $hasPrimary = true;
+                break;
+            }
+        }
+
+        // Si aucun contact principal, définir le premier comme principal
+        if (!$hasPrimary) {
+            $this->contacts->first()->setIsPrimary(true);
+        }
     }
 }

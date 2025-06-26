@@ -51,6 +51,9 @@ class Contact
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $address = null;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isPrimary = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -144,6 +147,18 @@ class Contact
     public function setAddress(?string $address): static
     {
         $this->address = $address;
+
+        return $this;
+    }
+
+    public function isPrimary(): bool
+    {
+        return $this->isPrimary;
+    }
+
+    public function setIsPrimary(bool $isPrimary): static
+    {
+        $this->isPrimary = $isPrimary;
 
         return $this;
     }

@@ -619,5 +619,3 @@ class ProcessExcelBatchMessageHandler
         return $entityManager->getConnection()->isTransactionActive();
     }
 }
-
-
