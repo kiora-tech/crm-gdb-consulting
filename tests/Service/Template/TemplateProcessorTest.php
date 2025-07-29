@@ -102,7 +102,7 @@ class TemplateProcessorTest extends TestCase
                 parent::__construct($storage, $logger);
             }
 
-            public function processTemplate(Template $template, Customer $customer): string
+            public function processTemplate(Template $template, Customer $customer, ?\App\Entity\User $currentUser = null): string
             {
                 // Mock implementation to avoid file system access
                 $this->logger->critical('Fichier template introuvable', [

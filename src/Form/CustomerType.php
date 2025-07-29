@@ -59,6 +59,21 @@ class CustomerType extends AbstractType
             ])
             ->add('companyGroup', null, [
                 'label' => 'customer.company_group',
+            ])
+            ->add('legalForm', null, [
+                'label' => 'customer.legal_form',
+            ])
+            ->add('addressNumber', null, [
+                'label' => 'customer.address_number',
+            ])
+            ->add('addressStreet', null, [
+                'label' => 'customer.address_street',
+            ])
+            ->add('addressPostalCode', null, [
+                'label' => 'customer.address_postal_code',
+            ])
+            ->add('addressCity', null, [
+                'label' => 'customer.address_city',
             ]);
 
         if ($this->security->isGranted('ROLE_ADMIN')) {

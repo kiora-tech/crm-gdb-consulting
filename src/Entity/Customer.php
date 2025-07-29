@@ -69,6 +69,18 @@ class Customer
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $address = null;
 
+    #[ORM\Column(length: 10, nullable: true)]
+    private ?string $addressNumber = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $addressStreet = null;
+
+    #[ORM\Column(length: 10, nullable: true)]
+    private ?string $addressPostalCode = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $addressCity = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $action = null;
 
@@ -98,6 +110,9 @@ class Customer
 
     #[ORM\Column(type: Types::STRING, nullable: true, enumType: CanalSignature::class)]
     private ?CanalSignature $canalSignature = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $legalForm = null;
 
     public function __construct()
     {
@@ -184,6 +199,11 @@ class Customer
         if (!$this->contacts->contains($contact)) {
             $this->contacts->add($contact);
             $contact->setCustomer($this);
+
+            // Si c'est le premier contact, le définir comme principal
+            if (1 === $this->contacts->count()) {
+                $contact->setIsPrimary(true);
+            }
         }
 
         return $this;
@@ -195,6 +215,11 @@ class Customer
             // set the owning side to null (unless already changed)
             if ($contact->getCustomer() === $this) {
                 $contact->setCustomer(null);
+            }
+
+            // Si c'était le contact principal et qu'il reste d'autres contacts
+            if ($contact->isPrimary() && !$this->contacts->isEmpty()) {
+                $this->ensurePrimaryContact();
             }
         }
 
@@ -263,6 +288,54 @@ class Customer
     public function setAddress(?string $address): static
     {
         $this->address = $address;
+
+        return $this;
+    }
+
+    public function getAddressNumber(): ?string
+    {
+        return $this->addressNumber;
+    }
+
+    public function setAddressNumber(?string $addressNumber): static
+    {
+        $this->addressNumber = $addressNumber;
+
+        return $this;
+    }
+
+    public function getAddressStreet(): ?string
+    {
+        return $this->addressStreet;
+    }
+
+    public function setAddressStreet(?string $addressStreet): static
+    {
+        $this->addressStreet = $addressStreet;
+
+        return $this;
+    }
+
+    public function getAddressPostalCode(): ?string
+    {
+        return $this->addressPostalCode;
+    }
+
+    public function setAddressPostalCode(?string $addressPostalCode): static
+    {
+        $this->addressPostalCode = $addressPostalCode;
+
+        return $this;
+    }
+
+    public function getAddressCity(): ?string
+    {
+        return $this->addressCity;
+    }
+
+    public function setAddressCity(?string $addressCity): static
+    {
+        $this->addressCity = $addressCity;
 
         return $this;
     }
@@ -396,5 +469,142 @@ class Customer
         $this->canalSignature = $canalSignature;
 
         return $this;
+    }
+
+    public function getLegalForm(): ?string
+    {
+        return $this->legalForm;
+    }
+
+    public function setLegalForm(?string $legalForm): static
+    {
+        $this->legalForm = $legalForm;
+
+        return $this;
+    }
+
+    public function getAddressFull(): ?string
+    {
+        // Si on a les nouveaux champs, les utiliser
+        if ($this->addressStreet || $this->addressPostalCode || $this->addressCity) {
+            $parts = [];
+            if ($this->addressNumber || $this->addressStreet) {
+                $streetParts = [];
+                if ($this->addressNumber) {
+                    $streetParts[] = $this->addressNumber;
+                }
+                if ($this->addressStreet) {
+                    $streetParts[] = $this->addressStreet;
+                }
+                $parts[] = implode(' ', $streetParts);
+            }
+            if ($this->addressPostalCode || $this->addressCity) {
+                $cityParts = [];
+                if ($this->addressPostalCode) {
+                    $cityParts[] = $this->addressPostalCode;
+                }
+                if ($this->addressCity) {
+                    $cityParts[] = $this->addressCity;
+                }
+                $parts[] = implode(' ', $cityParts);
+            }
+
+            return implode(', ', $parts);
+        }
+
+        // Sinon, utiliser l'ancien champ
+        return $this->address;
+    }
+
+    public function getAddressMultiline(): ?string
+    {
+        // Si on a les nouveaux champs, les utiliser
+        if ($this->addressStreet || $this->addressPostalCode || $this->addressCity) {
+            $lines = [];
+            if ($this->addressNumber || $this->addressStreet) {
+                $streetParts = [];
+                if ($this->addressNumber) {
+                    $streetParts[] = $this->addressNumber;
+                }
+                if ($this->addressStreet) {
+                    $streetParts[] = $this->addressStreet;
+                }
+                $lines[] = implode(' ', $streetParts);
+            }
+            if ($this->addressPostalCode || $this->addressCity) {
+                $cityParts = [];
+                if ($this->addressPostalCode) {
+                    $cityParts[] = $this->addressPostalCode;
+                }
+                if ($this->addressCity) {
+                    $cityParts[] = $this->addressCity;
+                }
+                $lines[] = implode(' ', $cityParts);
+            }
+
+            return implode("\n", $lines);
+        }
+
+        // Sinon, utiliser l'ancien champ
+        if (!$this->address) {
+            return null;
+        }
+
+        return str_replace(', ', "\n", $this->address);
+    }
+
+    public function getPrimaryContact(): ?Contact
+    {
+        foreach ($this->contacts as $contact) {
+            if ($contact->isPrimary()) {
+                return $contact;
+            }
+        }
+
+        // Si aucun contact principal n'est défini, retourner le premier contact
+        return $this->contacts->first() ?: null;
+    }
+
+    public function setPrimaryContact(Contact $newPrimaryContact): static
+    {
+        // S'assurer que le contact appartient à ce client
+        if (!$this->contacts->contains($newPrimaryContact)) {
+            throw new \InvalidArgumentException('Le contact doit appartenir à ce client');
+        }
+
+        // Retirer le statut principal de tous les autres contacts
+        foreach ($this->contacts as $contact) {
+            if ($contact !== $newPrimaryContact && $contact->isPrimary()) {
+                $contact->setIsPrimary(false);
+            }
+        }
+
+        // Définir le nouveau contact principal
+        $newPrimaryContact->setIsPrimary(true);
+
+        return $this;
+    }
+
+    /**
+     * Assure qu'il y a toujours un contact principal.
+     */
+    public function ensurePrimaryContact(): void
+    {
+        if ($this->contacts->isEmpty()) {
+            return;
+        }
+
+        $hasPrimary = false;
+        foreach ($this->contacts as $contact) {
+            if ($contact->isPrimary()) {
+                $hasPrimary = true;
+                break;
+            }
+        }
+
+        // Si aucun contact principal, définir le premier comme principal
+        if (!$hasPrimary) {
+            $this->contacts->first()->setIsPrimary(true);
+        }
     }
 }

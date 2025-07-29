@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Data\CustomerSearchData;
 use App\Repository\EnergyProviderRepository;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 

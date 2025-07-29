@@ -20,7 +20,11 @@ class ContactType extends AbstractType
             ->add('email')
             ->add('phone')
             ->add('mobilePhone')
-            ->add('address');
+            ->add('addressNumber')
+            ->add('addressStreet')
+            ->add('addressPostalCode')
+            ->add('addressCity')
+            ->add('isPrimary');
         if (!$options['customer'] instanceof Customer) {
             $builder->add('customer', EntityType::class, [
                 'class' => Customer::class,

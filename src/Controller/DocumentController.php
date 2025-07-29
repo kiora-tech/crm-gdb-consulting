@@ -250,7 +250,9 @@ class DocumentController extends CustomerInfoController
             $logger->info('Traitement du template', [
                 'template_path' => $template->getPath(),
             ]);
-            $tempFile = $templateProcessor->processTemplate($template, $customer);
+            /** @var \App\Entity\User|null $currentUser */
+            $currentUser = $this->getUser();
+            $tempFile = $templateProcessor->processTemplate($template, $customer, $currentUser);
             $logger->info('Template traité avec succès', [
                 'temp_file' => $tempFile,
             ]);

@@ -7,7 +7,10 @@
                 <li class="dropdown-header text-start">
                     <h6>{{ 'dashboard.actions'|trans }}</h6>
                 </li>
-                <li><a class="dropdown-item" href="{{ path('app_customer_index', {'expiringContracts': '1'}) }}">{{ 'dashboard.view_all'|trans }}</a></li>
+                <li><a class="dropdown-item" href="{{ path('app_customer_index', {
+                        'contractEndAfter': "now"|date('Y-m-d'),
+                        'contractEndBefore': "+3 months"|date('Y-m-d')
+                    }) }}">{{ 'dashboard.view_all'|trans }}</a></li>
             </ul>
         </div>
 

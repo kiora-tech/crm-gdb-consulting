@@ -4,6 +4,7 @@ namespace App\Service\Template;
 
 use App\Entity\Customer;
 use App\Entity\Template;
+use App\Entity\User;
 use Doctrine\Common\Collections\Collection;
 use League\Flysystem\FilesystemOperator;
 use PhpOffice\PhpWord\TemplateProcessor as PhpWordProcessor;
@@ -24,7 +25,7 @@ class TemplateProcessor
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
-    public function processTemplate(Template $template, Customer $customer): string
+    public function processTemplate(Template $template, Customer $customer, ?User $currentUser = null): string
     {
         if (!$template->getId()) {
             throw new \InvalidArgumentException('Template ID ne peut pas être null');
@@ -85,7 +86,50 @@ class TemplateProcessor
             foreach ($variables as $variable) {
                 try {
                     $this->logger->debug('Résolution de la variable', ['variable' => $variable]);
-                    $value = $this->resolveValue($customer, $variable);
+
+                    // Vérifier si c'est une variable spéciale
+                    $value = null;
+                    if (str_starts_with($variable, 'date.') || str_starts_with($variable, 'time.')) {
+                        $value = $this->resolveDateTimeVariable($variable);
+                    } elseif (str_starts_with($variable, 'user.') && null !== $currentUser) {
+                        $value = $this->resolveUserVariable($variable, $currentUser);
+                    } elseif (str_starts_with($variable, 'customer.')) {
+                        // Variables spéciales du customer
+                        $customerVar = substr($variable, 9); // Enlever "customer."
+                        if ('addressFull' === $customerVar) {
+                            $value = $customer->getAddressFull();
+                        } elseif ('addressMultiline' === $customerVar) {
+                            $value = $customer->getAddressMultiline();
+                        } elseif (str_starts_with($customerVar, 'primaryContact.')) {
+                            // Gérer les variables du contact principal
+                            $contactVar = substr($customerVar, 15); // Enlever "primaryContact."
+                            $primaryContact = $customer->getPrimaryContact();
+                            if ($primaryContact) {
+                                $value = $this->resolveValue($primaryContact, $contactVar);
+                            }
+                        } elseif (str_starts_with($customerVar, 'energiesElec[')) {
+                            // Filtre pour les énergies électriques
+                            $value = $this->resolveFilteredEnergies($customer, $customerVar, 'ELEC');
+                        } elseif (str_starts_with($customerVar, 'energiesGaz[')) {
+                            // Filtre pour les énergies gaz
+                            $value = $this->resolveFilteredEnergies($customer, $customerVar, 'GAZ');
+                        } elseif (str_starts_with($customerVar, 'energiesFuture[')) {
+                            // Filtre pour les énergies avec contrats futurs
+                            $value = $this->resolveFilteredEnergies($customer, $customerVar, null, true);
+                        } elseif (str_starts_with($customerVar, 'energiesFutureElec[')) {
+                            // Filtre pour les énergies électriques avec contrats futurs
+                            $value = $this->resolveFilteredEnergies($customer, $customerVar, 'ELEC', true);
+                        } elseif (str_starts_with($customerVar, 'energiesFutureGaz[')) {
+                            // Filtre pour les énergies gaz avec contrats futurs
+                            $value = $this->resolveFilteredEnergies($customer, $customerVar, 'GAZ', true);
+                        } else {
+                            $value = $this->resolveValue($customer, $customerVar);
+                        }
+                    } else {
+                        // Variables normales du customer
+                        $value = $this->resolveValue($customer, $variable);
+                    }
+
                     $formattedValue = $this->formatValue($value);
 
                     $this->logger->debug('Traitement variable', [
@@ -253,6 +297,131 @@ class TemplateProcessor
         }
 
         return $properties;
+    }
+
+    /**
+     * Résout les variables de date et heure.
+     */
+    private function resolveDateTimeVariable(string $variable): string
+    {
+        $now = new \DateTime();
+
+        return match ($variable) {
+            'date.today' => $now->format('d/m/Y'),
+            'date.todayLong' => $this->formatLongDate($now),
+            'time.now' => $now->format('H:i'),
+            'date.dayName' => $this->getDayName($now),
+            'date.month' => $this->getMonthName($now),
+            'date.year' => $now->format('Y'),
+            default => '',
+        };
+    }
+
+    /**
+     * Résout les variables utilisateur.
+     */
+    private function resolveUserVariable(string $variable, User $user): mixed
+    {
+        $userVar = substr($variable, 5); // Enlever "user."
+
+        return match ($userVar) {
+            'name' => trim(($user->getFirstName() ?? '').' '.($user->getLastName() ?? $user->getName() ?? '')),
+            'firstName' => $user->getFirstName() ?? '',
+            'lastName' => $user->getLastName() ?? $user->getName() ?? '',
+            'email' => $user->getEmail(),
+            'phone' => $user->getPhone() ?? '',
+            'title' => $user->getTitle() ?? '',
+            'signature' => $user->getSignature() ?? '',
+            default => $this->resolveValue($user, $userVar),
+        };
+    }
+
+    /**
+     * Formate une date en français long.
+     */
+    private function formatLongDate(\DateTimeInterface $date): string
+    {
+        $months = [
+            1 => 'janvier', 2 => 'février', 3 => 'mars', 4 => 'avril',
+            5 => 'mai', 6 => 'juin', 7 => 'juillet', 8 => 'août',
+            9 => 'septembre', 10 => 'octobre', 11 => 'novembre', 12 => 'décembre',
+        ];
+
+        $day = $date->format('j');
+        $month = $months[(int) $date->format('n')];
+        $year = $date->format('Y');
+
+        return sprintf('%d %s %d', $day, $month, $year);
+    }
+
+    /**
+     * Retourne le nom du jour en français.
+     */
+    private function getDayName(\DateTimeInterface $date): string
+    {
+        $days = [
+            1 => 'Lundi', 2 => 'Mardi', 3 => 'Mercredi', 4 => 'Jeudi',
+            5 => 'Vendredi', 6 => 'Samedi', 7 => 'Dimanche',
+        ];
+
+        return $days[(int) $date->format('N')];
+    }
+
+    /**
+     * Retourne le nom du mois en français.
+     */
+    private function getMonthName(\DateTimeInterface $date): string
+    {
+        $months = [
+            1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
+            5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
+            9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre',
+        ];
+
+        return $months[(int) $date->format('n')];
+    }
+
+    /**
+     * Résout les variables d'énergies filtrées.
+     */
+    private function resolveFilteredEnergies(Customer $customer, string $variable, ?string $type = null, bool $futureOnly = false): mixed
+    {
+        // Extraire l'index et la propriété
+        preg_match('/energies(?:Elec|Gaz|Future|FutureElec|FutureGaz)?\[(\d+)\]\.(.+)/', $variable, $matches);
+        if (count($matches) < 3) {
+            return '';
+        }
+
+        $index = (int) $matches[1];
+        $property = $matches[2];
+
+        // Filtrer les énergies
+        $energies = [];
+        $now = new \DateTime();
+
+        foreach ($customer->getEnergies() as $energy) {
+            // Filtre par type
+            if (null !== $type && $energy->getType()->value !== $type) {
+                continue;
+            }
+
+            // Filtre par date future
+            if ($futureOnly) {
+                $contractEnd = $energy->getContractEnd();
+                if (!$contractEnd || $contractEnd <= $now) {
+                    continue;
+                }
+            }
+
+            $energies[] = $energy;
+        }
+
+        // Retourner l'énergie à l'index demandé
+        if (isset($energies[$index])) {
+            return $this->resolveValue($energies[$index], $property);
+        }
+
+        return '';
     }
 
     /**

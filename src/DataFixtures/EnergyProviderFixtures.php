@@ -17,6 +17,8 @@ class EnergyProviderFixtures extends Fixture
         'provider_grdf' => 'GRDF',
         'provider_vattenfall' => 'Vattenfall',
         'provider_iberdrola' => 'Iberdrola',
+        'provider_endesa' => 'Endesa',
+        'provider_direct_energie' => 'Direct Energie',
     ];
 
     public function load(ObjectManager $manager): void

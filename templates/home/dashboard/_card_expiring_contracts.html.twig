@@ -44,9 +44,10 @@
         </div>
         
         <div class="text-center mt-3 mb-3">
-            <a href="{{ path('app_customer_index', {'expiringContracts': '1'}) }}" class="btn btn-primary btn-sm">
-                {{ 'dashboard.view_all'|trans }}
-            </a>
+            <a class="dropdown-item" href="{{ path('app_customer_index', {
+                'contractEndAfter': "now"|date('Y-m-d'),
+                'contractEndBefore': "+3 months"|date('Y-m-d')
+            }) }}">{{ 'dashboard.view_all'|trans }}</a>
         </div>
     </div>
 </div>
