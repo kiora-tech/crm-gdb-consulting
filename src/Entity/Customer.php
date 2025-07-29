@@ -508,9 +508,10 @@ class Customer
                 }
                 $parts[] = implode(' ', $cityParts);
             }
+
             return implode(', ', $parts);
         }
-        
+
         // Sinon, utiliser l'ancien champ
         return $this->address;
     }
@@ -540,13 +541,15 @@ class Customer
                 }
                 $lines[] = implode(' ', $cityParts);
             }
+
             return implode("\n", $lines);
         }
-        
+
         // Sinon, utiliser l'ancien champ
         if (!$this->address) {
             return null;
         }
+
         return str_replace(', ', "\n", $this->address);
     }
 

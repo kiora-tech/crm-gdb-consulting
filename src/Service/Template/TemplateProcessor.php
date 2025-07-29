@@ -107,6 +107,21 @@ class TemplateProcessor
                             if ($primaryContact) {
                                 $value = $this->resolveValue($primaryContact, $contactVar);
                             }
+                        } elseif (str_starts_with($customerVar, 'energiesElec[')) {
+                            // Filtre pour les énergies électriques
+                            $value = $this->resolveFilteredEnergies($customer, $customerVar, 'ELEC');
+                        } elseif (str_starts_with($customerVar, 'energiesGaz[')) {
+                            // Filtre pour les énergies gaz
+                            $value = $this->resolveFilteredEnergies($customer, $customerVar, 'GAZ');
+                        } elseif (str_starts_with($customerVar, 'energiesFuture[')) {
+                            // Filtre pour les énergies avec contrats futurs
+                            $value = $this->resolveFilteredEnergies($customer, $customerVar, null, true);
+                        } elseif (str_starts_with($customerVar, 'energiesFutureElec[')) {
+                            // Filtre pour les énergies électriques avec contrats futurs
+                            $value = $this->resolveFilteredEnergies($customer, $customerVar, 'ELEC', true);
+                        } elseif (str_starts_with($customerVar, 'energiesFutureGaz[')) {
+                            // Filtre pour les énergies gaz avec contrats futurs
+                            $value = $this->resolveFilteredEnergies($customer, $customerVar, 'GAZ', true);
                         } else {
                             $value = $this->resolveValue($customer, $customerVar);
                         }
@@ -364,6 +379,49 @@ class TemplateProcessor
         ];
 
         return $months[(int) $date->format('n')];
+    }
+
+    /**
+     * Résout les variables d'énergies filtrées.
+     */
+    private function resolveFilteredEnergies(Customer $customer, string $variable, ?string $type = null, bool $futureOnly = false): mixed
+    {
+        // Extraire l'index et la propriété
+        preg_match('/energies(?:Elec|Gaz|Future|FutureElec|FutureGaz)?\[(\d+)\]\.(.+)/', $variable, $matches);
+        if (count($matches) < 3) {
+            return '';
+        }
+
+        $index = (int) $matches[1];
+        $property = $matches[2];
+
+        // Filtrer les énergies
+        $energies = [];
+        $now = new \DateTime();
+
+        foreach ($customer->getEnergies() as $energy) {
+            // Filtre par type
+            if (null !== $type && $energy->getType()->value !== $type) {
+                continue;
+            }
+
+            // Filtre par date future
+            if ($futureOnly) {
+                $contractEnd = $energy->getContractEnd();
+                if (!$contractEnd || $contractEnd <= $now) {
+                    continue;
+                }
+            }
+
+            $energies[] = $energy;
+        }
+
+        // Retourner l'énergie à l'index demandé
+        if (isset($energies[$index])) {
+            return $this->resolveValue($energies[$index], $property);
+        }
+
+        return '';
     }
 
     /**
