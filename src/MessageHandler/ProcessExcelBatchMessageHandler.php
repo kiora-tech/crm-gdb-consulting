@@ -320,6 +320,7 @@ class ProcessExcelBatchMessageHandler
 
             $rowData[$normalizedKey] = $value;
         }
+        
         $this->logger->debug('Row data', [
             'row_index' => $rowIndex,
             'data' => $rowData,
@@ -385,7 +386,10 @@ class ProcessExcelBatchMessageHandler
             'pdl' => 'pce_pdl',
             'pce' => 'pce_pdl',
             'pce_pdl' => 'pce_pdl',
+            'pdl_pce' => 'pce_pdl',  // Pour gérer "PDL / PCE"
+            'pdl__pce' => 'pce_pdl',  // Pour gérer "PDL / PCE" normalisé
             'origine_lead' => 'lead_origin',
+            'origine_du_lead' => 'lead_origin',  // Pour gérer "ORIGINE DU LEAD"
             'origine' => 'lead_origin',
             'commentaire' => 'comment',
             'commentaires' => 'comment',
@@ -409,10 +413,15 @@ class ProcessExcelBatchMessageHandler
 
         $siret = str_replace(' ', '', $siret);
 
+        // Chercher d'abord par SIRET si fourni
+        $customer = null;
         if (!empty($siret)) {
             $customer = $entityManager->getRepository(Customer::class)
                 ->findOneBy(['siret' => $siret]);
-        } else {
+        }
+        
+        // Si pas trouvé par SIRET, chercher par nom
+        if (!$customer) {
             $customer = $entityManager->getRepository(Customer::class)
                 ->findOneBy(['name' => $name]);
         }
@@ -511,35 +520,55 @@ class ProcessExcelBatchMessageHandler
 
         // Chercher une énergie existante
         $energy = null;
+        
+        // Déterminer le type d'énergie
+        $energyType = EnergyType::ELEC; // Valeur par défaut
+        if (!empty($rowData['energy_type'])) {
+            $energyType = $this->parseEnergyType($rowData['energy_type']);
+        }
+        
+        // Récupérer ou créer le fournisseur si fourni
+        $provider = null;
+        if (!empty($rowData['provider'])) {
+            $provider = $entityManager->getRepository(EnergyProvider::class)
+                ->findOneBy(['name' => $rowData['provider']]);
+            
+            // Créer le fournisseur s'il n'existe pas
+            if (!$provider) {
+                $provider = new EnergyProvider();
+                $provider->setName($rowData['provider']);
+                $entityManager->persist($provider);
+                $entityManager->flush(); // Flush immédiat pour pouvoir l'utiliser
+            }
+        }
+        
+        // 1. Si on a un code PDL/PCE, chercher d'abord par code + type (unique)
         if ($pceCode) {
             $energy = $entityManager->getRepository(Energy::class)
-                ->findOneBy(['code' => $pceCode, 'customer' => $customer]);
-        } else {
-            // Si pas de code, chercher par fournisseur
-            if (!empty($rowData['provider'])) {
-                $provider = $entityManager->getRepository(EnergyProvider::class)
-                    ->findOneBy(['name' => $rowData['provider']]);
-
-                $energy = $entityManager->getRepository(Energy::class)
-                    ->findOneBy(['energyProvider' => $provider, 'customer' => $customer]);
-            }
+                ->findOneBy([
+                    'code' => (string) $pceCode,
+                    'type' => $energyType
+                ]);
+        }
+        
+        // 2. Si pas trouvé et qu'on a un fournisseur, chercher par customer + fournisseur + type
+        if (!$energy && $provider) {
+            $energy = $entityManager->getRepository(Energy::class)
+                ->findOneBy([
+                    'customer' => $customer,
+                    'energyProvider' => $provider,
+                    'type' => $energyType
+                ]);
         }
 
         if (!$energy) {
             // Créer une nouvelle énergie
             $energy = new Energy();
 
-            if (!empty($rowData['provider'])) {
-                $provider = $entityManager->getRepository(EnergyProvider::class)
-                    ->findOneBy(['name' => $rowData['provider']]);
+            if ($provider) {
                 $energy->setEnergyProvider($provider);
             }
 
-            // Déterminer le type d'énergie
-            $energyType = EnergyType::ELEC; // Valeur par défaut
-            if (!empty($rowData['energy_type'])) {
-                $energyType = $this->parseEnergyType($rowData['energy_type']);
-            }
             $energy->setType($energyType);
 
             // Définir le code PDL/PCE si disponible
@@ -551,19 +580,29 @@ class ProcessExcelBatchMessageHandler
             $entityManager->persist($energy);
         } else {
             // Mettre à jour l'énergie existante
-            if (!empty($rowData['provider'])) {
-                $provider = $entityManager->getRepository(EnergyProvider::class)
-                    ->findOneBy(['name' => $rowData['provider']]);
+            if ($provider) {
                 $energy->setEnergyProvider($provider);
+            }
+            
+            // Mettre à jour le code PDL/PCE s'il est fourni et que l'énergie n'en a pas
+            if ($pceCode && empty($energy->getCode())) {
+                $energy->setCode((string) $pceCode);
+            }
+            
+            // Mettre à jour le customer si l'énergie appartenait à un autre customer
+            if ($energy->getCustomer() !== $customer) {
+                $energy->setCustomer($customer);
             }
         }
 
-        if (!empty($rowData['contract_end']) && $rowData['contract_end'] instanceof \DateTime) {
-            $energy->setContractEnd($rowData['contract_end']);
-        } elseif (!empty($rowData['contract_end']) && !$energy->getContractEnd()) {
-            $date = $this->parseDate($rowData['contract_end']);
-            if ($date) {
-                $energy->setContractEnd($date);
+        if (!empty($rowData['contract_end'])) {
+            if ($rowData['contract_end'] instanceof \DateTime) {
+                $energy->setContractEnd($rowData['contract_end']);
+            } else {
+                $date = $this->parseDate($rowData['contract_end']);
+                if ($date) {
+                    $energy->setContractEnd($date);
+                }
             }
         }
     }

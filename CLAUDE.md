@@ -6,6 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Tests: `docker-compose exec php bin/phpunit [path]` (e.g., `docker-compose exec php bin/phpunit tests/Controller/SecurityControllerTest.php`)
 - Single test: `docker-compose exec php bin/phpunit --filter=testName tests/Path/Class.php`
 - Build: `make build` or `docker-compose up -d`
+- Build Docker image with tag: `make build_app TAG=0.11.1` (creates Docker image with version tag)
 - Update DB: `docker-compose exec php bin/console doctrine:migrations:migrate`
 - Load fixtures: `docker-compose exec php bin/console doctrine:fixtures:load`
 - Quality checks: `docker-compose exec php vendor/bin/grumphp run` (runs PHPStan and PHPUnit)
