@@ -320,7 +320,7 @@ class ProcessExcelBatchMessageHandler
 
             $rowData[$normalizedKey] = $value;
         }
-        
+
         $this->logger->debug('Row data', [
             'row_index' => $rowIndex,
             'data' => $rowData,
@@ -419,7 +419,7 @@ class ProcessExcelBatchMessageHandler
             $customer = $entityManager->getRepository(Customer::class)
                 ->findOneBy(['siret' => $siret]);
         }
-        
+
         // Si pas trouvé par SIRET, chercher par nom
         if (!$customer) {
             $customer = $entityManager->getRepository(Customer::class)
@@ -520,19 +520,19 @@ class ProcessExcelBatchMessageHandler
 
         // Chercher une énergie existante
         $energy = null;
-        
+
         // Déterminer le type d'énergie
         $energyType = EnergyType::ELEC; // Valeur par défaut
         if (!empty($rowData['energy_type'])) {
             $energyType = $this->parseEnergyType($rowData['energy_type']);
         }
-        
+
         // Récupérer ou créer le fournisseur si fourni
         $provider = null;
         if (!empty($rowData['provider'])) {
             $provider = $entityManager->getRepository(EnergyProvider::class)
                 ->findOneBy(['name' => $rowData['provider']]);
-            
+
             // Créer le fournisseur s'il n'existe pas
             if (!$provider) {
                 $provider = new EnergyProvider();
@@ -541,23 +541,23 @@ class ProcessExcelBatchMessageHandler
                 $entityManager->flush(); // Flush immédiat pour pouvoir l'utiliser
             }
         }
-        
+
         // 1. Si on a un code PDL/PCE, chercher d'abord par code + type (unique)
         if ($pceCode) {
             $energy = $entityManager->getRepository(Energy::class)
                 ->findOneBy([
                     'code' => (string) $pceCode,
-                    'type' => $energyType
+                    'type' => $energyType,
                 ]);
         }
-        
+
         // 2. Si pas trouvé et qu'on a un fournisseur, chercher par customer + fournisseur + type
         if (!$energy && $provider) {
             $energy = $entityManager->getRepository(Energy::class)
                 ->findOneBy([
                     'customer' => $customer,
                     'energyProvider' => $provider,
-                    'type' => $energyType
+                    'type' => $energyType,
                 ]);
         }
 
@@ -583,12 +583,12 @@ class ProcessExcelBatchMessageHandler
             if ($provider) {
                 $energy->setEnergyProvider($provider);
             }
-            
+
             // Mettre à jour le code PDL/PCE s'il est fourni et que l'énergie n'en a pas
             if ($pceCode && empty($energy->getCode())) {
                 $energy->setCode((string) $pceCode);
             }
-            
+
             // Mettre à jour le customer si l'énergie appartenait à un autre customer
             if ($energy->getCustomer() !== $customer) {
                 $energy->setCustomer($customer);
@@ -596,12 +596,33 @@ class ProcessExcelBatchMessageHandler
         }
 
         if (!empty($rowData['contract_end'])) {
+            $newDate = null;
             if ($rowData['contract_end'] instanceof \DateTime) {
-                $energy->setContractEnd($rowData['contract_end']);
+                $newDate = $rowData['contract_end'];
             } else {
-                $date = $this->parseDate($rowData['contract_end']);
-                if ($date) {
-                    $energy->setContractEnd($date);
+                $newDate = $this->parseDate($rowData['contract_end']);
+            }
+
+            if ($newDate) {
+                // Si l'énergie existe déjà et a une date d'échéance
+                $existingDate = $energy->getContractEnd();
+
+                // Ne mettre à jour que si:
+                // 1. L'énergie n'a pas de date d'échéance existante OU
+                // 2. La nouvelle date est plus récente que celle du CRM
+                if (!$existingDate || $newDate > $existingDate) {
+                    $energy->setContractEnd($newDate);
+                    $this->logger->debug('Updating contract end date', [
+                        'customer' => $customer->getName(),
+                        'old_date' => $existingDate ? $existingDate->format('Y-m-d') : 'none',
+                        'new_date' => $newDate->format('Y-m-d'),
+                    ]);
+                } else {
+                    $this->logger->debug('Keeping existing contract end date (more recent)', [
+                        'customer' => $customer->getName(),
+                        'existing_date' => $existingDate->format('Y-m-d'),
+                        'imported_date' => $newDate->format('Y-m-d'),
+                    ]);
                 }
             }
         }
@@ -658,5 +679,3 @@ class ProcessExcelBatchMessageHandler
         return $entityManager->getConnection()->isTransactionActive();
     }
 }
-
-
