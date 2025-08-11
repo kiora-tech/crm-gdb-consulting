@@ -256,7 +256,7 @@ class ProcessExcelBatchMessageHandler
             }
 
             // Traiter l'énergie - même si pce_pdl est 0, on peut créer une énergie
-            if (isset($rowData['pce_pdl']) || !empty($rowData['provider'])) {
+            if (isset($rowData['pce_pdl']) || !empty($rowData['provider']) || !empty($rowData['energy_type'])) {
                 $this->processEnergy($entityManager, $customer, $rowData);
             }
 
@@ -501,8 +501,8 @@ class ProcessExcelBatchMessageHandler
             $comment->setCustomer($customer);
             $comment->setNote($commentText);
             $entityManager->persist($comment);
-        } else {
-            $comment->setNote($commentText);
+//        } else {
+//            $comment->setNote($commentText);
         }
     }
 
@@ -610,7 +610,7 @@ class ProcessExcelBatchMessageHandler
         }
 
         if (!empty($rowData['contract_end'])) {
-            $newDate = null;
+
             if ($rowData['contract_end'] instanceof \DateTime) {
                 $newDate = $rowData['contract_end'];
             } else {
