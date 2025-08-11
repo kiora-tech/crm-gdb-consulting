@@ -342,7 +342,8 @@ class ProcessExcelBatchMessageHandler
 
         try {
             // Date Excel = nombre de jours depuis le 30 décembre 1899 (Excel a un bug avec 1900)
-            $unixTimestamp = ($excelDate - 25569) * 86400;
+            // Convertir en entier pour éviter les problèmes de précision avec les flottants
+            $unixTimestamp = (int) round(($excelDate - 25569) * 86400);
             $date = new \DateTime();
             $date->setTimestamp($unixTimestamp);
 
@@ -559,6 +560,19 @@ class ProcessExcelBatchMessageHandler
                     'energyProvider' => $provider,
                     'type' => $energyType,
                 ]);
+        }
+        // 3. Si le customer n'a qu'une seule énergie du type donné, on la récupère
+        if (!$energy) {
+            $energiesOfType = $entityManager->getRepository(Energy::class)
+                ->findBy([
+                    'customer' => $customer,
+                    'type' => $energyType,
+                ]);
+
+            // Si exactement une énergie de ce type existe, on l'utilise
+            if (1 === count($energiesOfType)) {
+                $energy = $energiesOfType[0];
+            }
         }
 
         if (!$energy) {
