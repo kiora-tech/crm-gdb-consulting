@@ -21,3 +21,4 @@ framework:
             Symfony\Component\Notifier\Message\SmsMessage: async
             App\Message\StartImportMessage: async
             App\Message\ProcessExcelBatchMessage: async
+            App\Message\SyncQueueMessage: async

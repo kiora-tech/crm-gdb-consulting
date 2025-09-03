@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0d6efd" rx="51.2"/>
+  <circle cx="256" cy="179.2" r="76.8" fill="white"/>
+  <rect x="128" y="281.6" width="256" height="40.96" fill="white" rx="10.24"/>
+  <rect x="128" y="343.04" width="179.2" height="30.72" fill="white" rx="7.68"/>
+  <text x="256" y="460.8" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="40.96" font-weight="bold">CRM</text>
+</svg>

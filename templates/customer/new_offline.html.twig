@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ "customer.new"|trans }}
+{% endblock %}
+
+{% block body %}
+    <section class="section">
+        <div class="row">
+            {# Offline-enabled form wrapper #}
+            <div class="offline-form-wrapper">
+                {{ form_start(form, {
+                    'attr': {
+                        'data-offline': 'true',
+                        'data-entity': 'customer',
+                        'data-sync-strategy': 'queue',
+                        'data-autosave': 'true',
+                        'data-autosave-delay': '30000',
+                        'data-clear-on-success': 'false'
+                    }
+                }) }}
+                
+                {# Offline status indicator #}
+                <div class="offline-status-indicator mb-3"></div>
+                
+                {{ include('customer/_form.html.twig') }}
+
+                <twig:FormActions
+                        backRoute="app_customer_index"
+                        :showDelete="false"
+                        :isAdmin="is_granted('ROLE_ADMIN')"
+                />
+                
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    {# Load offline mode scripts #}
+    <script type="module">
+        import { offlineForms } from '/assets/js/offline/offline-forms.js';
+        import { syncClient } from '/assets/js/offline/sync-client.js';
+        
+        // Initialize offline support for this form
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Offline mode enabled for customer form');
+            
+            // Set sync strategy for customer entities
+            syncClient.setConflictStrategy('merge');
+        });
+    </script>
+{% endblock %}

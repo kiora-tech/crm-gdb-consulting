@@ -7,9 +7,47 @@
 			{% endblock %}
 			- GDB consulting
 		</title>
-		<link rel="icon" type="image/png" href="{{ asset('img/logo.ico') }}"> {% block stylesheets %}{% endblock %}
-		<meta
-		name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		{# PWA and Mobile Meta Tags #}
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+		<meta name="theme-color" content="#0d6efd">
+		<meta name="msapplication-TileColor" content="#0d6efd">
+		<meta name="msapplication-navbutton-color" content="#0d6efd">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-title" content="CRM-GDB">
+		<meta name="application-name" content="CRM-GDB">
+		
+		{# PWA Manifest #}
+		<link rel="manifest" href="/manifest.json">
+		
+		{# Icons and Favicon #}
+		<link rel="icon" type="image/png" href="{{ asset('img/logo.ico') }}">
+		<link rel="apple-touch-icon" href="/icons/apple-touch-icon-180x180.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/icons/pwa-64x64.png">
+		<link rel="icon" type="image/png" sizes="192x192" href="/icons/pwa-192x192.png">
+		
+		{# SEO and Social Media Meta #}
+		<meta name="description" content="{% block meta_description %}Système de gestion de la relation client pour GDB Consulting - Secteur de l'énergie avec capacités hors ligne{% endblock %}">
+		<meta name="keywords" content="CRM, GDB Consulting, Énergie, Gestion client">
+		<meta name="author" content="GDB Consulting">
+		
+		{# Open Graph / Facebook #}
+		<meta property="og:type" content="website">
+		<meta property="og:title" content="{% block og_title %}{{ block('title') }} - GDB consulting{% endblock %}">
+		<meta property="og:description" content="{{ block('meta_description') }}">
+		<meta property="og:image" content="/icons/pwa-512x512.png">
+		<meta property="og:url" content="{{ app.request.uri }}">
+		<meta property="og:site_name" content="CRM-GDB Consulting">
+		
+		{# Twitter Card #}
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:title" content="{{ block('og_title') }}">
+		<meta name="twitter:description" content="{{ block('meta_description') }}">
+		<meta name="twitter:image" content="/icons/pwa-512x512.png">
+
+		{% block stylesheets %}{% endblock %}
 
 		{% block javascripts %}{% endblock %}
 

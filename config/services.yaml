@@ -31,3 +31,21 @@ services:
         arguments: [ "@knp_menu.factory" ]
         tags:
             - { name: knp_menu.menu_builder, method: createMainMenu, alias: main }
+
+    # Offline Sync Services
+    App\Service\ConflictResolutionService:
+        public: true
+
+    App\Service\OfflineSyncService:
+        public: true
+        calls:
+            - setConflictResolver: ['@App\Service\ConflictResolutionService']
+
+    # Message handlers for async sync processing
+    App\MessageHandler\SyncQueueMessageHandler:
+        tags:
+            - { name: messenger.message_handler }
+        arguments:
+            $syncService: '@App\Service\OfflineSyncService'
+            $messageBus: '@messenger.default_bus'
+            $logger: '@logger'

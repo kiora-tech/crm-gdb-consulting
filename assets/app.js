@@ -9,6 +9,8 @@ import './styles/app.css';
 
 // Import offline functionality
 import './js/offline/service-worker-manager.js';
+import './js/offline/offline-status-manager.js';
+import './js/offline/pwa-install-manager.js';
 
 const loadEssentialJsFiles = () => {
     return Promise.all([

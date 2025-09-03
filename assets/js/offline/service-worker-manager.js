@@ -44,7 +44,11 @@ export class ServiceWorkerManager {
                     newWorker.addEventListener('statechange', () => {
                         if (newWorker.state === 'installed') {
                             if (navigator.serviceWorker.controller) {
-                                this.showUpdateAvailable();
+                                this.showUpdateAvailable(newWorker);
+                                // Notify PWA install manager
+                                if (window.pwaInstallManager) {
+                                    window.pwaInstallManager.handleUpdateAvailable({ newWorker });
+                                }
                             } else {
                                 console.log('Service Worker installed for the first time');
                             }
@@ -140,7 +144,12 @@ export class ServiceWorkerManager {
         }
     }
 
-    showUpdateAvailable() {
+    showUpdateAvailable(newWorker = null) {
+        // Store the new worker for later use
+        if (newWorker) {
+            this.newWorker = newWorker;
+        }
+        
         const updateEl = document.createElement('div');
         updateEl.className = 'update-available alert alert-info alert-dismissible fade show';
         updateEl.innerHTML = `

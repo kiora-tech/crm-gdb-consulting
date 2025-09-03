@@ -1,0 +1,262 @@
+{# Offline-enabled form wrapper component #}
+{# Usage: {% include 'components/offline_form.html.twig' with {'form': form, 'entity': 'customer', 'autosave': true} %} #}
+
+{% set entity_type = entity|default('unknown') %}
+{% set autosave_enabled = autosave|default(false) %}
+{% set sync_strategy = strategy|default('queue') %}
+{% set clear_on_success = clear|default(false) %}
+
+{# Add offline attributes to form #}
+<div class="offline-form-wrapper">
+    {{ form_start(form, {
+        'attr': {
+            'data-offline': 'true',
+            'data-entity': entity_type,
+            'data-sync-strategy': sync_strategy,
+            'data-autosave': autosave_enabled ? 'true' : 'false',
+            'data-autosave-delay': '30000',
+            'data-clear-on-success': clear_on_success ? 'true' : 'false',
+            'class': (form.vars.attr.class|default('')) ~ ' offline-enabled-form'
+        }
+    }) }}
+    
+    {# Offline status indicator #}
+    <div class="offline-status-bar mb-3" style="display: none;">
+        <div class="alert alert-info d-flex align-items-center">
+            <i class="bi bi-wifi-off me-2"></i>
+            <span>{{ 'offline.working_offline'|trans }}</span>
+            <small class="ms-auto">{{ 'offline.changes_will_sync'|trans }}</small>
+        </div>
+    </div>
+    
+    {# Sync status indicator #}
+    <div class="sync-status-bar mb-3" style="display: none;">
+        <div class="alert alert-success d-flex align-items-center">
+            <i class="bi bi-cloud-check me-2"></i>
+            <span>{{ 'offline.synced_successfully'|trans }}</span>
+        </div>
+    </div>
+    
+    {# Form content #}
+    {{ form_content|raw }}
+    
+    {# Form actions with offline support #}
+    <div class="form-actions mt-3">
+        <div class="row">
+            <div class="col-md-6">
+                {# Offline queue status #}
+                <div class="offline-queue-status text-muted small" style="display: none;">
+                    <i class="bi bi-clock-history"></i>
+                    <span class="queue-count">0</span> {{ 'offline.pending_changes'|trans }}
+                </div>
+            </div>
+            <div class="col-md-6 text-end">
+                {# Submit button with offline support #}
+                <button type="submit" class="btn btn-primary">
+                    <span class="online-text">
+                        <i class="bi bi-save"></i> {{ button_label|default('Save') }}
+                    </span>
+                    <span class="offline-text" style="display: none;">
+                        <i class="bi bi-save"></i> {{ 'offline.save_locally'|trans|default('Save Locally') }}
+                    </span>
+                </button>
+                
+                {% if show_cancel|default(true) %}
+                    <a href="{{ cancel_url|default(path(app.request.attributes.get('_route')|replace({'_new': '_index', '_edit': '_show'}), app.request.attributes.get('_route_params'))) }}" 
+                       class="btn btn-secondary">
+                        {{ 'Cancel'|trans }}
+                    </a>
+                {% endif %}
+                
+                {# Sync now button (hidden by default) #}
+                <button type="button" class="btn btn-outline-info btn-sync-now ms-2" style="display: none;">
+                    <i class="bi bi-arrow-repeat"></i> {{ 'offline.sync_now'|trans }}
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    {{ form_end(form) }}
+</div>
+
+{# Inline JavaScript for offline form initialization #}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const formWrapper = document.querySelector('.offline-form-wrapper');
+    const form = formWrapper.querySelector('form');
+    
+    // Update UI based on connection status
+    function updateConnectionStatus() {
+        const isOnline = navigator.onLine;
+        const offlineBar = formWrapper.querySelector('.offline-status-bar');
+        const onlineText = formWrapper.querySelector('.online-text');
+        const offlineText = formWrapper.querySelector('.offline-text');
+        const syncButton = formWrapper.querySelector('.btn-sync-now');
+        
+        if (isOnline) {
+            offlineBar.style.display = 'none';
+            if (onlineText) onlineText.style.display = 'inline';
+            if (offlineText) offlineText.style.display = 'none';
+            if (syncButton && window.syncClient) {
+                // Show sync button if there are pending changes
+                window.syncClient.getStatus().then(status => {
+                    if (status.pendingChanges > 0) {
+                        syncButton.style.display = 'inline-block';
+                    }
+                });
+            }
+        } else {
+            offlineBar.style.display = 'block';
+            if (onlineText) onlineText.style.display = 'none';
+            if (offlineText) offlineText.style.display = 'inline';
+            if (syncButton) syncButton.style.display = 'none';
+        }
+    }
+    
+    // Initial status
+    updateConnectionStatus();
+    
+    // Listen for connection changes
+    window.addEventListener('online', updateConnectionStatus);
+    window.addEventListener('offline', updateConnectionStatus);
+    
+    // Handle sync now button
+    const syncButton = formWrapper.querySelector('.btn-sync-now');
+    if (syncButton && window.syncClient) {
+        syncButton.addEventListener('click', async function() {
+            syncButton.disabled = true;
+            syncButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Syncing...';
+            
+            try {
+                await window.syncClient.forceSync();
+                
+                // Show success message
+                const syncBar = formWrapper.querySelector('.sync-status-bar');
+                if (syncBar) {
+                    syncBar.style.display = 'block';
+                    setTimeout(() => {
+                        syncBar.style.display = 'none';
+                    }, 3000);
+                }
+                
+                // Update queue status
+                updateQueueStatus();
+            } catch (error) {
+                console.error('Sync failed:', error);
+            } finally {
+                syncButton.disabled = false;
+                syncButton.innerHTML = '<i class="bi bi-arrow-repeat"></i> {{ "offline.sync_now"|trans }}';
+                updateConnectionStatus();
+            }
+        });
+    }
+    
+    // Update queue status periodically
+    async function updateQueueStatus() {
+        if (!window.syncClient) return;
+        
+        const queueStatus = formWrapper.querySelector('.offline-queue-status');
+        if (!queueStatus) return;
+        
+        try {
+            const status = await window.syncClient.getStatus();
+            const queueCount = queueStatus.querySelector('.queue-count');
+            
+            if (status.pendingChanges > 0) {
+                queueCount.textContent = status.pendingChanges;
+                queueStatus.style.display = 'block';
+            } else {
+                queueStatus.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Failed to get queue status:', error);
+        }
+    }
+    
+    // Update queue status on load and periodically
+    updateQueueStatus();
+    setInterval(updateQueueStatus, 10000); // Every 10 seconds
+    
+    // Listen for sync events
+    window.addEventListener('sync-complete', function(e) {
+        console.log('Sync completed:', e.detail);
+        updateQueueStatus();
+        
+        // Show success message
+        const syncBar = formWrapper.querySelector('.sync-status-bar');
+        if (syncBar) {
+            syncBar.style.display = 'block';
+            setTimeout(() => {
+                syncBar.style.display = 'none';
+            }, 3000);
+        }
+    });
+    
+    window.addEventListener('offline-saved', function(e) {
+        console.log('Data saved offline:', e.detail);
+        updateQueueStatus();
+    });
+});
+</script>
+
+{# Add CSS for offline indicators #}
+<style>
+.offline-form-wrapper {
+    position: relative;
+}
+
+.offline-status-bar .alert,
+.sync-status-bar .alert {
+    margin-bottom: 0;
+    padding: 0.5rem 1rem;
+}
+
+.offline-queue-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-sync-now {
+    position: relative;
+}
+
+.form-loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.form-message {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Offline mode visual indicators */
+body.app-offline .offline-form-wrapper {
+    border: 2px dashed #ffc107;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+body.app-offline .offline-form-wrapper::before {
+    content: "Offline Mode";
+    position: absolute;
+    top: -12px;
+    left: 1rem;
+    background: white;
+    padding: 0 0.5rem;
+    color: #ffc107;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+</style>
