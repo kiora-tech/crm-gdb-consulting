@@ -7,6 +7,9 @@ import './NiceAdmin/scss/style.scss';
 import 'intl-tel-input/build/css/intlTelInput.css';
 import './styles/app.css';
 
+// Import offline functionality
+import './js/offline/service-worker-manager.js';
+
 const loadEssentialJsFiles = () => {
     return Promise.all([
         import('./NiceAdmin/js/main.js'),

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\SyncableEntity;
 use App\Repository\EnergyRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -9,8 +10,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: EnergyRepository::class)]
 #[UniqueEntity(['code', 'type'], message: 'Ce code est déjà utilisé pour ce type d\'énergie')]
+#[ORM\HasLifecycleCallbacks]
 class Energy
 {
+    use SyncableEntity;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

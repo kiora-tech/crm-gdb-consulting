@@ -2,13 +2,16 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\SyncableEntityMinimal;
 use App\Repository\CommentRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Comment
 {
+    use SyncableEntityMinimal;
     /**
      * @var int|null ID is set by Doctrine ORM and is initially null
      */

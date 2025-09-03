@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\SyncableEntity;
 use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,8 +13,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[UniqueEntity(fields: 'siret', ignoreNull: true)]
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Customer
 {
+    use SyncableEntity;
     /**
      * @var int|null ID is set by Doctrine ORM and is initially null
      */

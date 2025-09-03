@@ -501,8 +501,8 @@ class ProcessExcelBatchMessageHandler
             $comment->setCustomer($customer);
             $comment->setNote($commentText);
             $entityManager->persist($comment);
-//        } else {
-//            $comment->setNote($commentText);
+            //        } else {
+            //            $comment->setNote($commentText);
         }
     }
 
@@ -610,7 +610,6 @@ class ProcessExcelBatchMessageHandler
         }
 
         if (!empty($rowData['contract_end'])) {
-
             if ($rowData['contract_end'] instanceof \DateTime) {
                 $newDate = $rowData['contract_end'];
             } else {

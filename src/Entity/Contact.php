@@ -2,12 +2,15 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\SyncableEntity;
 use App\Repository\ContactRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ContactRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Contact
 {
+    use SyncableEntity;
     /**
      * @var int|null ID is set by Doctrine ORM and is initially null
      */

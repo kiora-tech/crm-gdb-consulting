@@ -349,4 +349,10 @@ return [
         'version' => '2.4.3',
         'type' => 'css',
     ],
+    './assets/js/offline/db-manager.js' => [
+        'path' => './assets/js/offline/db-manager.js',
+    ],
+    './assets/js/offline/service-worker-manager.js' => [
+        'path' => './assets/js/offline/service-worker-manager.js',
+    ],
 ];

@@ -342,3 +342,146 @@ a form {
 .ts-control .item {
     margin-top: 15px;
 }
+
+/* Offline Mode Styles */
+.connection-status {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    min-width: 250px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.app-offline .connection-status.alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffecb3;
+    color: #856404;
+}
+
+.app-online .connection-status.alert-success {
+    background-color: #d1edff;
+    border-color: #b3d9ff;
+    color: #0c5460;
+}
+
+.update-available {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9998;
+    min-width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+}
+
+/* Offline indicator in header */
+.app-offline::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ffc107, #ff9800);
+    z-index: 10000;
+    animation: offline-pulse 2s infinite;
+}
+
+@keyframes offline-pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+.app-online::before {
+    display: none;
+}
+
+/* Sync status indicators */
+.sync-status {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    z-index: 9997;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sync-status.syncing {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffecb3;
+}
+
+.sync-status.synced {
+    background-color: #d1edff;
+    color: #0c5460;
+    border: 1px solid #b3d9ff;
+}
+
+.sync-status.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Loading states for offline operations */
+.loading-offline::after {
+    content: "";
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-left: 8px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Form states during offline operations */
+.form-offline-queued {
+    background-color: #fff3cd;
+    border-color: #ffecb3;
+    position: relative;
+}
+
+.form-offline-queued::before {
+    content: "Queued for sync";
+    position: absolute;
+    top: -25px;
+    right: 0;
+    background: #ffc107;
+    color: #212529;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .connection-status,
+    .update-available {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin-bottom: 15px;
+        box-shadow: none;
+    }
+    
+    .sync-status {
+        bottom: 10px;
+        right: 10px;
+        font-size: 10px;
+        padding: 6px 10px;
+    }
+}
