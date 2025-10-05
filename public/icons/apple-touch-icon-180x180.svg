@@ -1,8 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180">
-  <rect width="180" height="180" fill="#0d6efd" rx="18"/>
-  <circle cx="90" cy="62.99999999999999" r="27" fill="white"/>
-  <rect x="45" y="99.00000000000001" width="90" height="14.4" fill="white" rx="3.6"/>
-  <rect x="45" y="120.60000000000001" width="62.99999999999999" height="10.799999999999999" fill="white" rx="2.6999999999999997"/>
-  <text x="90" y="162" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14.4" font-weight="bold">CRM</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
+  <rect width="180" height="180" fill="#0d6efd" rx="20"/>
+  <text x="90" y="100" font-family="Arial, sans-serif" font-size="60" font-weight="bold" text-anchor="middle" fill="white">CRM</text>
+  <text x="90" y="140" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="white">GDB</text>
 </svg>

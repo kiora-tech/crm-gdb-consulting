@@ -10,104 +10,77 @@
   "background_color": "#ffffff",
   "lang": "fr-FR",
   "categories": ["business", "productivity", "utilities"],
-  "shortcuts": [
-    {
-      "name": "Customers",
-      "short_name": "Customers",
-      "description": "View and manage customers",
-      "url": "/customers",
-      "icons": [
-        {
-          "src": "/icons/shortcut-customers-96x96.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
-    },
-    {
-      "name": "Add Customer",
-      "short_name": "New Customer",
-      "description": "Add a new customer",
-      "url": "/customers/new",
-      "icons": [
-        {
-          "src": "/icons/shortcut-add-customer-96x96.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
-    },
-    {
-      "name": "Energies",
-      "short_name": "Energies",
-      "description": "Manage energy contracts",
-      "url": "/energies",
-      "icons": [
-        {
-          "src": "/icons/shortcut-energies-96x96.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
-    }
-  ],
   "icons": [
     {
-      "src": "/icons/pwa-64x64.png",
-      "sizes": "64x64",
-      "type": "image/png"
-    },
-    {
-      "src": "/icons/pwa-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/icons/pwa-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/maskable-icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/icons/apple-touch-icon-180x180.png",
-      "sizes": "180x180",
-      "type": "image/png"
+      "src": "/icons/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ],
   "screenshots": [
+    {
+      "src": "/screenshots/desktop-dashboard.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Tableau de bord principal"
+    },
     {
       "src": "/screenshots/desktop-customers.png",
       "sizes": "1280x800",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Customer management view on desktop"
+      "label": "Gestion des clients"
     },
     {
       "src": "/screenshots/mobile-dashboard.png",
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Dashboard view on mobile"
+      "label": "Version mobile du tableau de bord"
+    },
+    {
+      "src": "/screenshots/mobile-customers.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Liste des clients mobile"
     }
   ],
-  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Clients",
+      "short_name": "Clients",
+      "description": "Voir et gérer les clients",
+      "url": "/customer/",
+      "icons": [
+        {
+          "src": "/icons/logo.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Nouveau Client",
+      "short_name": "Nouveau",
+      "description": "Ajouter un nouveau client",
+      "url": "/customer/new",
+      "icons": [
+        {
+          "src": "/icons/logo.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
   "edge_side_panel": {
     "preferred_width": 400
   },
   "handle_links": "preferred",
   "launch_handler": {
     "client_mode": "navigate-existing"
-  },
-  "protocol_handlers": [
-    {
-      "protocol": "web+crm",
-      "url": "/?handler=crm&url=%s"
-    }
-  ]
+  }
 }

@@ -9,12 +9,10 @@ For optimal PWA store listing, the following screenshots should be provided:
 ### Desktop Screenshots (form_factor: "wide")
 - `desktop-customers.png` - 1280x800px - Customer management view
 - `desktop-dashboard.png` - 1280x800px - Dashboard overview
-- `desktop-energies.png` - 1280x800px - Energy contracts view
 
 ### Mobile Screenshots (form_factor: "narrow")  
 - `mobile-dashboard.png` - 390x844px - Mobile dashboard
 - `mobile-customers.png` - 390x844px - Mobile customer list
-- `mobile-customer-detail.png` - 390x844px - Mobile customer detail view
 
 ## Current Status
 

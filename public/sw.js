@@ -151,6 +151,11 @@ self.addEventListener('fetch', event => {
     const { request } = event;
     const url = new URL(request.url);
     
+    // Skip chrome-extension and other non-HTTP requests
+    if (!url.protocol.startsWith('http')) {
+        return;
+    }
+    
     // Skip non-GET requests
     if (request.method !== 'GET') {
         return handleNonGetRequest(event);
@@ -420,7 +425,7 @@ async function handleNetworkFirstWithExpiry(request, cacheName, config) {
                 return offlinePage;
             }
             return caches.match('/') || new Response(
-                '<!DOCTYPE html><html><head><title>Offline - CRM-GDB</title><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"></head><body style=\"font-family:system-ui,sans-serif;text-align:center;padding:2rem;background:#f8f9fa\"><h1 style=\"color:#0d6efd\">You\\'re offline</h1><p>This page isn\\'t available offline. Please check your connection.</p><button onclick=\"window.location.reload()\" style=\"background:#0d6efd;color:white;border:none;padding:0.5rem 1rem;border-radius:0.25rem;cursor:pointer\">Try Again</button></body></html>', 
+                '<!DOCTYPE html><html><head><title>Offline - CRM-GDB</title><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="font-family:system-ui,sans-serif;text-align:center;padding:2rem;background:#f8f9fa"><h1 style="color:#0d6efd">You are offline</h1><p>This page is not available offline. Please check your connection.</p><button onclick="window.location.reload()" style="background:#0d6efd;color:white;border:none;padding:0.5rem 1rem;border-radius:0.25rem;cursor:pointer">Try Again</button></body></html>', 
                 { 
                     status: 503, 
                     headers: { 'Content-Type': 'text/html' }

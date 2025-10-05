@@ -11,6 +11,8 @@ import './styles/app.css';
 import './js/offline/service-worker-manager.js';
 import './js/offline/offline-status-manager.js';
 import './js/offline/pwa-install-manager.js';
+import './js/offline/header-status.js';
+import './js/offline/initial-sync.js';
 
 const loadEssentialJsFiles = () => {
     return Promise.all([
