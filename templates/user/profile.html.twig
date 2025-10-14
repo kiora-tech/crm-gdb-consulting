@@ -41,6 +41,11 @@
                                     {{ 'update_profile.2fa.label'|trans }}
                                 </button>
                             </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-microsoft">
+                                    Microsoft
+                                </button>
+                            </li>
                         </ul>
                         <div class="tab-content pt-2">
                             <div class="tab-pane fade show active profile-overview" id="profile-overview">
@@ -169,6 +174,65 @@
                                             class="btn btn-primary">{{ 'update_profile.submit_changes'|trans }}</button>
                                 </div>
                                 {{ form_end(twoFactorForm) }}#}
+                            </div>
+
+                            <div class="tab-pane fade pt-3" id="profile-microsoft">
+                                <h5 class="card-title">Microsoft Integration</h5>
+                                {% if app.user.hasMicrosoftToken() %}
+                                    <div class="alert alert-success" role="alert">
+                                        <i class="bi bi-check-circle me-2"></i>
+                                        Votre compte Microsoft est connecté!
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <p><strong>Connecté le:</strong> {{ app.user.microsoftToken.createdAt|date('d/m/Y H:i') }}</p>
+                                            <p><strong>Dernière mise à jour:</strong> {{ app.user.microsoftToken.updatedAt|date('d/m/Y H:i') }}</p>
+                                        </div>
+                                    </div>
+
+                                    {% if calendars|length > 0 %}
+                                    <hr class="my-4">
+                                    <h6 class="card-subtitle mb-3">
+                                        <i class="bi bi-calendar3 me-2"></i>Calendrier par défaut
+                                    </h6>
+                                    <form action="{{ path('save_default_calendar') }}" method="post">
+                                        <div class="row mb-3">
+                                            <div class="col-md-8">
+                                                <select class="form-select" name="calendar_id" id="calendar_id">
+                                                    <option value="">Aucun calendrier par défaut</option>
+                                                    {% for calendar in calendars %}
+                                                        <option value="{{ calendar.id }}" {% if app.user.defaultCalendarId == calendar.id %}selected{% endif %}>
+                                                            {{ calendar.name }}
+                                                            {% if calendar.isDefaultCalendar %} (Microsoft par défaut){% endif %}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                                <div class="form-text">
+                                                    Le calendrier par défaut sera utilisé pour créer vos événements.
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-save me-1"></i>Enregistrer
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    {% endif %}
+
+                                    <hr class="my-4">
+                                    <a href="{{ path('disconnect_microsoft') }}" class="btn btn-outline-danger" data-turbo="false" onclick="return confirm('Êtes-vous sûr de vouloir déconnecter votre compte Microsoft?')">
+                                        <i class="bi bi-x-circle me-2"></i>Déconnecter Microsoft
+                                    </a>
+                                {% else %}
+                                    <div class="alert alert-info" role="alert">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        Connectez votre compte Microsoft pour accéder à vos tâches et calendriers.
+                                    </div>
+                                    <a href="{{ path('connect_microsoft_start') }}" class="btn btn-primary" data-turbo="false">
+                                        <i class="bi bi-microsoft me-2"></i>Connecter Microsoft
+                                    </a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

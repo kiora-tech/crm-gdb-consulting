@@ -8,6 +8,7 @@ use App\Form\UserProfilType;
 use App\Form\UserType;
 use App\Notification\NewCollaboratorNotification;
 use App\Repository\UserRepository;
+use App\Service\MicrosoftGraphService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -152,16 +153,27 @@ class UserController extends AbstractController
     }
 
     #[Route('/edit/profile', name: 'app_user_profile', methods: ['GET', 'POST'])]
-    public function profile(Request $request, EntityManagerInterface $entityManager): Response
+    public function profile(Request $request, EntityManagerInterface $entityManager, MicrosoftGraphService $microsoftGraphService): Response
     {
         $user = $this->getUser();
         if (!$user instanceof User) {
             throw new \LogicException('User is not valid');
         }
 
+        // Fetch calendars if user has Microsoft token
+        $calendars = [];
+        if ($user->hasMicrosoftToken()) {
+            try {
+                $calendars = $microsoftGraphService->getUserCalendars($user);
+            } catch (\Exception $e) {
+                // Silently fail if calendars cannot be fetched
+            }
+        }
+
         // Render the profile template directly, without redirecting
         return $this->render('user/profile.html.twig', [
             'form' => $this->createForm(UserProfilType::class, $user)->createView(),
+            'calendars' => $calendars,
         ]);
     }
 
