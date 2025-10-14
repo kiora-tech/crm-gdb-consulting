@@ -40,11 +40,11 @@ class CalendarEvent
     private ?string $location = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?User $createdBy = null;
 
     #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: 'calendarEvents')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Customer $customer = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -58,6 +58,9 @@ class CalendarEvent
 
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $isCancelled = false;
+
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private bool $isArchived = false;
 
     public function __construct()
     {
@@ -210,6 +213,18 @@ class CalendarEvent
     public function setIsCancelled(bool $isCancelled): static
     {
         $this->isCancelled = $isCancelled;
+
+        return $this;
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->isArchived;
+    }
+
+    public function setIsArchived(bool $isArchived): static
+    {
+        $this->isArchived = $isArchived;
 
         return $this;
     }

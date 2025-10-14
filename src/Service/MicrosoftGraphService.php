@@ -97,6 +97,94 @@ class MicrosoftGraphService
         }
     }
 
+    /**
+     * Make an HTTP request with retry logic and error handling.
+     *
+     * @param array<string, mixed> $options
+     *
+     * @return array<string, mixed>
+     *
+     * @phpstan-ignore method.unused (Will be used in future refactoring of HTTP methods)
+     */
+    private function makeGraphRequest(string $method, string $url, MicrosoftToken $token, array $options = [], int $retries = 3): array
+    {
+        $attempt = 0;
+        $lastException = null;
+
+        while ($attempt < $retries) {
+            try {
+                $options['headers'] = array_merge($options['headers'] ?? [], [
+                    'Authorization' => 'Bearer '.$token->getAccessToken(),
+                    'Content-Type' => 'application/json',
+                ]);
+
+                $options['timeout'] = 30; // 30 second timeout
+
+                $response = $this->httpClient->request($method, $url, $options);
+                $statusCode = $response->getStatusCode();
+
+                // Handle 401: token expired, refresh and retry once
+                if (401 === $statusCode && 0 === $attempt) {
+                    $this->logger->warning('Token expired, refreshing', ['url' => $url]);
+                    $token = $this->refreshToken($token);
+                    ++$attempt;
+                    continue;
+                }
+
+                // Handle 429: rate limit, wait and retry
+                if (429 === $statusCode) {
+                    $retryAfter = (int) ($response->getHeaders()['retry-after'][0] ?? 5);
+                    $this->logger->warning('Rate limit hit, waiting', [
+                        'url' => $url,
+                        'retry_after' => $retryAfter,
+                    ]);
+                    sleep(min($retryAfter, 60)); // Max 60 seconds wait
+                    ++$attempt;
+                    continue;
+                }
+
+                // Handle 404: resource not found
+                if (404 === $statusCode) {
+                    return []; // Return empty array for not found
+                }
+
+                // Handle server errors: 500, 502, 503
+                if ($statusCode >= 500 && $statusCode < 600) {
+                    $this->logger->error('Microsoft API server error', [
+                        'url' => $url,
+                        'status_code' => $statusCode,
+                    ]);
+                    ++$attempt;
+                    sleep(min($attempt * 2, 10)); // Exponential backoff
+                    continue;
+                }
+
+                // Success: parse and return JSON
+                $content = $response->getContent();
+
+                return json_decode($content, true) ?? [];
+            } catch (\Exception $e) {
+                $lastException = $e;
+                // Don't log 404 errors as they're expected for missing resources
+                if (!str_contains($e->getMessage(), '404')) {
+                    $this->logger->error('Network error making Graph request', [
+                        'url' => $url,
+                        'attempt' => $attempt + 1,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+                ++$attempt;
+                if ($attempt < $retries) {
+                    sleep(min($attempt * 2, 10)); // Exponential backoff
+                }
+            }
+        }
+
+        // All retries failed
+        $message = sprintf('Failed to make Graph API request after %d attempts: %s', $retries, $lastException?->getMessage() ?? 'Unknown error');
+        throw new \RuntimeException($message);
+    }
+
     private function refreshToken(MicrosoftToken $token): MicrosoftToken
     {
         if (!$token->getRefreshToken()) {
@@ -472,6 +560,8 @@ class MicrosoftGraphService
             $startDateTime = new \DateTime('+2 hours');
             $endDateTime = new \DateTime('+3 hours');
 
+            $userTimezone = $user->getTimezone();
+
             $eventData = [
                 'subject' => 'Événement de test - '.date('d/m/Y H:i:s'),
                 'body' => [
@@ -480,11 +570,11 @@ class MicrosoftGraphService
                 ],
                 'start' => [
                     'dateTime' => $startDateTime->format('Y-m-d\TH:i:s'),
-                    'timeZone' => 'Europe/Paris',
+                    'timeZone' => $userTimezone,
                 ],
                 'end' => [
                     'dateTime' => $endDateTime->format('Y-m-d\TH:i:s'),
-                    'timeZone' => 'Europe/Paris',
+                    'timeZone' => $userTimezone,
                 ],
                 'location' => [
                     'displayName' => 'Bureau - Test',
@@ -546,15 +636,17 @@ class MicrosoftGraphService
         }
 
         try {
+            $userTimezone = $user->getTimezone();
+
             $eventData = [
                 'subject' => $title,
                 'start' => [
                     'dateTime' => $startDateTime,
-                    'timeZone' => 'Europe/Paris',
+                    'timeZone' => $userTimezone,
                 ],
                 'end' => [
                     'dateTime' => $endDateTime,
-                    'timeZone' => 'Europe/Paris',
+                    'timeZone' => $userTimezone,
                 ],
                 'isOnlineMeeting' => false,
             ];
@@ -740,6 +832,54 @@ class MicrosoftGraphService
                 'error' => $e->getMessage(),
             ]);
             throw new \RuntimeException('Failed to update calendar event: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Delete a calendar event from Microsoft.
+     */
+    public function deleteEvent(User $user, string $eventId): void
+    {
+        $token = $user->getMicrosoftToken();
+        if (!$token) {
+            throw new \RuntimeException('User has no Microsoft token');
+        }
+
+        if ($token->isExpired()) {
+            $token = $this->refreshToken($token);
+        }
+
+        try {
+            $response = $this->httpClient->request('DELETE', "https://graph.microsoft.com/v1.0/me/events/{$eventId}", [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$token->getAccessToken(),
+                ],
+            ]);
+
+            $statusCode = $response->getStatusCode();
+            if (401 === $statusCode) {
+                $this->logger->warning('Received 401 when deleting event, attempting token refresh', ['user_id' => $user->getId()]);
+                $token = $this->refreshToken($token);
+
+                // Retry with refreshed token
+                $response = $this->httpClient->request('DELETE', "https://graph.microsoft.com/v1.0/me/events/{$eventId}", [
+                    'headers' => [
+                        'Authorization' => 'Bearer '.$token->getAccessToken(),
+                    ],
+                ]);
+            }
+
+            $this->logger->info('Calendar event deleted from Microsoft', [
+                'user_id' => $user->getId(),
+                'event_id' => $eventId,
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Error deleting calendar event', [
+                'user_id' => $user->getId(),
+                'event_id' => $eventId,
+                'error' => $e->getMessage(),
+            ]);
+            throw new \RuntimeException('Failed to delete calendar event: '.$e->getMessage());
         }
     }
 }

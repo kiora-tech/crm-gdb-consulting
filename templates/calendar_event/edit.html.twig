@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier un événement{% endblock %}
+
+{% block body %}
+<div class="pagetitle">
+    <h1>Modifier l'événement pour {{ customer.name }}</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('homepage') }}">Accueil</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('app_customer_index') }}">Clients</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('app_customer_show', {id: customer.id}) }}">{{ customer.name }}</a></li>
+            <li class="breadcrumb-item active">Modifier un événement</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Informations de l'événement</h5>
+
+                    {{ form_start(form) }}
+                        <div class="row mb-3">
+                            <label for="title" class="col-sm-3 col-form-label">{{ form_label(form.title) }}</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.title) }}
+                                {{ form_errors(form.title) }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="description" class="col-sm-3 col-form-label">{{ form_label(form.description) }}</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.description) }}
+                                {{ form_errors(form.description) }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="startDateTime" class="col-sm-3 col-form-label">{{ form_label(form.startDateTime) }}</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.startDateTime) }}
+                                {{ form_errors(form.startDateTime) }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="endDateTime" class="col-sm-3 col-form-label">{{ form_label(form.endDateTime) }}</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.endDateTime) }}
+                                {{ form_errors(form.endDateTime) }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="location" class="col-sm-3 col-form-label">{{ form_label(form.location) }}</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.location) }}
+                                {{ form_errors(form.location) }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-sm-9 offset-sm-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-save"></i> Enregistrer les modifications
+                                </button>
+                                <a href="{{ path('app_customer_show', {id: customer.id}) }}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Annuler
+                                </a>
+                            </div>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Informations</h5>
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Les modifications seront synchronisées avec votre calendrier Microsoft.
+                    </div>
+                    <p class="small text-muted">
+                        <strong>Client :</strong> {{ customer.name }}<br>
+                        {% if customer.email %}
+                        <strong>Email :</strong> {{ customer.email }}<br>
+                        {% endif %}
+                        {% if customer.phone %}
+                        <strong>Téléphone :</strong> {{ customer.phone }}
+                        {% endif %}
+                    </p>
+                    <p class="small text-muted">
+                        <strong>Créé le :</strong> {{ calendarEvent.createdAt|date('d/m/Y H:i') }}<br>
+                        <strong>Créé par :</strong> {{ calendarEvent.createdBy ? calendarEvent.createdBy.email : 'N/A' }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

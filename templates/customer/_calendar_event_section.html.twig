@@ -44,12 +44,17 @@
                                         {{ event.createdBy.email }}
                                     </td>
                                     <td>
+                                        <a href="{{ path('app_calendar_event_edit', {'customerId': customer.id, 'id': event.id}) }}"
+                                           class="btn btn-primary btn-sm"
+                                           title="Modifier">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
                                         <form method="post"
                                               action="{{ path('app_calendar_event_delete', {'customerId': customer.id, 'id': event.id}) }}"
                                               onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');"
                                               style="display: inline;">
                                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
-                                            <button type="submit" class="btn btn-danger btn-sm">
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>

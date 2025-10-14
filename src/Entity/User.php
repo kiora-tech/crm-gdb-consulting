@@ -76,6 +76,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailRe
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $defaultCalendarId = null;
 
+    #[ORM\Column(length: 50, nullable: false)]
+    private string $timezone = 'Europe/Paris';
+
     public function __construct()
     {
         $this->customers = new ArrayCollection();
@@ -327,6 +330,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailRe
     public function setDefaultCalendarId(?string $defaultCalendarId): static
     {
         $this->defaultCalendarId = $defaultCalendarId;
+
+        return $this;
+    }
+
+    public function getTimezone(): string
+    {
+        return $this->timezone;
+    }
+
+    public function setTimezone(string $timezone): static
+    {
+        $this->timezone = $timezone;
 
         return $this;
     }
