@@ -527,4 +527,219 @@ class MicrosoftGraphService
             throw new \RuntimeException('Failed to create calendar event: '.$e->getMessage());
         }
     }
+
+    /**
+     * Create a calendar event from CalendarEvent entity.
+     *
+     * @return array{id: string, subject: string, start: array{dateTime: string, timeZone: string}, end: array{dateTime: string, timeZone: string}, location: array{displayName: string}}
+     */
+    public function createEventFromCalendarEvent(User $user, string $title, string $startDateTime, string $endDateTime, ?string $description = null, ?string $location = null): array
+    {
+        $token = $user->getMicrosoftToken();
+        if (!$token) {
+            throw new \RuntimeException('User has no Microsoft token');
+        }
+
+        if ($token->isExpired()) {
+            $this->logger->info('Token expired, refreshing token', ['user_id' => $user->getId()]);
+            $token = $this->refreshToken($token);
+        }
+
+        try {
+            $eventData = [
+                'subject' => $title,
+                'start' => [
+                    'dateTime' => $startDateTime,
+                    'timeZone' => 'Europe/Paris',
+                ],
+                'end' => [
+                    'dateTime' => $endDateTime,
+                    'timeZone' => 'Europe/Paris',
+                ],
+                'isOnlineMeeting' => false,
+            ];
+
+            if ($description) {
+                $eventData['body'] = [
+                    'contentType' => 'HTML',
+                    'content' => $description,
+                ];
+            }
+
+            if ($location) {
+                $eventData['location'] = [
+                    'displayName' => $location,
+                ];
+            }
+
+            $calendarId = $user->getDefaultCalendarId();
+            $url = $calendarId
+                ? "https://graph.microsoft.com/v1.0/me/calendars/{$calendarId}/events"
+                : 'https://graph.microsoft.com/v1.0/me/events';
+
+            $response = $this->httpClient->request('POST', $url, [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$token->getAccessToken(),
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => $eventData,
+            ]);
+
+            $statusCode = $response->getStatusCode();
+            if (401 === $statusCode) {
+                $this->logger->warning('Received 401 when creating event, attempting token refresh', ['user_id' => $user->getId()]);
+                $token = $this->refreshToken($token);
+
+                // Retry with refreshed token
+                $response = $this->httpClient->request('POST', $url, [
+                    'headers' => [
+                        'Authorization' => 'Bearer '.$token->getAccessToken(),
+                        'Content-Type' => 'application/json',
+                    ],
+                    'json' => $eventData,
+                ]);
+            }
+
+            $createdEvent = json_decode($response->getContent(), true);
+
+            $this->logger->info('Calendar event created from CalendarEvent entity', [
+                'user_id' => $user->getId(),
+                'event_id' => $createdEvent['id'],
+                'title' => $title,
+            ]);
+
+            return $createdEvent;
+        } catch (\Exception $e) {
+            $this->logger->error('Error creating calendar event from entity', [
+                'user_id' => $user->getId(),
+                'title' => $title,
+                'error' => $e->getMessage(),
+            ]);
+            throw new \RuntimeException('Failed to create calendar event: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Get a specific event by its ID.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function getEventById(User $user, string $eventId): ?array
+    {
+        $token = $user->getMicrosoftToken();
+        if (!$token) {
+            throw new \RuntimeException('User has no Microsoft token');
+        }
+
+        if ($token->isExpired()) {
+            $token = $this->refreshToken($token);
+        }
+
+        try {
+            $response = $this->httpClient->request('GET', "https://graph.microsoft.com/v1.0/me/events/{$eventId}", [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$token->getAccessToken(),
+                    'Content-Type' => 'application/json',
+                ],
+            ]);
+
+            $statusCode = $response->getStatusCode();
+            if (404 === $statusCode) {
+                // Event not found or deleted
+                return null;
+            }
+
+            if (401 === $statusCode) {
+                $this->logger->warning('Received 401 when fetching event, attempting token refresh', ['user_id' => $user->getId()]);
+                $token = $this->refreshToken($token);
+
+                // Retry with refreshed token
+                $response = $this->httpClient->request('GET', "https://graph.microsoft.com/v1.0/me/events/{$eventId}", [
+                    'headers' => [
+                        'Authorization' => 'Bearer '.$token->getAccessToken(),
+                        'Content-Type' => 'application/json',
+                    ],
+                ]);
+
+                if (404 === $response->getStatusCode()) {
+                    return null;
+                }
+            }
+
+            return json_decode($response->getContent(), true);
+        } catch (\Exception $e) {
+            $this->logger->error('Error fetching event by ID', [
+                'user_id' => $user->getId(),
+                'event_id' => $eventId,
+                'error' => $e->getMessage(),
+            ]);
+
+            // Return null if event not found, rethrow other exceptions
+            if (str_contains($e->getMessage(), '404')) {
+                return null;
+            }
+
+            throw new \RuntimeException('Failed to fetch event: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Update an existing calendar event.
+     *
+     * @param array<string, mixed> $eventData
+     *
+     * @return array<string, mixed>
+     */
+    public function updateEvent(User $user, string $eventId, array $eventData): array
+    {
+        $token = $user->getMicrosoftToken();
+        if (!$token) {
+            throw new \RuntimeException('User has no Microsoft token');
+        }
+
+        if ($token->isExpired()) {
+            $token = $this->refreshToken($token);
+        }
+
+        try {
+            $response = $this->httpClient->request('PATCH', "https://graph.microsoft.com/v1.0/me/events/{$eventId}", [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$token->getAccessToken(),
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => $eventData,
+            ]);
+
+            $statusCode = $response->getStatusCode();
+            if (401 === $statusCode) {
+                $this->logger->warning('Received 401 when updating event, attempting token refresh', ['user_id' => $user->getId()]);
+                $token = $this->refreshToken($token);
+
+                // Retry with refreshed token
+                $response = $this->httpClient->request('PATCH', "https://graph.microsoft.com/v1.0/me/events/{$eventId}", [
+                    'headers' => [
+                        'Authorization' => 'Bearer '.$token->getAccessToken(),
+                        'Content-Type' => 'application/json',
+                    ],
+                    'json' => $eventData,
+                ]);
+            }
+
+            $updatedEvent = json_decode($response->getContent(), true);
+
+            $this->logger->info('Calendar event updated successfully', [
+                'user_id' => $user->getId(),
+                'event_id' => $eventId,
+            ]);
+
+            return $updatedEvent;
+        } catch (\Exception $e) {
+            $this->logger->error('Error updating calendar event', [
+                'user_id' => $user->getId(),
+                'event_id' => $eventId,
+                'error' => $e->getMessage(),
+            ]);
+            throw new \RuntimeException('Failed to update calendar event: '.$e->getMessage());
+        }
+    }
 }

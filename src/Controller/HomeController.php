@@ -7,6 +7,8 @@ use App\Entity\Document;
 use App\Entity\Energy;
 use App\Entity\ProspectStatus;
 use App\Entity\User;
+use App\Repository\CalendarEventRepository;
+use App\Service\MicrosoftGraphService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,8 +16,13 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class HomeController extends AbstractController
 {
+    public function __construct(
+        private readonly MicrosoftGraphService $microsoftGraphService,
+    ) {
+    }
+
     #[Route('/', name: 'homepage')]
-    public function index(EntityManagerInterface $entityManager): Response
+    public function index(EntityManagerInterface $entityManager, CalendarEventRepository $calendarEventRepository): Response
     {
         // Récupérer les données pour le tableau de bord
         /** @var User|null $user */
@@ -110,6 +117,38 @@ class HomeController extends AbstractController
             ->getQuery()
             ->getSingleScalarResult();
 
+        // Récupérer les tâches Microsoft si l'utilisateur est connecté
+        $microsoftTasks = [];
+        $hasMicrosoftToken = false;
+        if ($user instanceof User) {
+            $hasMicrosoftToken = $this->microsoftGraphService->hasValidToken($user);
+            if ($hasMicrosoftToken) {
+                try {
+                    $allTasks = $this->microsoftGraphService->getUserTasks($user);
+                    // Prendre les 10 tâches les plus récentes (non terminées en priorité)
+                    $microsoftTasks = array_slice(
+                        array_filter($allTasks, fn ($task) => 'completed' !== $task['status']),
+                        0,
+                        10
+                    );
+                } catch (\Exception $e) {
+                    // En cas d'erreur, on continue sans les tâches mais on log l'erreur
+                    $microsoftTasks = [];
+                    $errorMessage = $e->getMessage();
+
+                    // Si c'est un problème de token, marquer que le token n'est plus valide
+                    if (str_contains($errorMessage, 'refresh Microsoft token')
+                        || str_contains($errorMessage, '401')
+                        || str_contains($errorMessage, 'No refresh token available')) {
+                        $hasMicrosoftToken = false;
+                    }
+                }
+            }
+        }
+
+        // Récupérer les événements calendrier à venir
+        $upcomingEvents = $calendarEventRepository->findUpcomingEvents(10);
+
         // Retourner les données au template
         return $this->render('home/index.html.twig', [
             'totalCustomers' => $totalCustomers,
@@ -121,6 +160,9 @@ class HomeController extends AbstractController
             'recentDocuments' => $recentDocuments,
             'totalWorth' => $totalWorth,
             'monthlyWonCustomers' => $monthlyWonCustomers,
+            'microsoftTasks' => $microsoftTasks,
+            'hasMicrosoftToken' => $hasMicrosoftToken,
+            'upcomingEvents' => $upcomingEvents,
         ]);
     }
 }

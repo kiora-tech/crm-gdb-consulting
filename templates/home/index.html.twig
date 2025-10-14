@@ -24,7 +24,10 @@
 
                     {# Clients récents #}
                     {% include 'home/dashboard/_card_recent_clients.html.twig' %}
-                    
+
+                    {# Prochains événements #}
+                    {% include 'home/dashboard/_card_upcoming_events.html.twig' %}
+
                     {# Contrats expirant bientôt - Déplacé ici #}
                     {% include 'home/dashboard/_card_expiring_contracts.html.twig' %}
                 </div>
@@ -32,11 +35,16 @@
 
             <!-- Colonne droite -->
             <div class="col-lg-4">
-                {# Carte des statistiques - Déplacée en haut #}
-                {% include 'home/dashboard/_card_stats.html.twig' %}
+                <div class="row">
+                    {# Carte des statistiques - Déplacée en haut #}
+                    {% include 'home/dashboard/_card_stats.html.twig' %}
 
-                {# Documents récents #}
-                {% include 'home/dashboard/_card_recent_documents.html.twig' %}
+                    {# Microsoft Tasks #}
+                    {% include 'home/dashboard/_card_microsoft_tasks.html.twig' %}
+
+                    {# Documents récents #}
+                    {% include 'home/dashboard/_card_recent_documents.html.twig' %}
+                </div>
             </div>
         </div>
     </section>

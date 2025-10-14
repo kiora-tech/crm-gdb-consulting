@@ -1,0 +1,70 @@
+<div class="col-12">
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title mb-0">Événements calendrier</h5>
+                <a href="{{ path('app_calendar_event_create', {'customerId': customer.id}) }}"
+                   class="btn btn-primary btn-sm">
+                    <i class="bi bi-calendar-plus"></i> Créer un événement
+                </a>
+            </div>
+
+            {% set upcomingEvents = customer.calendarEvents|filter(e => e.isFuture and not e.isCancelled)|sort((a, b) => a.startDateTime <=> b.startDateTime) %}
+
+            {% if upcomingEvents|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Titre</th>
+                                <th>Date de début</th>
+                                <th>Date de fin</th>
+                                <th>Lieu</th>
+                                <th>Créé par</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for event in upcomingEvents %}
+                                <tr>
+                                    <td>
+                                        <i class="bi bi-calendar-event text-primary"></i>
+                                        {{ event.title }}
+                                    </td>
+                                    <td>
+                                        {{ event.startDateTime|date('d/m/Y H:i') }}
+                                    </td>
+                                    <td>
+                                        {{ event.endDateTime|date('d/m/Y H:i') }}
+                                    </td>
+                                    <td>
+                                        {{ event.location ?? '-' }}
+                                    </td>
+                                    <td>
+                                        {{ event.createdBy.email }}
+                                    </td>
+                                    <td>
+                                        <form method="post"
+                                              action="{{ path('app_calendar_event_delete', {'customerId': customer.id, 'id': event.id}) }}"
+                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');"
+                                              style="display: inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    Aucun événement à venir pour ce client.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

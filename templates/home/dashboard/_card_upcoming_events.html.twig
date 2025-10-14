@@ -1,0 +1,71 @@
+{# Prochains événements #}
+<div class="col-12">
+    <div class="card">
+        <div class="filter">
+            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                <li class="dropdown-header text-start">
+                    <h6>Actions</h6>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card-body">
+            <h5 class="card-title">
+                <i class="bi bi-calendar-event text-primary"></i> Prochains événements
+            </h5>
+
+            {% if upcomingEvents|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-borderless">
+                        <thead>
+                            <tr>
+                                <th scope="col">Titre</th>
+                                <th scope="col">Client</th>
+                                <th scope="col">Date de début</th>
+                                <th scope="col">Lieu</th>
+                                <th scope="col">Créé par</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for event in upcomingEvents %}
+                                <tr>
+                                    <td>
+                                        <i class="bi bi-calendar-check text-success"></i>
+                                        {{ event.title }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ path('app_customer_show', {'id': event.customer.id}) }}"
+                                           class="text-decoration-none">
+                                            {{ event.customer.name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            {{ event.startDateTime|date('d/m/Y H:i') }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if event.location %}
+                                            <i class="bi bi-geo-alt"></i> {{ event.location }}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="text-muted small">{{ event.createdBy.email }}</span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    Aucun événement à venir
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
