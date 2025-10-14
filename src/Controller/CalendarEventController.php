@@ -8,7 +8,6 @@ use App\Entity\CalendarEvent;
 use App\Entity\Customer;
 use App\Entity\User;
 use App\Form\CalendarEventType;
-use App\Repository\CalendarEventRepository;
 use App\Service\CalendarEventSyncService;
 use App\Service\MicrosoftGraphService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,7 +22,6 @@ class CalendarEventController extends AbstractController
     public function __construct(
         private readonly CalendarEventSyncService $syncService,
         private readonly MicrosoftGraphService $microsoftGraphService,
-        private readonly CalendarEventRepository $calendarEventRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }

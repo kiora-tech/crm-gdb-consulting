@@ -22,7 +22,9 @@ class CalendarEventRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $this->entityManager = self::getContainer()->get('doctrine')->getManager();
-        $this->repository = $this->entityManager->getRepository(CalendarEvent::class);
+        $repository = $this->entityManager->getRepository(CalendarEvent::class);
+        assert($repository instanceof CalendarEventRepository);
+        $this->repository = $repository;
 
         // Clean database before each test
         $this->cleanDatabase();
@@ -112,7 +114,9 @@ class CalendarEventRepositoryTest extends KernelTestCase
         $event->setCreatedBy($user);
         $event->setCustomer($customer);
         $event->setStartDateTime($startDateTime);
-        $event->setEndDateTime((clone $startDateTime)->modify('+1 hour'));
+        $endDateTime = \DateTime::createFromInterface($startDateTime);
+        $endDateTime->modify('+1 hour');
+        $event->setEndDateTime($endDateTime);
         $event->setMicrosoftEventId('microsoft-event-'.uniqid());
         $event->setIsCancelled($cancelled);
 

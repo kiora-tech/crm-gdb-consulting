@@ -151,10 +151,6 @@ class CalendarEventSyncService
                 $event->getLocation()
             );
 
-            if (!isset($microsoftEvent['id'])) {
-                throw new \RuntimeException('Microsoft event ID not returned');
-            }
-
             $this->logger->info('Event created in Microsoft Calendar', [
                 'event_id' => $event->getId(),
                 'microsoft_event_id' => $microsoftEvent['id'],

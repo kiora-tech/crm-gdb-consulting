@@ -11,7 +11,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFixtures extends Fixture implements DependentFixtureInterface
 {
-    private const USERS = [
+    private const array USERS = [
         'admin_user' => [
             'name' => 'Admin',
             'lastname' => 'User',
