@@ -24,6 +24,14 @@
 
                     {{ form_start(form) }}
                         <div class="row mb-3">
+                            <label for="contact" class="col-sm-3 col-form-label">{{ form_label(form.contact) }}</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.contact) }}
+                                {{ form_errors(form.contact) }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
                             <label for="title" class="col-sm-3 col-form-label">{{ form_label(form.title) }}</label>
                             <div class="col-sm-9">
                                 {{ form_widget(form.title) }}
@@ -64,13 +72,20 @@
                         </div>
 
                         <div class="row mb-3">
+                            <label for="category" class="col-sm-3 col-form-label">{{ form_label(form.category) }}</label>
+                            <div class="col-sm-9">
+                                {{ form_widget(form.category) }}
+                                {{ form_errors(form.category) }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
                             <div class="col-sm-9 offset-sm-3">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-calendar-plus"></i> Créer l'événement
-                                </button>
-                                <a href="{{ path('app_customer_show', {id: customer.id}) }}" class="btn btn-secondary">
-                                    <i class="bi bi-x-circle"></i> Annuler
-                                </a>
+                                <twig:FormActions
+                                    backRoute="app_customer_show"
+                                    :backRouteParams="{'id': customer.id}"
+                                    :showDelete="false"
+                                />
                             </div>
                         </div>
                     {{ form_end(form) }}
@@ -87,17 +102,129 @@
                         L'événement sera créé dans votre calendrier Microsoft et sera synchronisé automatiquement.
                     </div>
                     <p class="small text-muted">
-                        <strong>Client :</strong> {{ customer.name }}<br>
-                        {% if customer.email %}
-                        <strong>Email :</strong> {{ customer.email }}<br>
-                        {% endif %}
-                        {% if customer.phone %}
-                        <strong>Téléphone :</strong> {{ customer.phone }}
-                        {% endif %}
+                        <strong>Client :</strong> {{ customer.name }}
                     </p>
                 </div>
             </div>
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .category-select option {
+            padding-left: 25px;
+        }
+        .category-color-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('turbo:load', function() {
+            const contactSelect = document.getElementById('calendar_event_contact');
+            const titleInput = document.getElementById('calendar_event_title');
+            const descriptionTextarea = document.getElementById('calendar_event_description');
+            const categorySelect = document.getElementById('calendar_event_category');
+            const startDateTimeInput = document.getElementById('calendar_event_startDateTime');
+            const endDateTimeInput = document.getElementById('calendar_event_endDateTime');
+            const customerId = {{ customer.id }};
+
+            if (contactSelect && titleInput && descriptionTextarea) {
+                contactSelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+
+                    if (this.value) {
+                        // Get data attributes from selected option
+                        const firstName = selectedOption.dataset.firstName || '';
+                        const lastName = selectedOption.dataset.lastName || '';
+                        const phone = selectedOption.dataset.phone || '';
+                        const customerName = selectedOption.dataset.customerName || '';
+                        const contactId = selectedOption.dataset.contactId || '';
+
+                        // Build title: "Nom établissement - Nom du contact - Téléphone"
+                        let title = customerName;
+                        if (firstName || lastName) {
+                            title += ' - ' + firstName + ' ' + lastName;
+                        }
+                        if (phone) {
+                            title += ' - ' + phone;
+                        }
+                        titleInput.value = title.trim();
+
+                        // Build description with contact URL
+                        const contactUrl = window.location.origin + '/contact/' + contactId + '/edit';
+                        descriptionTextarea.value = 'Fiche contact: ' + contactUrl;
+                    } else {
+                        // Clear fields if no contact selected
+                        titleInput.value = '';
+                        descriptionTextarea.value = '';
+                    }
+                });
+            }
+
+            // Auto-set end date to 30 minutes after start date
+            if (startDateTimeInput && endDateTimeInput) {
+                startDateTimeInput.addEventListener('change', function() {
+                    if (this.value) {
+                        const startDate = new Date(this.value);
+                        const endDate = new Date(startDate.getTime() + 30 * 60000); // Add 30 minutes
+
+                        // Format date to datetime-local input format (YYYY-MM-DDTHH:mm)
+                        const year = endDate.getFullYear();
+                        const month = String(endDate.getMonth() + 1).padStart(2, '0');
+                        const day = String(endDate.getDate()).padStart(2, '0');
+                        const hours = String(endDate.getHours()).padStart(2, '0');
+                        const minutes = String(endDate.getMinutes()).padStart(2, '0');
+
+                        endDateTimeInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+                    }
+                });
+            }
+
+            // Add color indicators to category select options
+            if (categorySelect) {
+                // Create a wrapper div to hold the select with colored badge
+                const wrapper = document.createElement('div');
+                wrapper.style.position = 'relative';
+                categorySelect.parentNode.insertBefore(wrapper, categorySelect);
+                wrapper.appendChild(categorySelect);
+
+                // Create color indicator element
+                const colorIndicator = document.createElement('span');
+                colorIndicator.className = 'category-color-indicator';
+                colorIndicator.style.position = 'absolute';
+                colorIndicator.style.left = '10px';
+                colorIndicator.style.top = '50%';
+                colorIndicator.style.transform = 'translateY(-50%)';
+                colorIndicator.style.pointerEvents = 'none';
+                colorIndicator.style.zIndex = '1';
+                wrapper.appendChild(colorIndicator);
+
+                // Update color indicator based on selection
+                function updateColorIndicator() {
+                    const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+                    const color = selectedOption?.dataset?.color || 'transparent';
+                    colorIndicator.style.backgroundColor = color;
+                    colorIndicator.style.display = categorySelect.value ? 'inline-block' : 'none';
+                }
+
+                categorySelect.addEventListener('change', updateColorIndicator);
+                updateColorIndicator();
+
+                // Add left padding to select to make room for indicator
+                categorySelect.style.paddingLeft = '30px';
+            }
+        });
+    </script>
 {% endblock %}

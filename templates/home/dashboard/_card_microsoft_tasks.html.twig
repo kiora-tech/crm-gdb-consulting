@@ -1,0 +1,111 @@
+<!-- Microsoft Tasks -->
+<div class="col-12">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">
+                <i class="bi bi-microsoft text-primary me-2"></i>Microsoft Tasks
+            </h5>
+
+            {% if hasMicrosoftToken %}
+                {% if microsoftTasks|length > 0 %}
+                    <div class="list-group list-group-flush">
+                        {% for task in microsoftTasks %}
+                            <div class="list-group-item px-0 py-2 border-0 border-bottom">
+                                <div class="d-flex align-items-start">
+                                    <div class="me-2 mt-1">
+                                        {% if task.status == 'notStarted' %}
+                                            <i class="bi bi-circle text-secondary"></i>
+                                        {% elseif task.status == 'inProgress' %}
+                                            <i class="bi bi-arrow-clockwise text-warning"></i>
+                                        {% else %}
+                                            <i class="bi bi-check-circle text-success"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 text-truncate">{{ task.title }}</h6>
+                                        <small class="text-muted">
+                                            <i class="bi bi-list-ul me-1"></i>{{ task.listName }}
+                                            {% if task.dueDateTime %}
+                                                <br><i class="bi bi-calendar-event me-1"></i>{{ task.dueDateTime|date('d/m/Y') }}
+                                            {% endif %}
+                                        </small>
+                                        {% if task.importance == 'high' %}
+                                            <span class="badge bg-danger ms-2">Priorité élevée</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <div class="d-flex gap-2 justify-content-center flex-wrap">
+                            <a href="{{ path('app_tasks_index') }}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye me-1"></i>Voir toutes les tâches
+                            </a>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="bi bi-plus-circle me-1"></i>Tests
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ path('create_test_task') }}" data-turbo="false">
+                                        <i class="bi bi-microsoft text-primary me-2"></i>Tâche Microsoft To-Do
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{{ path('create_outlook_test_task') }}" data-turbo="false">
+                                        <i class="bi bi-envelope text-info me-2"></i>Tâche Outlook
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{{ path('create_calendar_event') }}" data-turbo="false">
+                                        <i class="bi bi-calendar-event text-success me-2"></i>Événement Calendrier
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{{ path('get_outlook_tasks') }}" data-turbo="false">
+                                        <i class="bi bi-list-check text-warning me-2"></i>Lister tâches Outlook
+                                    </a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Aucune tâche en cours trouvée dans Microsoft To-Do.
+                        <div class="mt-2">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="bi bi-plus-circle me-1"></i>Créer une tâche de test
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ path('create_test_task') }}" data-turbo="false">
+                                        <i class="bi bi-microsoft text-primary me-2"></i>Tâche Microsoft To-Do
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{{ path('create_outlook_test_task') }}" data-turbo="false">
+                                        <i class="bi bi-envelope text-info me-2"></i>Tâche Outlook
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{{ path('create_calendar_event') }}" data-turbo="false">
+                                        <i class="bi bi-calendar-event text-success me-2"></i>Événement Calendrier
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{{ path('get_outlook_tasks') }}" data-turbo="false">
+                                        <i class="bi bi-list-check text-warning me-2"></i>Lister tâches Outlook
+                                    </a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-warning mb-0">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Connectez votre compte Microsoft pour voir vos tâches ici.
+                    <div class="mt-2">
+                        <a href="{{ path('connect_microsoft_start') }}" class="btn btn-primary btn-sm" data-turbo="false">
+                            <i class="bi bi-microsoft me-1"></i>Se connecter
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

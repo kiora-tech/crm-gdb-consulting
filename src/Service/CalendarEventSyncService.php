@@ -148,7 +148,8 @@ class CalendarEventSyncService
                 $event->getStartDateTime()->format('Y-m-d\TH:i:s'),
                 $event->getEndDateTime()->format('Y-m-d\TH:i:s'),
                 $event->getDescription(),
-                $event->getLocation()
+                $event->getLocation(),
+                $event->getCategory()
             );
 
             $this->logger->info('Event created in Microsoft Calendar', [

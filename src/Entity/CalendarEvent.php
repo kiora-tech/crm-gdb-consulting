@@ -21,7 +21,7 @@ class CalendarEvent
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(length: 255, unique: true, nullable: true)]
     private ?string $microsoftEventId = null;
 
     #[ORM\Column(length: 255)]
@@ -38,6 +38,13 @@ class CalendarEvent
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $location = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $category = null;
+
+    #[ORM\ManyToOne(targetEntity: Contact::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Contact $contact = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
@@ -141,6 +148,30 @@ class CalendarEvent
     public function setLocation(?string $location): static
     {
         $this->location = $location;
+
+        return $this;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?string $category): static
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    public function getContact(): ?Contact
+    {
+        return $this->contact;
+    }
+
+    public function setContact(?Contact $contact): static
+    {
+        $this->contact = $contact;
 
         return $this;
     }

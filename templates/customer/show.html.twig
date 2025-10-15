@@ -13,7 +13,7 @@
 			<div class="col-lg-8">
 				<div class="row">
 					{% include 'customer/_information_card.html.twig' with {'customer': customer} %}
-					{% include 'customer/_calendar_event_section.html.twig' with {'customer': customer} %}
+					{% include 'customer/_calendar_event_section.html.twig' with {'customer': customer, 'categoryColors': categoryColors} %}
 					{% include 'customer/_energy_section.html.twig' with {'customer': customer} %}
 					{% include 'customer/_contact_section.html.twig' with {'customer': customer} %}
 				</div>

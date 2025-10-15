@@ -252,7 +252,30 @@ class MicrosoftGraphService
     {
         $token = $user->getMicrosoftToken();
 
-        return $token && !$token->isExpired();
+        if (!$token) {
+            return false;
+        }
+
+        // Token is still valid
+        if (!$token->isExpired()) {
+            return true;
+        }
+
+        // Token is expired, try to refresh it if we have a refresh token
+        if ($token->getRefreshToken()) {
+            try {
+                $this->refreshToken($token);
+                return true;
+            } catch (\Exception $e) {
+                $this->logger->warning('Failed to refresh token in hasValidToken', [
+                    'user_id' => $user->getId(),
+                    'error' => $e->getMessage(),
+                ]);
+                return false;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -623,7 +646,7 @@ class MicrosoftGraphService
      *
      * @return array{id: string, subject: string, start: array{dateTime: string, timeZone: string}, end: array{dateTime: string, timeZone: string}, location: array{displayName: string}}
      */
-    public function createEventFromCalendarEvent(User $user, string $title, string $startDateTime, string $endDateTime, ?string $description = null, ?string $location = null): array
+    public function createEventFromCalendarEvent(User $user, string $title, string $startDateTime, string $endDateTime, ?string $description = null, ?string $location = null, ?string $category = null): array
     {
         $token = $user->getMicrosoftToken();
         if (!$token) {
@@ -662,6 +685,10 @@ class MicrosoftGraphService
                 $eventData['location'] = [
                     'displayName' => $location,
                 ];
+            }
+
+            if ($category) {
+                $eventData['categories'] = [$category];
             }
 
             $calendarId = $user->getDefaultCalendarId();
@@ -880,6 +907,74 @@ class MicrosoftGraphService
                 'error' => $e->getMessage(),
             ]);
             throw new \RuntimeException('Failed to delete calendar event: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Get user's Outlook master categories.
+     *
+     * @return array<int, array{displayName: string, color: string}>
+     */
+    public function getUserCategories(User $user): array
+    {
+        $token = $user->getMicrosoftToken();
+        if (!$token) {
+            throw new \RuntimeException('User has no Microsoft token');
+        }
+
+        if ($token->isExpired()) {
+            $token = $this->refreshToken($token);
+        }
+
+        try {
+            $response = $this->httpClient->request('GET', 'https://graph.microsoft.com/v1.0/me/outlook/masterCategories', [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$token->getAccessToken(),
+                    'Content-Type' => 'application/json',
+                ],
+            ]);
+
+            $statusCode = $response->getStatusCode();
+            if (401 === $statusCode) {
+                $this->logger->warning('Received 401 when fetching categories, attempting token refresh', ['user_id' => $user->getId()]);
+                $token = $this->refreshToken($token);
+
+                // Retry with refreshed token
+                $response = $this->httpClient->request('GET', 'https://graph.microsoft.com/v1.0/me/outlook/masterCategories', [
+                    'headers' => [
+                        'Authorization' => 'Bearer '.$token->getAccessToken(),
+                        'Content-Type' => 'application/json',
+                    ],
+                ]);
+            }
+
+            $content = $response->getContent();
+            $data = json_decode($content, true);
+
+            $categories = [];
+            if (isset($data['value']) && is_array($data['value'])) {
+                foreach ($data['value'] as $category) {
+                    $categories[] = [
+                        'displayName' => $category['displayName'] ?? '',
+                        'color' => $category['color'] ?? 'preset0',
+                    ];
+                }
+            }
+
+            $this->logger->info('Retrieved Outlook categories', [
+                'user_id' => $user->getId(),
+                'category_count' => count($categories),
+            ]);
+
+            return $categories;
+        } catch (\Exception $e) {
+            $this->logger->error('Error fetching Outlook categories', [
+                'user_id' => $user->getId(),
+                'error' => $e->getMessage(),
+            ]);
+
+            // Return default categories as fallback
+            return [];
         }
     }
 }

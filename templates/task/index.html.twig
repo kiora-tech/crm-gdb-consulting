@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Microsoft Tasks{% endblock %}
+
+{% block body %}
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title">My Microsoft To-Do Tasks</h5>
+                        <div>
+                            <span class="badge bg-success">{{ tasksByStatus.completed|length }} Completed</span>
+                            <span class="badge bg-warning">{{ tasksByStatus.inProgress|length }} In Progress</span>
+                            <span class="badge bg-secondary">{{ tasksByStatus.notStarted|length }} Not Started</span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Not Started Tasks -->
+                        <div class="col-md-4">
+                            <h6 class="text-muted mb-3">
+                                <i class="bi bi-circle me-2"></i>Not Started ({{ tasksByStatus.notStarted|length }})
+                            </h6>
+                            {% for task in tasksByStatus.notStarted %}
+                                <div class="card mb-2 border-secondary">
+                                    <div class="card-body p-3">
+                                        <h6 class="card-title text-truncate">{{ task.title }}</h6>
+                                        <p class="card-text small text-muted">
+                                            <i class="bi bi-list-ul me-1"></i>{{ task.listName }}
+                                        </p>
+                                        {% if task.dueDateTime %}
+                                            <p class="card-text small">
+                                                <i class="bi bi-calendar-event me-1"></i>
+                                                {{ task.dueDateTime|date('d/m/Y H:i') }}
+                                            </p>
+                                        {% endif %}
+                                        {% if task.importance == 'high' %}
+                                            <span class="badge bg-danger">High Priority</span>
+                                        {% endif %}
+                                        {% if task.body %}
+                                            <p class="card-text small mt-2">{{ task.body|striptags|slice(0, 100) }}...</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No tasks not started</p>
+                            {% endfor %}
+                        </div>
+
+                        <!-- In Progress Tasks -->
+                        <div class="col-md-4">
+                            <h6 class="text-muted mb-3">
+                                <i class="bi bi-arrow-clockwise me-2"></i>In Progress ({{ tasksByStatus.inProgress|length }})
+                            </h6>
+                            {% for task in tasksByStatus.inProgress %}
+                                <div class="card mb-2 border-warning">
+                                    <div class="card-body p-3">
+                                        <h6 class="card-title text-truncate">{{ task.title }}</h6>
+                                        <p class="card-text small text-muted">
+                                            <i class="bi bi-list-ul me-1"></i>{{ task.listName }}
+                                        </p>
+                                        {% if task.dueDateTime %}
+                                            <p class="card-text small">
+                                                <i class="bi bi-calendar-event me-1"></i>
+                                                {{ task.dueDateTime|date('d/m/Y H:i') }}
+                                            </p>
+                                        {% endif %}
+                                        {% if task.importance == 'high' %}
+                                            <span class="badge bg-danger">High Priority</span>
+                                        {% endif %}
+                                        {% if task.body %}
+                                            <p class="card-text small mt-2">{{ task.body|striptags|slice(0, 100) }}...</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No tasks in progress</p>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Completed Tasks -->
+                        <div class="col-md-4">
+                            <h6 class="text-muted mb-3">
+                                <i class="bi bi-check-circle me-2"></i>Completed ({{ tasksByStatus.completed|length }})
+                            </h6>
+                            {% for task in tasksByStatus.completed %}
+                                <div class="card mb-2 border-success">
+                                    <div class="card-body p-3">
+                                        <h6 class="card-title text-truncate text-decoration-line-through">{{ task.title }}</h6>
+                                        <p class="card-text small text-muted">
+                                            <i class="bi bi-list-ul me-1"></i>{{ task.listName }}
+                                        </p>
+                                        {% if task.completedDateTime %}
+                                            <p class="card-text small text-success">
+                                                <i class="bi bi-check-circle me-1"></i>
+                                                Completed: {{ task.completedDateTime|date('d/m/Y H:i') }}
+                                            </p>
+                                        {% endif %}
+                                        {% if task.body %}
+                                            <p class="card-text small mt-2 text-muted">{{ task.body|striptags|slice(0, 100) }}...</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No completed tasks</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

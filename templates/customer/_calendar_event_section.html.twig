@@ -1,63 +1,94 @@
 <div class="col-12">
-    <div class="card">
+    <div class="card pt-4">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="card-title mb-0">Événements calendrier</h5>
-                <a href="{{ path('app_calendar_event_create', {'customerId': customer.id}) }}"
-                   class="btn btn-primary btn-sm">
-                    <i class="bi bi-calendar-plus"></i> Créer un événement
-                </a>
+                <div class="d-flex align-items-center gap-3">
+                    <h5 class="card-title mb-0">Événements calendrier</h5>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="showPastEvents">
+                        <label class="form-check-label" for="showPastEvents">
+                            Afficher les événements passés
+                        </label>
+                    </div>
+                </div>
+                <twig:Button
+                    link="{{ path('app_calendar_event_create', {'customerId': customer.id}) }}"
+                    theme="primary"
+                    size="sm"
+                    icon="calendar-plus"
+                    label="Créer un événement"
+                />
             </div>
 
-            {% set upcomingEvents = customer.calendarEvents|filter(e => e.isFuture and not e.isCancelled)|sort((a, b) => a.startDateTime <=> b.startDateTime) %}
+            {% set allEvents = customer.calendarEvents|filter(e => not e.isCancelled)|sort((a, b) => b.startDateTime <=> a.startDateTime) %}
 
-            {% if upcomingEvents|length > 0 %}
+            {% if allEvents|length > 0 %}
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
-                            <tr>
-                                <th>Titre</th>
-                                <th>Date de début</th>
-                                <th>Date de fin</th>
-                                <th>Lieu</th>
-                                <th>Créé par</th>
-                                <th>Actions</th>
+                            <tr class="table-primary">
+                                <th scope="col" class="text-center">Titre</th>
+                                <th scope="col" class="text-center">Date</th>
+                                <th scope="col" class="text-center">Catégorie</th>
+                                <th scope="col" class="text-center">Contact</th>
+                                <th scope="col" class="text-center">Créé par</th>
+                                <th scope="col" class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for event in upcomingEvents %}
-                                <tr>
-                                    <td>
-                                        <i class="bi bi-calendar-event text-primary"></i>
-                                        {{ event.title }}
+                            {% for event in allEvents %}
+                                <tr class="{{ event.isFuture ? '' : 'table-secondary past-event d-none' }}" data-past="{{ event.isFuture ? 'false' : 'true' }}">
+                                    <td class="text-center">
+                                        {% if event.isFuture %}
+                                            <i class="bi bi-calendar-event text-primary"></i>
+                                        {% else %}
+                                            {% set iconColor = event.category ? (categoryColors[event.category] ?? '#6c757d') : '#6c757d' %}
+                                            <i class="bi bi-calendar-check" style="color: {{ iconColor }};"></i>
+                                        {% endif %}
+                                        <span title="{{ event.title }}">
+                                            {{ event.title|length > 15 ? event.title|slice(0, 15) ~ '...' : event.title }}
+                                        </span>
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         {{ event.startDateTime|date('d/m/Y H:i') }}
                                     </td>
-                                    <td>
-                                        {{ event.endDateTime|date('d/m/Y H:i') }}
+                                    <td class="text-center">
+                                        {% if event.category %}
+                                            {% set categoryColor = categoryColors[event.category] ?? '#6c757d' %}
+                                            <span class="badge" style="background-color: {{ categoryColor }}; color: white;">{{ event.category }}</span>
+                                        {% else %}
+                                            -
+                                        {% endif %}
                                     </td>
-                                    <td>
-                                        {{ event.location ?? '-' }}
+                                    <td class="text-center">
+                                        {% if event.contact %}
+                                            {{ event.contact.firstName }} {{ event.contact.lastName }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         {{ event.createdBy.email }}
                                     </td>
-                                    <td>
-                                        <a href="{{ path('app_calendar_event_edit', {'customerId': customer.id, 'id': event.id}) }}"
-                                           class="btn btn-primary btn-sm"
-                                           title="Modifier">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <form method="post"
-                                              action="{{ path('app_calendar_event_delete', {'customerId': customer.id, 'id': event.id}) }}"
-                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');"
-                                              style="display: inline;">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
-                                            <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
+                                    <td class="text-end">
+                                        <div class="d-flex gap-2 justify-content-end">
+                                            <twig:Button
+                                                link="{{ path('app_calendar_event_edit', {'customerId': customer.id, 'id': event.id}) }}"
+                                                theme="primary"
+                                                size="sm"
+                                                :outline="true"
+                                                icon="pencil-square"
+                                                :attributes="{'title': 'action.edit'|trans}"
+                                            />
+                                            <twig:DeleteButton
+                                                deleteRoute="app_calendar_event_delete"
+                                                :deleteRouteParams="{'customerId': customer.id, 'id': event.id}"
+                                                :entityId="event.id"
+                                                size="sm"
+                                                :outline="true"
+                                                confirmationMessage="Êtes-vous sûr de vouloir supprimer cet événement ?"
+                                            />
+                                        </div>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -65,11 +96,47 @@
                     </table>
                 </div>
             {% else %}
-                <div class="alert alert-info mb-0">
-                    <i class="bi bi-info-circle"></i>
-                    Aucun événement à venir pour ce client.
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr class="table-primary">
+                                <th scope="col" class="text-center">Titre</th>
+                                <th scope="col" class="text-center">Date</th>
+                                <th scope="col" class="text-center">Catégorie</th>
+                                <th scope="col" class="text-center">Contact</th>
+                                <th scope="col" class="text-center">Créé par</th>
+                                <th scope="col" class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="6" class="text-center">
+                                    Aucun événement pour ce client.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             {% endif %}
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('turbo:load', function() {
+        const showPastEventsCheckbox = document.getElementById('showPastEvents');
+
+        if (showPastEventsCheckbox) {
+            showPastEventsCheckbox.addEventListener('change', function() {
+                const pastEvents = document.querySelectorAll('.past-event');
+                pastEvents.forEach(function(row) {
+                    if (this.checked) {
+                        row.classList.remove('d-none');
+                    } else {
+                        row.classList.add('d-none');
+                    }
+                }.bind(this));
+            });
+        }
+    });
+</script>
