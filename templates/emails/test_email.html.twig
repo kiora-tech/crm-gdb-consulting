@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Email - CRM GDB Consulting</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .content p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 20px 0;
+            transition: transform 0.2s;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            border-top: 1px solid #e9ecef;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Test Email</h1>
+        </div>
+
+        <div class="content">
+            <p>Bonjour Stéphane,</p>
+
+            <p>Ceci est un <strong>email de test</strong> envoyé depuis le CRM GDB Consulting.</p>
+
+            <div class="highlight">
+                <p><strong>✅ Fonctionnalités testées :</strong></p>
+                <ul>
+                    <li>Configuration du mailer Symfony</li>
+                    <li>Intégration avec MailHog</li>
+                    <li>Templates HTML avec styles</li>
+                    <li>Boutons cliquables</li>
+                </ul>
+            </div>
+
+            <p>Cliquez sur le bouton ci-dessous pour accéder à la homepage du CRM :</p>
+
+            <div class="button-container">
+                <a href="{{ homeUrl }}" class="button">Accéder au CRM</a>
+            </div>
+
+            <p>Si vous voyez cet email, cela signifie que l'envoi d'emails fonctionne parfaitement !</p>
+
+            <p>Date d'envoi : <strong>{{ "now"|date("d/m/Y à H:i:s") }}</strong></p>
+        </div>
+
+        <div class="footer">
+            <p><strong>CRM GDB Consulting</strong></p>
+            <p>Cet email a été envoyé automatiquement depuis le système CRM.</p>
+            <p>&copy; {{ "now"|date("Y") }} GDB Consulting - Tous droits réservés</p>
+        </div>
+    </div>
+</body>
+</html>

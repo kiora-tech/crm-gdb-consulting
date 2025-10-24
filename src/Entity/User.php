@@ -70,6 +70,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailRe
     #[ORM\OneToMany(targetEntity: Customer::class, mappedBy: 'user')]
     private Collection $customers;
 
+    #[ORM\OneToOne(targetEntity: MicrosoftToken::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?MicrosoftToken $microsoftToken = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $defaultCalendarId = null;
+
+    #[ORM\Column(length: 50, nullable: false)]
+    private string $timezone = 'Europe/Paris';
+
     public function __construct()
     {
         $this->customers = new ArrayCollection();
@@ -284,6 +293,55 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailRe
     public function setSignature(?string $signature): static
     {
         $this->signature = $signature;
+
+        return $this;
+    }
+
+    public function getMicrosoftToken(): ?MicrosoftToken
+    {
+        return $this->microsoftToken;
+    }
+
+    public function setMicrosoftToken(?MicrosoftToken $microsoftToken): static
+    {
+        if (null === $microsoftToken && null !== $this->microsoftToken) {
+            $this->microsoftToken->setUser(null);
+        }
+
+        if (null !== $microsoftToken) {
+            $microsoftToken->setUser($this);
+        }
+
+        $this->microsoftToken = $microsoftToken;
+
+        return $this;
+    }
+
+    public function hasMicrosoftToken(): bool
+    {
+        return null !== $this->microsoftToken && !$this->microsoftToken->isExpired();
+    }
+
+    public function getDefaultCalendarId(): ?string
+    {
+        return $this->defaultCalendarId;
+    }
+
+    public function setDefaultCalendarId(?string $defaultCalendarId): static
+    {
+        $this->defaultCalendarId = $defaultCalendarId;
+
+        return $this;
+    }
+
+    public function getTimezone(): string
+    {
+        return $this->timezone;
+    }
+
+    public function setTimezone(string $timezone): static
+    {
+        $this->timezone = $timezone;
 
         return $this;
     }

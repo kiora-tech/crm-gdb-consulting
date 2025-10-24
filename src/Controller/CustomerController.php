@@ -8,11 +8,13 @@ use App\Entity\Customer;
 use App\Entity\Document;
 use App\Entity\ProspectStatus;
 use App\Entity\Template;
+use App\Entity\User;
 use App\Form\CustomerSearchType;
 use App\Form\CustomerType;
 use App\Form\DropzoneForm;
 use App\Repository\CustomerRepository;
 use App\Service\ImportService;
+use App\Service\MicrosoftGraphService;
 use App\Service\PaginationService;
 use App\Service\SearchFilterService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -194,7 +196,7 @@ class CustomerController extends AbstractController
     }
 
     #[Route('/{id}', name: '_show', methods: ['GET'])]
-    public function show(Customer $customer, EntityManagerInterface $entityManager): Response
+    public function show(Customer $customer, EntityManagerInterface $entityManager, MicrosoftGraphService $microsoftGraphService, LoggerInterface $logger): Response
     {
         // Vérifier si l'utilisateur a le droit de voir ce client
         $this->denyAccessUnlessGranted('view', $customer);
@@ -204,11 +206,66 @@ class CustomerController extends AbstractController
         $formDocument = $this->createForm(DropzoneForm::class, $document, ['customer' => $customer]);
         $templates = $entityManager->getRepository(Template::class)->findAll();
 
+        // Get category colors from Outlook
+        $categoryColors = [];
+        $user = $this->getUser();
+        if ($user instanceof User && $microsoftGraphService->hasValidToken($user)) {
+            try {
+                $outlookCategories = $microsoftGraphService->getUserCategories($user);
+                foreach ($outlookCategories as $category) {
+                    $categoryName = $category['displayName'];
+                    $categoryColors[$categoryName] = $this->mapOutlookColorToHex($category['color']);
+                }
+            } catch (\Exception $e) {
+                $logger->warning('Could not fetch Outlook categories for customer view', [
+                    'user_id' => $user->getId(),
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
         return $this->render('customer/show.html.twig', [
             'customer' => $customer,
             'formDocument' => $formDocument->createView(),
             'templates' => $templates,
+            'categoryColors' => $categoryColors,
         ]);
+    }
+
+    /**
+     * Map Outlook color preset to hex color.
+     */
+    private function mapOutlookColorToHex(string $preset): string
+    {
+        $colorMap = [
+            'preset0' => '#FF6B6B', // Red
+            'preset1' => '#FFA500', // Orange
+            'preset2' => '#FFD700', // Yellow
+            'preset3' => '#90EE90', // Light Green
+            'preset4' => '#40E0D0', // Turquoise
+            'preset5' => '#87CEEB', // Sky Blue
+            'preset6' => '#4169E1', // Royal Blue
+            'preset7' => '#9370DB', // Medium Purple
+            'preset8' => '#DA70D6', // Orchid
+            'preset9' => '#708090', // Slate Gray
+            'preset10' => '#A9A9A9', // Dark Gray
+            'preset11' => '#696969', // Dim Gray
+            'preset12' => '#8B4513', // Saddle Brown
+            'preset13' => '#D2691E', // Chocolate
+            'preset14' => '#CD5C5C', // Indian Red
+            'preset15' => '#F08080', // Light Coral
+            'preset16' => '#FA8072', // Salmon
+            'preset17' => '#E9967A', // Dark Salmon
+            'preset18' => '#FFA07A', // Light Salmon
+            'preset19' => '#FF7F50', // Coral
+            'preset20' => '#FF6347', // Tomato
+            'preset21' => '#FF4500', // Orange Red
+            'preset22' => '#FFD700', // Gold
+            'preset23' => '#FFFF00', // Yellow
+            'preset24' => '#9ACD32', // Yellow Green
+        ];
+
+        return $colorMap[$preset] ?? '#808080'; // Default gray
     }
 
     #[Route('/{id}/edit', name: '_edit', methods: ['GET', 'POST'])]

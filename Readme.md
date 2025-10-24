@@ -43,3 +43,7 @@ Ce logiciel est sous licence propriétaire. Voir le fichier [LICENSE](LICENSE.md
 ---
 
 Développé avec ❤️ pour Kiora et GDB Consulting.
+
+Validation de l'app
+
+https://login.microsoftonline.com/common/adminconsent?client_id=147f920e-e398-4ff3-97d4-b93d44771a6d

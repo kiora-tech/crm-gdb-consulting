@@ -24,17 +24,17 @@ final class Version20250811154448 extends AbstractMigration
         $count = $this->connection->fetchOne(
             "SELECT COUNT(*) FROM energy WHERE contract_end = '2023-12-31'"
         );
-        
+
         if ($count > 0) {
             $this->write(sprintf('Found %d contract_end dates set to 2023-12-31 (import error)', $count));
-            
+
             // Update all dates that are 31/12/2023 to NULL
             $this->addSql("
                 UPDATE energy 
                 SET contract_end = NULL 
                 WHERE contract_end = '2023-12-31'
             ");
-            
+
             $this->write(sprintf('✓ Fixed %d records by setting contract_end from 2023-12-31 to NULL', $count));
         } else {
             $this->write('No dates to fix - no records found with contract_end = 2023-12-31');

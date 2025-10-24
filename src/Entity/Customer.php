@@ -102,6 +102,13 @@ class Customer
     #[ORM\OneToMany(targetEntity: Document::class, mappedBy: 'customer', orphanRemoval: true)]
     private Collection $documents;
 
+    /**
+     * @var Collection<int, CalendarEvent>
+     */
+    #[ORM\OneToMany(targetEntity: CalendarEvent::class, mappedBy: 'customer', orphanRemoval: true)]
+    #[ORM\OrderBy(['startDateTime' => 'ASC'])]
+    private Collection $calendarEvents;
+
     #[ORM\ManyToOne(inversedBy: 'customers')]
     private ?User $user = null;
 
@@ -120,6 +127,7 @@ class Customer
         $this->contacts = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->documents = new ArrayCollection();
+        $this->calendarEvents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -606,5 +614,35 @@ class Customer
         if (!$hasPrimary) {
             $this->contacts->first()->setIsPrimary(true);
         }
+    }
+
+    /**
+     * @return Collection<int, CalendarEvent>
+     */
+    public function getCalendarEvents(): Collection
+    {
+        return $this->calendarEvents;
+    }
+
+    public function addCalendarEvent(CalendarEvent $calendarEvent): static
+    {
+        if (!$this->calendarEvents->contains($calendarEvent)) {
+            $this->calendarEvents->add($calendarEvent);
+            $calendarEvent->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCalendarEvent(CalendarEvent $calendarEvent): static
+    {
+        if ($this->calendarEvents->removeElement($calendarEvent)) {
+            // set the owning side to null (unless already changed)
+            if ($calendarEvent->getCustomer() === $this) {
+                $calendarEvent->setCustomer(null);
+            }
+        }
+
+        return $this;
     }
 }
