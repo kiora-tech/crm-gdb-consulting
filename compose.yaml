@@ -27,7 +27,7 @@ services:
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/mysql:/var/lib/mysql
 
   migrations:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.12.0
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.12.1
     networks:
       - crm-gdb-dev_default
     command: sh -c "php bin/console doctrine:migrations:migrate --no-interaction"
@@ -43,7 +43,7 @@ services:
       restart_policy:
         condition: none
   php:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.12.0
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.12.1
     networks:
       - crm-gdb-dev_default
     depends_on:
@@ -92,7 +92,7 @@ services:
     networks:
       - crm-gdb-dev_default
   nginx:
-    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.12.0
+    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.12.1
     networks:
       - crm-gdb-dev_default
     depends_on:
@@ -110,7 +110,7 @@ services:
         delay: 5s
         max_attempts: 3
   supervisor:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.12.0-supervisor
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.12.1-supervisor
     networks:
       - crm-gdb-dev_default
     volumes:

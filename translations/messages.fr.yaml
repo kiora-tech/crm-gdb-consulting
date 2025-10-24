@@ -409,3 +409,18 @@ energy_provider:
         success: 'Le fournisseur a été supprimé avec succès.'
     edit:
         title: 'Modifier le fournisseur d''énergie'
+update_profile:
+    overview: "Vue d'ensemble du profil"
+    edit_profile: "Modifier le profil"
+    change_password: "Changer le mot de passe"
+    2fa:
+        label: "Authentification à deux facteurs"
+    profile_details: "Détails du profil"
+    last_name: "Nom"
+    first_name: "Prénom"
+    email: "Email"
+    tooltip_name: "Votre nom de famille"
+    tooltip_first_name: "Votre prénom"
+    profile_picture:
+        label: "Photo de profil"
+    submit_changes: "Enregistrer les modifications"
