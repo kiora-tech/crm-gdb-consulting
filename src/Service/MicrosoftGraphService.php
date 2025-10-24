@@ -977,4 +977,98 @@ class MicrosoftGraphService
             return [];
         }
     }
+
+    /**
+     * Send an email via Microsoft Graph.
+     */
+    public function sendEmail(User $user, string $to, string $subject, string $htmlBody): void
+    {
+        $token = $user->getMicrosoftToken();
+        if (!$token) {
+            throw new \RuntimeException('User has no Microsoft token');
+        }
+
+        if ($token->isExpired()) {
+            $token = $this->refreshToken($token);
+        }
+
+        try {
+            $emailData = [
+                'message' => [
+                    'subject' => $subject,
+                    'body' => [
+                        'contentType' => 'HTML',
+                        'content' => $htmlBody,
+                    ],
+                    'toRecipients' => [
+                        [
+                            'emailAddress' => [
+                                'address' => $to,
+                            ],
+                        ],
+                    ],
+                ],
+                'saveToSentItems' => true,
+            ];
+
+            $response = $this->httpClient->request('POST', 'https://graph.microsoft.com/v1.0/me/sendMail', [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$token->getAccessToken(),
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => $emailData,
+            ]);
+
+            $statusCode = $response->getStatusCode();
+
+            $this->logger->info('Microsoft Graph sendMail response', [
+                'user_id' => $user->getId(),
+                'status_code' => $statusCode,
+                'to' => $to,
+                'subject' => $subject,
+            ]);
+
+            if (401 === $statusCode) {
+                $this->logger->warning('Received 401 when sending email, attempting token refresh', ['user_id' => $user->getId()]);
+                $token = $this->refreshToken($token);
+
+                // Retry with refreshed token
+                $response = $this->httpClient->request('POST', 'https://graph.microsoft.com/v1.0/me/sendMail', [
+                    'headers' => [
+                        'Authorization' => 'Bearer '.$token->getAccessToken(),
+                        'Content-Type' => 'application/json',
+                    ],
+                    'json' => $emailData,
+                ]);
+
+                $statusCode = $response->getStatusCode();
+                $this->logger->info('Microsoft Graph sendMail retry response', [
+                    'status_code' => $statusCode,
+                ]);
+            }
+
+            if ($statusCode >= 400) {
+                $errorContent = $response->getContent(false);
+                $this->logger->error('Microsoft Graph sendMail error', [
+                    'status_code' => $statusCode,
+                    'error_response' => $errorContent,
+                ]);
+                throw new \RuntimeException('Failed to send email: HTTP '.$statusCode.' - '.$errorContent);
+            }
+
+            $this->logger->info('Email sent via Microsoft Graph', [
+                'user_id' => $user->getId(),
+                'to' => $to,
+                'subject' => $subject,
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Error sending email via Microsoft Graph', [
+                'user_id' => $user->getId(),
+                'to' => $to,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw new \RuntimeException('Failed to send email: '.$e->getMessage());
+        }
+    }
 }

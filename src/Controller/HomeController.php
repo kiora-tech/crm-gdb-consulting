@@ -12,7 +12,11 @@ use App\Service\MicrosoftGraphService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class HomeController extends AbstractController
 {
@@ -117,35 +121,6 @@ class HomeController extends AbstractController
             ->getQuery()
             ->getSingleScalarResult();
 
-        // Récupérer les tâches Microsoft si l'utilisateur est connecté
-        $microsoftTasks = [];
-        $hasMicrosoftToken = false;
-        if ($user instanceof User) {
-            $hasMicrosoftToken = $this->microsoftGraphService->hasValidToken($user);
-            if ($hasMicrosoftToken) {
-                try {
-                    $allTasks = $this->microsoftGraphService->getUserTasks($user);
-                    // Prendre les 10 tâches les plus récentes (non terminées en priorité)
-                    $microsoftTasks = array_slice(
-                        array_filter($allTasks, fn ($task) => 'completed' !== $task['status']),
-                        0,
-                        10
-                    );
-                } catch (\Exception $e) {
-                    // En cas d'erreur, on continue sans les tâches mais on log l'erreur
-                    $microsoftTasks = [];
-                    $errorMessage = $e->getMessage();
-
-                    // Si c'est un problème de token, marquer que le token n'est plus valide
-                    if (str_contains($errorMessage, 'refresh Microsoft token')
-                        || str_contains($errorMessage, '401')
-                        || str_contains($errorMessage, 'No refresh token available')) {
-                        $hasMicrosoftToken = false;
-                    }
-                }
-            }
-        }
-
         // Récupérer les événements calendrier à venir
         $upcomingEvents = $calendarEventRepository->findUpcomingEvents(10);
 
@@ -160,9 +135,42 @@ class HomeController extends AbstractController
             'recentDocuments' => $recentDocuments,
             'totalWorth' => $totalWorth,
             'monthlyWonCustomers' => $monthlyWonCustomers,
-            'microsoftTasks' => $microsoftTasks,
-            'hasMicrosoftToken' => $hasMicrosoftToken,
             'upcomingEvents' => $upcomingEvents,
         ]);
+    }
+
+    #[Route('/test-email', name: 'test_email')]
+    #[IsGranted('ROLE_USER')]
+    public function testEmail(): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (!$this->microsoftGraphService->hasValidToken($user)) {
+            $this->addFlash('error', 'Vous devez connecter votre compte Microsoft pour envoyer des emails.');
+            return $this->redirectToRoute('homepage');
+        }
+
+        try {
+            $homeUrl = $this->generateUrl('homepage', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            $htmlContent = $this->renderView('emails/test_email.html.twig', [
+                'homeUrl' => $homeUrl,
+            ]);
+
+            // Envoyer l'email via Microsoft Graph
+            $this->microsoftGraphService->sendEmail(
+                $user,
+                'stephane@kiora.tech',
+                'Test Email - CRM GDB Consulting',
+                $htmlContent
+            );
+
+            $this->addFlash('success', 'Email de test envoyé à stephane@kiora.tech via Microsoft Graph');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Erreur lors de l\'envoi : ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute('homepage');
     }
 }

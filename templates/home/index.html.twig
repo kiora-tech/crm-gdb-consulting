@@ -5,6 +5,15 @@
 {% block body %}
     <div class="pagetitle">
         <h1>{{ 'dashboard.title'|trans }}</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item active">
+                    <a href="{{ path('test_email') }}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-envelope"></i> Tester l'envoi d'email
+                    </a>
+                </li>
+            </ol>
+        </nav>
     </div>
 
     <section class="section dashboard">
@@ -38,9 +47,6 @@
                 <div class="row">
                     {# Carte des statistiques - Déplacée en haut #}
                     {% include 'home/dashboard/_card_stats.html.twig' %}
-
-                    {# Microsoft Tasks #}
-                    {% include 'home/dashboard/_card_microsoft_tasks.html.twig' %}
 
                     {# Documents récents #}
                     {% include 'home/dashboard/_card_recent_documents.html.twig' %}

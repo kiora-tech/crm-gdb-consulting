@@ -1,0 +1,5 @@
+framework:
+    messenger:
+        routing:
+            # En dev, envoyer les emails de manière synchrone pour éviter les problèmes de réseau
+            Symfony\Component\Mailer\Messenger\SendEmailMessage: sync
