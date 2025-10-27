@@ -140,6 +140,14 @@
             const endDateTimeInput = document.getElementById('calendar_event_endDateTime');
             const customerId = {{ customer.id }};
 
+            // Initialize title with leadOrigin - customerName format
+            const leadOrigin = '{{ customer.leadOrigin|default("") }}';
+            const customerName = '{{ customer.name }}';
+            const initialTitle = leadOrigin ? leadOrigin + ' - ' + customerName : customerName;
+            if (titleInput && !titleInput.value) {
+                titleInput.value = initialTitle;
+            }
+
             if (contactSelect && titleInput && descriptionTextarea) {
                 contactSelect.addEventListener('change', function() {
                     const selectedOption = this.options[this.selectedIndex];
@@ -152,8 +160,8 @@
                         const customerName = selectedOption.dataset.customerName || '';
                         const contactId = selectedOption.dataset.contactId || '';
 
-                        // Build title: "Nom établissement - Nom du contact - Téléphone"
-                        let title = customerName;
+                        // Build title: "leadOrigin - Nom établissement - Nom du contact - Téléphone"
+                        let title = initialTitle;
                         if (firstName || lastName) {
                             title += ' - ' + firstName + ' ' + lastName;
                         }
@@ -163,11 +171,11 @@
                         titleInput.value = title.trim();
 
                         // Build description with contact URL
-                        const contactUrl = window.location.origin + '/contact/' + contactId + '/edit';
+                        const contactUrl = window.location.origin + '/contact/' + contactId;
                         descriptionTextarea.value = 'Fiche contact: ' + contactUrl;
                     } else {
-                        // Clear fields if no contact selected
-                        titleInput.value = '';
+                        // Reset to initial title if no contact selected
+                        titleInput.value = initialTitle;
                         descriptionTextarea.value = '';
                     }
                 });

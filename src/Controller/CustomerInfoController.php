@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ObjectRepository;
 use Knp\Component\Pager\PaginatorInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,6 +28,7 @@ abstract class CustomerInfoController extends AbstractController
     public function __construct(
         protected readonly EntityManagerInterface $entityManager,
         protected readonly PaginatorInterface $paginator,
+        protected readonly LoggerInterface $logger,
     ) {
     }
 
@@ -81,8 +83,26 @@ abstract class CustomerInfoController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Log pour tracer les changements de statut
+            if ($customer) {
+                $this->logger->info('[DEBUG] Customer status BEFORE persist', [
+                    'customer_id' => $customer->getId(),
+                    'status' => $customer->getStatus()->value ?? 'null',
+                    'entity_type' => $this->getEntityClass(),
+                ]);
+            }
+
             $this->entityManager->persist($entity);
             $this->entityManager->flush();
+
+            // Log après flush
+            if ($customer) {
+                $this->logger->info('[DEBUG] Customer status AFTER flush', [
+                    'customer_id' => $customer->getId(),
+                    'status' => $customer->getStatus()->value ?? 'null',
+                    'entity_type' => $this->getEntityClass(),
+                ]);
+            }
 
             if ($customer) {
                 return $this->redirectToRoute('app_customer_show', ['id' => $customer->getId()]);
@@ -168,8 +188,22 @@ abstract class CustomerInfoController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
+                // Log pour tracer les changements de statut
+                $this->logger->info('[DEBUG MODAL] Customer status BEFORE persist', [
+                    'customer_id' => $customer->getId(),
+                    'status' => $customer->getStatus()->value ?? 'null',
+                    'entity_type' => $this->getEntityClass(),
+                ]);
+
                 $this->entityManager->persist($entity);
                 $this->entityManager->flush();
+
+                // Log après flush
+                $this->logger->info('[DEBUG MODAL] Customer status AFTER flush', [
+                    'customer_id' => $customer->getId(),
+                    'status' => $customer->getStatus()->value ?? 'null',
+                    'entity_type' => $this->getEntityClass(),
+                ]);
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->json([
