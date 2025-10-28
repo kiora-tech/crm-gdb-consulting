@@ -265,12 +265,14 @@ class MicrosoftGraphService
         if ($token->getRefreshToken()) {
             try {
                 $this->refreshToken($token);
+
                 return true;
             } catch (\Exception $e) {
                 $this->logger->warning('Failed to refresh token in hasValidToken', [
                     'user_id' => $user->getId(),
                     'error' => $e->getMessage(),
                 ]);
+
                 return false;
             }
         }

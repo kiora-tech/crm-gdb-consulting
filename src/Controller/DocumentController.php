@@ -29,8 +29,9 @@ class DocumentController extends CustomerInfoController
         private readonly FilesystemOperator $documentsStorage,
         EntityManagerInterface $entityManager,
         PaginatorInterface $paginator,
+        LoggerInterface $logger,
     ) {
-        parent::__construct($entityManager, $paginator);
+        parent::__construct($entityManager, $paginator, $logger);
     }
 
     #[Route('/new/{customer?}', name: '_new', methods: ['GET', 'POST'], priority: 999)]

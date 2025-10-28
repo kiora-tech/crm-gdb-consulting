@@ -154,7 +154,7 @@ class CustomerController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $customer = new Customer();
-        /** @var \App\Entity\User|null $user */
+        /** @var User|null $user */
         $user = $this->getUser();
         $customer->setUser($user);
         $form = $this->createForm(CustomerType::class, $customer);
@@ -180,7 +180,7 @@ class CustomerController extends AbstractController
             $file = $request->files->get('file');
 
             if ($file instanceof UploadedFile && $file->isValid()) {
-                /** @var \App\Entity\User $user */
+                /** @var User $user */
                 $user = $this->getUser();
                 $importService->importFromUpload($file, $user->getId());
 

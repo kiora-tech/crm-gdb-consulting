@@ -63,6 +63,9 @@ class CalendarEvent
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $syncedAt = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $microsoftLastModifiedDateTime = null;
+
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $isCancelled = false;
 
@@ -301,6 +304,18 @@ class CalendarEvent
     {
         $this->syncedAt = new \DateTime();
         $this->updatedAt = new \DateTime();
+
+        return $this;
+    }
+
+    public function getMicrosoftLastModifiedDateTime(): ?\DateTimeInterface
+    {
+        return $this->microsoftLastModifiedDateTime;
+    }
+
+    public function setMicrosoftLastModifiedDateTime(?\DateTimeInterface $microsoftLastModifiedDateTime): static
+    {
+        $this->microsoftLastModifiedDateTime = $microsoftLastModifiedDateTime;
 
         return $this;
     }

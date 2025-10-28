@@ -105,8 +105,16 @@ class CalendarEventController extends AbstractController
 
                 // Create event in Microsoft Calendar with rollback capability
                 try {
-                    $microsoftEventId = $this->syncService->createEventInMicrosoft($calendarEvent, $user);
-                    $calendarEvent->setMicrosoftEventId($microsoftEventId);
+                    $microsoftEvent = $this->syncService->createEventInMicrosoft($calendarEvent, $user);
+                    $calendarEvent->setMicrosoftEventId($microsoftEvent['id']);
+
+                    // Store Microsoft last modified date
+                    if (isset($microsoftEvent['lastModifiedDateTime'])) {
+                        $calendarEvent->setMicrosoftLastModifiedDateTime(
+                            new \DateTime($microsoftEvent['lastModifiedDateTime'])
+                        );
+                    }
+
                     $calendarEvent->markAsSynced();
                     $this->entityManager->flush();
                     $this->entityManager->commit();
@@ -234,11 +242,18 @@ class CalendarEventController extends AbstractController
                     $eventData['categories'] = [$calendarEvent->getCategory()];
                 }
 
-                $this->microsoftGraphService->updateEvent(
+                $updatedEvent = $this->microsoftGraphService->updateEvent(
                     $user,
                     $calendarEvent->getMicrosoftEventId(),
                     $eventData
                 );
+
+                // Store Microsoft last modified date
+                if (isset($updatedEvent['lastModifiedDateTime'])) {
+                    $calendarEvent->setMicrosoftLastModifiedDateTime(
+                        new \DateTime($updatedEvent['lastModifiedDateTime'])
+                    );
+                }
 
                 $calendarEvent->markAsSynced();
                 $this->entityManager->flush();

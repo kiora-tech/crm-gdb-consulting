@@ -5,17 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Form;
 
 use App\Entity\CalendarEvent;
-use App\Entity\Contact;
 use App\Form\CalendarEventType;
-use App\Repository\ContactRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\QueryBuilder;
-use Doctrine\Persistence\ManagerRegistry;
-use PHPUnit\Framework\Attributes\Skip;
-use Symfony\Bridge\Doctrine\Form\DoctrineOrmExtension;
-use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\Test\TypeTestCase;
-use Symfony\Component\Validator\Validation;
 
 class CalendarEventTypeTest extends TypeTestCase
 {

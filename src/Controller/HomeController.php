@@ -12,7 +12,6 @@ use App\Service\MicrosoftGraphService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -148,6 +147,7 @@ class HomeController extends AbstractController
 
         if (!$this->microsoftGraphService->hasValidToken($user)) {
             $this->addFlash('error', 'Vous devez connecter votre compte Microsoft pour envoyer des emails.');
+
             return $this->redirectToRoute('homepage');
         }
 
@@ -168,7 +168,7 @@ class HomeController extends AbstractController
 
             $this->addFlash('success', 'Email de test envoyé à stephane@kiora.tech via Microsoft Graph');
         } catch (\Exception $e) {
-            $this->addFlash('error', 'Erreur lors de l\'envoi : ' . $e->getMessage());
+            $this->addFlash('error', 'Erreur lors de l\'envoi : '.$e->getMessage());
         }
 
         return $this->redirectToRoute('homepage');

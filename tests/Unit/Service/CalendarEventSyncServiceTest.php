@@ -113,7 +113,7 @@ class CalendarEventSyncServiceTest extends TestCase
         $this->assertNotNull($event->getSyncedAt());
     }
 
-    public function testSyncEventWithMicrosoftWithDeletedEventMarksCancelled(): void
+    public function testSyncEventWithMicrosoftWithDeletedEventDeletesFromDatabase(): void
     {
         $user = $this->createMock(User::class);
         $event = new CalendarEvent();
@@ -129,16 +129,17 @@ class CalendarEventSyncServiceTest extends TestCase
             ->willReturn(null);
 
         $this->entityManager->expects($this->once())
+            ->method('remove')
+            ->with($event);
+
+        $this->entityManager->expects($this->once())
             ->method('flush');
 
         $this->logger->expects($this->once())
             ->method('info')
-            ->with('Event deleted in Microsoft, marking as cancelled', $this->arrayHasKey('microsoft_event_id'));
+            ->with('Event deleted in Microsoft, deleting from local database', $this->arrayHasKey('microsoft_event_id'));
 
         $this->syncService->syncEventWithMicrosoft($event);
-
-        $this->assertTrue($event->isCancelled());
-        $this->assertNotNull($event->getSyncedAt());
     }
 
     public function testSyncEventWithMicrosoftWithCancelledEventUpdatesCancelledStatus(): void
@@ -316,7 +317,8 @@ class CalendarEventSyncServiceTest extends TestCase
                 '2025-10-20T10:00:00',
                 '2025-10-20T11:00:00',
                 'Event description',
-                'Office'
+                'Office',
+                null
             )
             ->willReturn($microsoftEvent);
 
@@ -324,9 +326,10 @@ class CalendarEventSyncServiceTest extends TestCase
             ->method('info')
             ->with('Event created in Microsoft Calendar', $this->arrayHasKey('microsoft_event_id'));
 
-        $microsoftEventId = $this->syncService->createEventInMicrosoft($event, $user);
+        $result = $this->syncService->createEventInMicrosoft($event, $user);
 
-        $this->assertSame('microsoft-new-event-123', $microsoftEventId);
+        $this->assertArrayHasKey('id', $result);
+        $this->assertSame('microsoft-new-event-123', $result['id']);
     }
 
     public function testCreateEventInMicrosoftWithNullTitleUsesSansTitre(): void
@@ -348,13 +351,15 @@ class CalendarEventSyncServiceTest extends TestCase
                 $this->anything(),
                 $this->anything(),
                 $this->anything(),
+                $this->anything(),
                 $this->anything()
             )
             ->willReturn($microsoftEvent);
 
-        $microsoftEventId = $this->syncService->createEventInMicrosoft($event, $user);
+        $result = $this->syncService->createEventInMicrosoft($event, $user);
 
-        $this->assertSame('microsoft-new-event-123', $microsoftEventId);
+        $this->assertArrayHasKey('id', $result);
+        $this->assertSame('microsoft-new-event-123', $result['id']);
     }
 
     public function testCreateEventInMicrosoftWithoutStartDateTimeThrowsException(): void

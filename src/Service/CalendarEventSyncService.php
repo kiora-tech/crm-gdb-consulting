@@ -44,16 +44,35 @@ class CalendarEventSyncService
             $microsoftEvent = $this->microsoftGraphService->getEventById($user, $microsoftEventId);
 
             if (null === $microsoftEvent) {
-                // Event was deleted in Microsoft
-                $this->logger->info('Event deleted in Microsoft, marking as cancelled', [
+                // Event was deleted in Microsoft - delete it from local database too
+                $this->logger->info('Event deleted in Microsoft, deleting from local database', [
                     'event_id' => $event->getId(),
                     'microsoft_event_id' => $microsoftEventId,
                 ]);
-                $event->setIsCancelled(true);
-                $event->markAsSynced();
+                $this->entityManager->remove($event);
                 $this->entityManager->flush();
 
                 return;
+            }
+
+            // Get Microsoft last modified date
+            $microsoftLastModified = null;
+            if (isset($microsoftEvent['lastModifiedDateTime'])) {
+                $microsoftLastModified = new \DateTime($microsoftEvent['lastModifiedDateTime']);
+            }
+
+            // Detect conflicts: both sides modified since last sync
+            $hasLocalChanges = $event->getSyncedAt() && $event->getUpdatedAt() > $event->getSyncedAt();
+            $hasMicrosoftChanges = $microsoftLastModified && $event->getMicrosoftLastModifiedDateTime()
+                && $microsoftLastModified > $event->getMicrosoftLastModifiedDateTime();
+
+            if ($hasLocalChanges && $hasMicrosoftChanges) {
+                // Conflict detected! For now, Microsoft wins (we could implement a better strategy)
+                $this->logger->warning('Sync conflict detected - Microsoft changes will override local changes', [
+                    'event_id' => $event->getId(),
+                    'local_updated_at' => $event->getUpdatedAt()?->format('Y-m-d H:i:s'),
+                    'microsoft_last_modified' => $microsoftLastModified->format('Y-m-d H:i:s'),
+                ]);
             }
 
             // Update local event with Microsoft data
@@ -82,6 +101,11 @@ class CalendarEventSyncService
             // Check if event is cancelled
             if (isset($microsoftEvent['isCancelled']) && true === $microsoftEvent['isCancelled']) {
                 $event->setIsCancelled(true);
+            }
+
+            // Store Microsoft last modified date
+            if ($microsoftLastModified) {
+                $event->setMicrosoftLastModifiedDateTime($microsoftLastModified);
             }
 
             $event->markAsSynced();
@@ -133,9 +157,11 @@ class CalendarEventSyncService
     }
 
     /**
-     * Create an event in Microsoft Calendar and return the Microsoft event ID.
+     * Create an event in Microsoft Calendar and return the Microsoft event data.
+     *
+     * @return array<string, mixed>
      */
-    public function createEventInMicrosoft(CalendarEvent $event, User $user): string
+    public function createEventInMicrosoft(CalendarEvent $event, User $user): array
     {
         if (!$event->getStartDateTime() || !$event->getEndDateTime()) {
             throw new \RuntimeException('Event must have start and end date times');
@@ -158,7 +184,7 @@ class CalendarEventSyncService
                 'title' => $event->getTitle(),
             ]);
 
-            return $microsoftEvent['id'];
+            return $microsoftEvent;
         } catch (\Exception $e) {
             $this->logger->error('Error creating event in Microsoft', [
                 'event_id' => $event->getId(),
