@@ -4,7 +4,8 @@
       class="d-inline"
       data-controller="delete-confirmation"
       data-action="submit->delete-confirmation#confirm"
-      data-delete-confirmation-message="{{ confirmationMessage|trans }}">
+      data-delete-confirmation-message="{{ confirmationMessage|trans }}"
+      data-turbo="false">
 
     <input type="hidden" name="_token" value="{{ csrf_token(this.deleteToken) }}">
 

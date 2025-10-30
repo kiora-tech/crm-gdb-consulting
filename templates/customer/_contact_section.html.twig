@@ -63,14 +63,14 @@
                                     }
                                 }) }}
 
-                                <form action="{{ path('app_contact_delete', {'id': contact.id, 'customer': contact.customer.id}) }}"
-                                      method="post"
-                                      class="d-inline">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ contact.id) }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
+                                {{ component('DeleteButton', {
+                                    deleteRoute: 'app_contact_delete',
+                                    deleteRouteParams: {'id': contact.id, 'customer': contact.customer.id},
+                                    entityId: contact.id,
+                                    showLabel: false,
+                                    size: 'sm',
+                                    outline: true
+                                }) }}
                             </td>
                         </tr>
                     {% else %}

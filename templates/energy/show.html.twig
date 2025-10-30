@@ -78,5 +78,10 @@
 
     <a href="{{ path('app_energy_edit', {'id': entity.id}) }}">edit</a>
 
-    {{ include('energy/_delete_form.html.twig') }}
+    {{ component('DeleteButton', {
+        deleteRoute: 'app_energy_delete',
+        deleteRouteParams: {'id': entity.id},
+        entityId: entity.id,
+        showLabel: true
+    }) }}
 {% endblock %}

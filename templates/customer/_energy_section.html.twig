@@ -46,14 +46,14 @@
                                         'title': 'action.edit'|trans
                                     }
                                 }) }}
-                                <form action="{{ path('app_energy_delete', {'id': energy.id, 'customer': energy.customer.id}) }}"
-                                      method="post"
-                                      class="d-inline">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ energy.id) }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
+                                {{ component('DeleteButton', {
+                                    deleteRoute: 'app_energy_delete',
+                                    deleteRouteParams: {'id': energy.id, 'customer': energy.customer.id},
+                                    entityId: energy.id,
+                                    showLabel: false,
+                                    size: 'sm',
+                                    outline: true
+                                }) }}
                             </td>
                         </tr>
                     {% else %}

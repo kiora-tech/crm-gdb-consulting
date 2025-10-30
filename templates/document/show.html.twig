@@ -26,5 +26,10 @@
 
     <a href="{{ path('app_document_edit', {'id': document.id}) }}">edit</a>
 
-    {{ include('document/_delete_form.html.twig') }}
+    {{ component('DeleteButton', {
+        deleteRoute: 'app_document_delete',
+        deleteRouteParams: {'id': document.id},
+        entityId: document.id,
+        showLabel: true
+    }) }}
 {% endblock %}
