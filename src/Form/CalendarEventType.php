@@ -34,12 +34,12 @@ class CalendarEventType extends AbstractType
                 },
                 'choice_attr' => function (Contact $contact): array {
                     $customer = $contact->getCustomer();
-                    $phone = $contact->getPhone() ?: $contact->getMobilePhone() ?: '';
 
                     return [
                         'data-first-name' => $contact->getFirstName(),
                         'data-last-name' => $contact->getLastName(),
-                        'data-phone' => $phone,
+                        'data-phone' => $contact->getPhone() ?: '',
+                        'data-mobile-phone' => $contact->getMobilePhone() ?: '',
                         'data-customer-name' => $customer ? $customer->getName() : '',
                         'data-contact-id' => (string) $contact->getId(),
                     ];

@@ -157,17 +157,24 @@
                         const firstName = selectedOption.dataset.firstName || '';
                         const lastName = selectedOption.dataset.lastName || '';
                         const phone = selectedOption.dataset.phone || '';
+                        const mobilePhone = selectedOption.dataset.mobilePhone || '';
                         const customerName = selectedOption.dataset.customerName || '';
                         const contactId = selectedOption.dataset.contactId || '';
 
-                        // Build title: "leadOrigin - Nom établissement - Nom du contact - Téléphone"
+                        // Build title: "leadOrigin - Nom établissement - Nom du contact - Téléphone(s)"
                         let title = initialTitle;
                         if (firstName || lastName) {
                             title += ' - ' + firstName + ' ' + lastName;
                         }
-                        if (phone) {
-                            title += ' - ' + phone;
+
+                        // Add phone numbers: if both exist, add both separated by " / "
+                        const phoneNumbers = [];
+                        if (phone) phoneNumbers.push(phone);
+                        if (mobilePhone) phoneNumbers.push(mobilePhone);
+                        if (phoneNumbers.length > 0) {
+                            title += ' - ' + phoneNumbers.join(' / ');
                         }
+
                         titleInput.value = title.trim();
 
                         // Build description with contact URL
