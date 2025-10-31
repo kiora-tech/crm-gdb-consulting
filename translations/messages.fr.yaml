@@ -18,6 +18,7 @@ reset:
     email: "Entrez votre adresse e-mail, et nous vous enverrons un lien pour réinitialiser votre mot de passe."
 menu:
     home: Accueil
+    outlook_calendar: "Mon Agenda Outlook"
     companies: Entreprises
     user: Utilisateur
     company: Entreprise

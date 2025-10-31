@@ -1,0 +1,137 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Agenda Outlook{% endblock %}
+
+{% block body %}
+<div class="pagetitle">
+    <h1>Mon Agenda Outlook</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('homepage') }}">Accueil</a></li>
+            <li class="breadcrumb-item active">Agenda Outlook</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Événements à venir (30 prochains jours)</h5>
+
+                    {% if events is empty %}
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            Aucun événement prévu dans les 30 prochains jours.
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Heure</th>
+                                        <th scope="col">Titre</th>
+                                        <th scope="col">Lieu</th>
+                                        <th scope="col">Catégorie</th>
+                                        <th scope="col">Organisateur</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for event in events %}
+                                        {% set startDateTime = event.start.dateTime %}
+                                        {% set endDateTime = event.end.dateTime %}
+                                        {% set today = 'now'|date('Y-m-d') %}
+                                        {% set eventDate = startDateTime|date('Y-m-d') %}
+                                        {% set isToday = eventDate == today %}
+                                        {% set isPast = eventDate < today %}
+
+                                        <tr class="{{ isToday ? 'table-primary' : (isPast ? 'text-muted' : '') }}"
+                                            style="cursor: pointer;"
+                                            onclick="window.open('https://outlook.office.com/calendar/item/{{ event.id|url_encode }}', '_blank')"
+                                            title="Cliquer pour ouvrir dans Outlook">
+                                            <td>
+                                                <strong>{{ startDateTime|date('d/m/Y') }}</strong>
+                                                {% if isToday %}
+                                                    <span class="badge bg-primary">Aujourd'hui</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {{ startDateTime|date('H:i') }} - {{ endDateTime|date('H:i') }}
+                                            </td>
+                                            <td>
+                                                <strong>{{ event.subject }}</strong>
+                                                <i class="bi bi-box-arrow-up-right text-muted ms-1" style="font-size: 0.8em;"></i>
+                                                {% if event.isOnlineMeeting %}
+                                                    <br><small class="text-info"><i class="bi bi-camera-video"></i> Réunion en ligne</small>
+                                                {% endif %}
+                                                {% if event.body.content %}
+                                                    {% set cleanContent = event.body.content|striptags|html_entity_decode|trim %}
+                                                    {% if cleanContent %}
+                                                        <br><small class="text-muted">{{ cleanContent|slice(0, 100) }}{{ cleanContent|length > 100 ? '...' : '' }}</small>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if event.location.displayName %}
+                                                    <i class="bi bi-geo-alt"></i> {{ event.location.displayName }}
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if event.categories is defined and event.categories is not empty %}
+                                                    {% for category in event.categories %}
+                                                        <span class="badge bg-secondary">{{ category }}</span>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if event.organizer.emailAddress %}
+                                                    <small>{{ event.organizer.emailAddress.name|default(event.organizer.emailAddress.address) }}</small>
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-3">
+                            <p class="text-muted small">
+                                <i class="bi bi-info-circle"></i>
+                                Total : {{ events|length }} événement(s)
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .table-hover tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 123, 255, 0.1) !important;
+            transform: scale(1.001);
+        }
+        .table-primary {
+            background-color: rgba(13, 110, 253, 0.1);
+        }
+        .table-hover tbody tr[style*="cursor: pointer"]:hover {
+            background-color: rgba(0, 123, 255, 0.15) !important;
+        }
+    </style>
+{% endblock %}
