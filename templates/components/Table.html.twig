@@ -1,10 +1,36 @@
 {# templates/components/Table.html.twig #}
-<div class="card pt-4">
+<div class="card pt-4" {% if options.selectable %}data-controller="table-selection"{% endif %}>
     <div class="card-body">
+        {% if options.selectable %}
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted">
+                        <span data-table-selection-target="counter">0</span> contact(s) sélectionné(s)
+                    </span>
+                </div>
+                <button type="button"
+                        class="btn btn-primary"
+                        data-action="click->table-selection#createEmailDraft"
+                        data-table-selection-target="emailButton"
+                        disabled>
+                    <i class="bi bi-envelope"></i> {{ options.selectableLabel }}
+                </button>
+            </div>
+        {% endif %}
+
         <div class="table-responsive">
             <table class="{{ options.tableClass }}">
                 <thead>
                 <tr class="{{ options.theadClass }}">
+                    {% if options.selectable %}
+                        <th scope="col" class="text-center" style="width: 50px;">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   data-action="change->table-selection#toggleAll"
+                                   data-table-selection-target="selectAll">
+                        </th>
+                    {% endif %}
+
                     {% for column in columns %}
                         <th scope="col" class="text-center">
                             {% if column.sortable|default(false) and options.sortable %}
@@ -32,6 +58,18 @@
                 {% if paginator|length > 0 %}
                     {% for entity in paginator %}
                         <tr>
+                            {% if options.selectable %}
+                                <td class="text-center">
+                                    {% set emailValue = attribute(entity, options.selectableField) %}
+                                    <input type="checkbox"
+                                           class="form-check-input"
+                                           data-table-selection-target="checkbox"
+                                           data-action="change->table-selection#updateSelection"
+                                           data-email="{{ emailValue }}"
+                                           value="{{ emailValue }}">
+                                </td>
+                            {% endif %}
+
                             {% for column in columns %}
                                 <td class="text-center">
                                     {% if block('column_' ~ column.field|replace({'.': '_'})) is defined %}
@@ -73,7 +111,7 @@
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td colspan="{{ columns|length + (options.showActions ? 1 : 0) }}" class="text-center">
+                        <td colspan="{{ columns|length + (options.showActions ? 1 : 0) + (options.selectable ? 1 : 0) }}" class="text-center">
                             {{ 'table.no_data'|trans }}
                         </td>
                     </tr>

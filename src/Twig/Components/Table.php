@@ -86,6 +86,9 @@ class Table
                 'delete' => [],
             ],
             'sortable' => true,
+            'selectable' => false,
+            'selectableField' => 'email', // Field to use for email (default: 'email')
+            'selectableLabel' => 'Créer un brouillon d\'email',
         ]);
 
         $resolver->setRequired(['routes']);
