@@ -9,6 +9,7 @@ use App\Entity\Customer;
 use App\Entity\User;
 use App\Form\CalendarEventType;
 use App\Service\CalendarEventSyncService;
+use App\Service\MicrosoftGraphCacheService;
 use App\Service\MicrosoftGraphService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -23,6 +24,7 @@ class CalendarEventController extends AbstractController
     public function __construct(
         private readonly CalendarEventSyncService $syncService,
         private readonly MicrosoftGraphService $microsoftGraphService,
+        private readonly MicrosoftGraphCacheService $cacheService,
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
     ) {
@@ -59,21 +61,18 @@ class CalendarEventController extends AbstractController
         $calendarEvent->setCustomer($customer);
         $calendarEvent->setCreatedBy($user);
 
-        // Get user's Outlook categories with colors
+        // Get user's Outlook categories with colors - FROM CACHE
         $userCategories = [];
         $categoryColors = [];
-        try {
-            $outlookCategories = $this->microsoftGraphService->getUserCategories($user);
-            foreach ($outlookCategories as $category) {
-                $categoryName = $category['displayName'];
-                $userCategories[$categoryName] = $categoryName;
-                $categoryColors[$categoryName] = $this->mapOutlookColorToHex($category['color']);
-            }
-        } catch (\Exception $e) {
-            $this->logger->warning('Could not fetch Outlook categories, using defaults', [
-                'user_id' => $user->getId(),
-                'error' => $e->getMessage(),
-            ]);
+
+        $outlookCategories = $this->cacheService->getUserCategories($user);
+        foreach ($outlookCategories as $category) {
+            $categoryName = $category['displayName'];
+            $userCategories[$categoryName] = $categoryName;
+            $categoryColors[$categoryName] = $this->mapOutlookColorToHex($category['color']);
+        }
+
+        if (empty($userCategories)) {
             // Fallback to default categories
             $userCategories = [
                 'Réunion' => 'Réunion',
@@ -85,7 +84,6 @@ class CalendarEventController extends AbstractController
                 'Suivi' => 'Suivi',
                 'Autre' => 'Autre',
             ];
-            $categoryColors = [];
         }
 
         $form = $this->createForm(CalendarEventType::class, $calendarEvent, [
@@ -118,6 +116,9 @@ class CalendarEventController extends AbstractController
                     $calendarEvent->markAsSynced();
                     $this->entityManager->flush();
                     $this->entityManager->commit();
+
+                    // INVALIDATE CACHE après création
+                    $this->cacheService->invalidateEventCache($user, $user->getDefaultCalendarId() ?? '');
 
                     $this->addFlash('success', sprintf(
                         'Événement "%s" créé avec succès dans votre calendrier Microsoft.',
@@ -175,21 +176,18 @@ class CalendarEventController extends AbstractController
             throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cet événement');
         }
 
-        // Get user's Outlook categories with colors
+        // Get user's Outlook categories with colors - FROM CACHE
         $userCategories = [];
         $categoryColors = [];
-        try {
-            $outlookCategories = $this->microsoftGraphService->getUserCategories($user);
-            foreach ($outlookCategories as $category) {
-                $categoryName = $category['displayName'];
-                $userCategories[$categoryName] = $categoryName;
-                $categoryColors[$categoryName] = $this->mapOutlookColorToHex($category['color']);
-            }
-        } catch (\Exception $e) {
-            $this->logger->warning('Could not fetch Outlook categories, using defaults', [
-                'user_id' => $user->getId(),
-                'error' => $e->getMessage(),
-            ]);
+
+        $outlookCategories = $this->cacheService->getUserCategories($user);
+        foreach ($outlookCategories as $category) {
+            $categoryName = $category['displayName'];
+            $userCategories[$categoryName] = $categoryName;
+            $categoryColors[$categoryName] = $this->mapOutlookColorToHex($category['color']);
+        }
+
+        if (empty($userCategories)) {
             // Fallback to default categories
             $userCategories = [
                 'Réunion' => 'Réunion',
@@ -201,7 +199,6 @@ class CalendarEventController extends AbstractController
                 'Suivi' => 'Suivi',
                 'Autre' => 'Autre',
             ];
-            $categoryColors = [];
         }
 
         $form = $this->createForm(CalendarEventType::class, $calendarEvent, [
@@ -258,6 +255,9 @@ class CalendarEventController extends AbstractController
                 $calendarEvent->markAsSynced();
                 $this->entityManager->flush();
 
+                // INVALIDATE CACHE après modification
+                $this->cacheService->invalidateEventCache($user, $user->getDefaultCalendarId() ?? '');
+
                 $this->addFlash('success', 'Événement mis à jour avec succès.');
 
                 return $this->redirectToRoute('app_customer_show', ['id' => $customerId]);
@@ -311,6 +311,9 @@ class CalendarEventController extends AbstractController
                 // Delete from local database
                 $this->entityManager->remove($calendarEvent);
                 $this->entityManager->flush();
+
+                // INVALIDATE CACHE après suppression
+                $this->cacheService->invalidateEventCache($user, $user->getDefaultCalendarId() ?? '');
 
                 $this->addFlash('success', 'Événement supprimé avec succès');
             } catch (\Exception $e) {
