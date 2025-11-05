@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: EnergyRepository::class)]
-#[UniqueEntity(['code', 'type'], message: 'Ce code est déjà utilisé pour ce type d\'énergie')]
+#[UniqueEntity(['code', 'type', 'contractEnd'], message: 'Ce code est déjà utilisé pour ce type d\'énergie avec cette date de fin de contrat')]
 class Energy
 {
     #[ORM\Id]
