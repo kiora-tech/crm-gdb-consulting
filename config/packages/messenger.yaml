@@ -21,3 +21,8 @@ framework:
             Symfony\Component\Notifier\Message\SmsMessage: async
             App\Message\StartImportMessage: async
             App\Message\ProcessExcelBatchMessage: async
+            # Microsoft Graph async refresh messages
+            App\Message\RefreshMicrosoftCalendarsMessage: async
+            App\Message\RefreshMicrosoftEventsMessage: async
+            App\Message\RefreshMicrosoftCategoriesMessage: async
+            App\Message\RefreshMicrosoftTasksMessage: async

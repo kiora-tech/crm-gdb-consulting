@@ -15,5 +15,8 @@ framework:
         #app: cache.adapter.apcu
 
         # Namespaced pools use the above "app" backend by default
-        #pools:
-            #my.dedicated.cache: null
+        pools:
+            cache.microsoft_graph:
+                adapter: cache.adapter.redis
+                provider: 'redis://redis:6379'
+                default_lifetime: 300  # 5 minutes par défaut
