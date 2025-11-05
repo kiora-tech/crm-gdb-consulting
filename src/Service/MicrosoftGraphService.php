@@ -1073,4 +1073,39 @@ class MicrosoftGraphService
             throw new \RuntimeException('Failed to send email: '.$e->getMessage());
         }
     }
+
+    /**
+     * Get Microsoft user profile information.
+     *
+     * @return array<string, mixed>
+     */
+    public function getUserProfile(User $user): array
+    {
+        $token = $user->getMicrosoftToken();
+        if (!$token) {
+            throw new \RuntimeException('User has no Microsoft token');
+        }
+
+        if ($token->isExpired()) {
+            $token = $this->refreshToken($token);
+        }
+
+        try {
+            $response = $this->httpClient->request('GET', 'https://graph.microsoft.com/v1.0/me', [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$token->getAccessToken(),
+                    'Content-Type' => 'application/json',
+                ],
+            ]);
+
+            return json_decode($response->getContent(), true);
+        } catch (\Exception $e) {
+            $this->logger->error('Error fetching Microsoft user profile', [
+                'user_id' => $user->getId(),
+                'error' => $e->getMessage(),
+            ]);
+
+            throw new \RuntimeException('Failed to fetch user profile: '.$e->getMessage());
+        }
+    }
 }

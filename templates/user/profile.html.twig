@@ -185,6 +185,9 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-md-12">
+                                            {% if app.user.microsoftToken.microsoftEmail %}
+                                                <p><strong>Email Microsoft:</strong> {{ app.user.microsoftToken.microsoftEmail }}</p>
+                                            {% endif %}
                                             <p><strong>Connecté le:</strong> {{ app.user.microsoftToken.createdAt|date('d/m/Y H:i') }}</p>
                                             <p><strong>Dernière mise à jour:</strong> {{ app.user.microsoftToken.updatedAt|date('d/m/Y H:i') }}</p>
                                         </div>

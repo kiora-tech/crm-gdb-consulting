@@ -29,6 +29,9 @@ class MicrosoftToken
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $scope = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $microsoftEmail = null;
+
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $createdAt = null;
 
@@ -105,6 +108,18 @@ class MicrosoftToken
     public function setScope(?string $scope): static
     {
         $this->scope = $scope;
+
+        return $this;
+    }
+
+    public function getMicrosoftEmail(): ?string
+    {
+        return $this->microsoftEmail;
+    }
+
+    public function setMicrosoftEmail(?string $microsoftEmail): static
+    {
+        $this->microsoftEmail = $microsoftEmail;
 
         return $this;
     }

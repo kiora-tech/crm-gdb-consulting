@@ -71,6 +71,19 @@ class MicrosoftAuthController extends AbstractController
                 $microsoftToken->setScope((string) $scope);
             }
 
+            // Récupérer l'email du compte Microsoft depuis l'API Graph
+            try {
+                $userInfo = $this->microsoftGraphService->getUserProfile($user);
+                if (isset($userInfo['userPrincipalName'])) {
+                    $microsoftToken->setMicrosoftEmail($userInfo['userPrincipalName']);
+                } elseif (isset($userInfo['mail'])) {
+                    $microsoftToken->setMicrosoftEmail($userInfo['mail']);
+                }
+            } catch (\Exception $e) {
+                // Si on ne peut pas récupérer l'email, ce n'est pas bloquant
+                $this->addFlash('warning', 'Connected but could not retrieve Microsoft email');
+            }
+
             $entityManager->flush();
 
             $this->addFlash('success', 'Microsoft account connected successfully!');
