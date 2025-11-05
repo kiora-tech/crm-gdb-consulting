@@ -7,7 +7,7 @@ RUN chmod uga+x /usr/local/bin/install-php-extensions && sync
 RUN apt update \
     && apt install -y zlib1g-dev g++ git libicu-dev zip libzip-dev zip
 
-RUN install-php-extensions intl opcache pdo_mysql zip apcu gd xml dom sysvsem xsl fileinfo
+RUN install-php-extensions intl opcache pdo_mysql zip apcu gd xml dom sysvsem xsl fileinfo redis
 
 COPY ./docker/php/conf.d/common-php.ini /usr/local/etc/php/conf.d/common-php.ini
 COPY ./docker/php/php-fpm.d/www.conf /usr/local/etc/php-fpm.d/www.conf

@@ -132,6 +132,16 @@ services:
         condition: any
         delay: 15s
         window: 300s
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
 networks:
   crm-gdb-dev_default:
