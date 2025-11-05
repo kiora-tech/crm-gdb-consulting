@@ -24,8 +24,8 @@ class SentryFingerprintProcessor
             $stacktrace = $event->getStacktrace();
             if (null !== $stacktrace && count($stacktrace->getFrames()) > 0) {
                 $frame = $stacktrace->getFrames()[0];
-                $fingerprint[] = $frame->getFile() ?? 'unknown';
-                $fingerprint[] = $frame->getLine() ?? 0;
+                $fingerprint[] = $frame->getFile();
+                $fingerprint[] = $frame->getLine();
             }
         } else {
             // For log messages: use message + logger + level
