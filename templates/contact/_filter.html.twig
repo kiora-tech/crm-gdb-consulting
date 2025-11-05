@@ -1,0 +1,117 @@
+{{ form_start(form, {'attr': {'class': 'row g-3'}}) }}
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <div class="form-floating">
+                {{ form_widget(form.firstName, {
+                    'attr': {
+                        'class': 'form-control',
+                        'placeholder': 'contact.name'
+                    }
+                }) }}
+                <label for="firstName">{{ 'First name:'|trans }}</label>
+                {{ form_errors(form.firstName) }}
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-floating">
+                {{ form_widget(form.lastName, {
+                    'attr': {
+                        'class': 'form-control',
+                        'placeholder': 'contact.last_name'
+                    }
+                }) }}
+                <label for="lastName">{{ 'Last name:'|trans }}</label>
+                {{ form_errors(form.lastName) }}
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-floating">
+                {{ form_widget(form.email, {
+                    'attr': {
+                        'class': 'form-control',
+                        'placeholder': 'contact.email'
+                    }
+                }) }}
+                <label for="email">{{ 'Email:'|trans }}</label>
+                {{ form_errors(form.email) }}
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-floating">
+                {{ form_widget(form.leadOrigin, {
+                    'attr': {
+                        'class': 'form-control',
+                        'placeholder': 'customer.lead_origin'
+                    }
+                }) }}
+                <label for="leadOrigin">{{ 'customer.lead_origin'|trans }}</label>
+                {{ form_errors(form.leadOrigin) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <div class="form-floating">
+                {{ form_widget(form.contractEndAfter, {
+                    'attr': {
+                        'class': 'form-control'
+                    }
+                }) }}
+                <label for="contractEndAfter">{{ 'Date de clôture après' }}</label>
+                {{ form_errors(form.contractEndAfter) }}
+            </div>
+            <small class="form-text text-muted">
+                Contrats du client expirant à partir de cette date
+            </small>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-floating">
+                {{ form_widget(form.contractEndBefore, {
+                    'attr': {
+                        'class': 'form-control'
+                    }
+                }) }}
+                <label for="contractEndBefore">{{ 'Date de clôture avant' }}</label>
+                {{ form_errors(form.contractEndBefore) }}
+            </div>
+            <small class="form-text text-muted">
+                Contacts dont le client n'a pas de contrat plus récent
+            </small>
+        </div>
+    </div>
+
+    <!-- Aide sur les filtres de contrat -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="alert alert-info" role="alert">
+                <h6 class="alert-heading"><i class="bi bi-info-circle"></i> Aide sur les filtres de date de clôture</h6>
+                <small>
+                    <strong>Date de clôture avant (ex: 31/12/2025) :</strong> Trouve les contacts dont le client a son dernier contrat expirant avant ou à cette date. Les contacts dont le client a un contrat plus récent sont exclus.<br>
+                    <strong>Date de clôture après (ex: 01/01/2025) :</strong> Trouve les contacts dont le client a au moins un contrat expirant après cette date.<br>
+                    <strong>Combinaison des deux :</strong> Trouve les contacts dont le client a un contrat dans la période spécifiée, sans contrat plus récent que la date limite.
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <twig:Button
+                theme="primary"
+                icon="bi bi-funnel"
+                type="submit"
+        >
+            {{ 'button.filter'|trans }}
+        </twig:Button>
+
+        <a href="{{ path('app_contact_index', {'reset': 1}) }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-counterclockwise"></i>
+            {{ 'button.reset'|trans }}
+        </a>
+    </div>
+
+{{ form_end(form) }}

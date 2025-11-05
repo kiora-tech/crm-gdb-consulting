@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ "contact.title"|trans }}
+{% endblock %}
+
+{% block body %}
+    <div class="pagetitle d-flex justify-content-between align-items-center">
+        <h1>{{ "contact.title"|trans }}</h1>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Filtres de recherche</h5>
+            {% include 'contact/_filter.html.twig' %}
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="card p-4">
+            <div class="card-body">
+                <twig:Table
+                        :paginator="contacts"
+                        :columns="[
+                            {field: 'firstName', label: 'First name:', sortable: true, sortAlias: 'c.firstName'},
+                            {field: 'lastName', label: 'Last name:', sortable: true, sortAlias: 'c.lastName'},
+                            {field: 'email', label: 'Email:', sortable: true, sortAlias: 'c.email'},
+                            {field: 'position', label: 'Position:', sortable: true, sortAlias: 'c.position'},
+                            {field: 'phone', label: 'Phone:', sortable: false},
+                            {field: 'mobilePhone', label: 'Mobile phone:', sortable: false},
+                            {field: 'customer.name', label: 'Customer:', sortable: true, sortAlias: 'cus.name', type: 'customer_link'}
+                        ]"
+                        :options="{
+                            routes: {
+                                show: 'app_contact_show',
+                                edit: 'app_contact_edit',
+                                delete: 'app_contact_delete'
+                            },
+                            tableClass: 'table',
+                            theadClass: 'table-light',
+                            showActions: true,
+                            actions: {
+                                show: true,
+                                edit: true,
+                                delete: true
+                            },
+                            selectable: true,
+                            selectableField: 'email',
+                            selectableLabel: 'Créer un brouillon d\'email (CCI)'
+                        }"
+                />
+            </div>
+        </div>
+    </section>
+{% endblock %}
