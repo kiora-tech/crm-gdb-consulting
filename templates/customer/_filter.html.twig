@@ -110,6 +110,9 @@
                     <label for="contractEndAfter">{{ 'Date de clôture après' }}</label>
                     {{ form_errors(form.contractEndAfter) }}
                 </div>
+                <small class="form-text text-muted">
+                    Contrats expirant à partir de cette date
+                </small>
             </div>
 
             <div class="col-md-3">
@@ -123,6 +126,9 @@
                     <label for="contractEndBefore">{{ 'Date de clôture avant' }}</label>
                     {{ form_errors(form.contractEndBefore) }}
                 </div>
+                <small class="form-text text-muted">
+                    Clients sans contrat plus récent que cette date
+                </small>
             </div>
 
             {% if is_granted('ROLE_ADMIN') %}
@@ -151,6 +157,20 @@
                 </div>
             </div>
             {% endif %}
+        </div>
+
+        <!-- Aide sur les filtres de contrat -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="alert alert-info" role="alert">
+                    <h6 class="alert-heading"><i class="bi bi-info-circle"></i> Aide sur les filtres de date de clôture</h6>
+                    <small>
+                        <strong>Date de clôture avant (ex: 31/12/2025) :</strong> Trouve les clients dont le dernier contrat expire avant ou à cette date. Les clients ayant un contrat plus récent sont exclus.<br>
+                        <strong>Date de clôture après (ex: 01/01/2025) :</strong> Trouve les clients avec au moins un contrat expirant après cette date.<br>
+                        <strong>Combinaison des deux :</strong> Trouve les clients avec un contrat dans la période spécifiée, sans contrat plus récent que la date limite.
+                    </small>
+                </div>
+            </div>
         </div>
 
         <div class="text-center">
