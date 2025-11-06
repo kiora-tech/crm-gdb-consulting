@@ -27,4 +27,5 @@ return [
     Sentry\SentryBundle\SentryBundle::class => ['prod' => true],
     League\FlysystemBundle\FlysystemBundle::class => ['all' => true],
     KnpU\OAuth2ClientBundle\KnpUOAuth2ClientBundle::class => ['all' => true],
+    Kiora\HealthCheckBundle\HealthCheckBundle::class => ['all' => true],
 ];

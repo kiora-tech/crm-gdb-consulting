@@ -17,4 +17,6 @@ grumphp:
             triggered_by: [ 'php' ]
             memory_limit: "-1"
             use_grumphp_paths: true
-        phpcsfixer: ~
+        phpcsfixer:
+            config: .php-cs-fixer.dist.php
+            path_mode: intersection
