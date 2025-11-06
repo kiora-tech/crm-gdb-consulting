@@ -19,4 +19,3 @@ grumphp:
             use_grumphp_paths: true
         phpcsfixer:
             config: .php-cs-fixer.dist.php
-            path_mode: intersection
