@@ -21,6 +21,7 @@ menu:
     outlook_calendar: "Mon Agenda Outlook"
     companies: Entreprises
     user: Utilisateur
+    import: Imports
     company: Entreprise
     customer: Client
     customers: Clients
@@ -40,6 +41,7 @@ menu:
 document:
     name: Nom
     type: Type
+    no_type: Sans type
     customer: Client
     title: Documents
     select_type: Quel type de document?

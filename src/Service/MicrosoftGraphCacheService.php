@@ -143,7 +143,7 @@ class MicrosoftGraphCacheService
         string $calendarId,
         \DateTimeInterface $startDate,
         \DateTimeInterface $endDate,
-        bool $forceRefresh = false
+        bool $forceRefresh = false,
     ): array {
         $cacheKey = $this->getCacheKey(
             $user->getId(),
@@ -278,7 +278,7 @@ class MicrosoftGraphCacheService
         User $user,
         string $calendarId,
         \DateTimeInterface $startDate,
-        \DateTimeInterface $endDate
+        \DateTimeInterface $endDate,
     ): array {
         $token = $user->getMicrosoftToken();
         if (!$token) {
@@ -314,8 +314,6 @@ class MicrosoftGraphCacheService
 
     /**
      * Store data in cache with timestamp.
-     *
-     * @param mixed $data
      */
     private function storeCachedData(string $cacheKey, $data, int $ttl): void
     {

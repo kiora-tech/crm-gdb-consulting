@@ -1,0 +1,214 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Nouvel import
+{% endblock %}
+
+{% block body %}
+    <div class="pagetitle">
+        <h1>Nouvel import</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_import_index') }}">Imports</a></li>
+                <li class="breadcrumb-item active">Nouveau</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body pt-4">
+                        <h5 class="card-title">Télécharger un fichier d'import</h5>
+
+                        <form action="{{ path('app_import_new') }}" method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="import_type" class="form-label">Type d'import <span class="text-danger">*</span></label>
+                                <select class="form-select" id="import_type" name="import_type" required>
+                                    <option value="">Sélectionnez un type...</option>
+                                    <option value="customer">Clients</option>
+                                    <option value="energy">Énergies</option>
+                                    <option value="contact">Contacts</option>
+                                    <option value="full">Import complet</option>
+                                </select>
+                                <div class="form-text">
+                                    Choisissez le type de données que vous souhaitez importer.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="import_file" class="form-label">Fichier <span class="text-danger">*</span></label>
+                                <input type="file"
+                                       class="form-control"
+                                       id="import_file"
+                                       name="import_file"
+                                       accept=".xls,.xlsx,.ods"
+                                       required>
+                                <div class="form-text">
+                                    Formats acceptés : .xls, .xlsx, .ods (max 10 MB)
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info" role="alert">
+                                <h6 class="alert-heading"><i class="bi bi-info-circle me-2"></i>Informations importantes</h6>
+                                <ul class="mb-0">
+                                    <li>Le fichier sera analysé avant l'import effectif</li>
+                                    <li>Vous pourrez visualiser les modifications qui seront apportées</li>
+                                    <li>Vous devrez confirmer l'import avant son traitement</li>
+                                    <li>Les erreurs éventuelles seront listées et pourront être corrigées</li>
+                                </ul>
+                            </div>
+
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a href="{{ path('app_import_index') }}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Annuler
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-upload"></i> Télécharger et analyser
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card mb-3">
+                    <div class="card-body pt-4">
+                        <h5 class="card-title">
+                            <i class="bi bi-download me-2"></i>Fichiers d'exemple
+                        </h5>
+                        <p class="text-muted small mb-3">
+                            Téléchargez un fichier d'exemple pour vous aider à préparer vos données :
+                        </p>
+                        <div class="d-grid gap-2">
+                            <a href="/examples/import_clients_exemple.xlsx"
+                               class="btn btn-outline-primary btn-sm"
+                               download>
+                                <i class="bi bi-file-earmark-excel me-2"></i>
+                                Import Clients
+                            </a>
+                            <a href="/examples/import_energies_exemple.xlsx"
+                               class="btn btn-outline-warning btn-sm"
+                               download>
+                                <i class="bi bi-file-earmark-excel me-2"></i>
+                                Import Énergies
+                            </a>
+                            <a href="/examples/import_contacts_exemple.xlsx"
+                               class="btn btn-outline-info btn-sm"
+                               download>
+                                <i class="bi bi-file-earmark-excel me-2"></i>
+                                Import Contacts
+                            </a>
+                            <a href="/examples/import_complet_exemple.xlsx"
+                               class="btn btn-outline-success btn-sm"
+                               download>
+                                <i class="bi bi-file-earmark-spreadsheet me-2"></i>
+                                Import Complet
+                            </a>
+                        </div>
+                        <div class="alert alert-light mt-3 mb-0" role="alert">
+                            <small class="text-muted">
+                                <i class="bi bi-lightbulb me-1"></i>
+                                Ces fichiers contiennent des exemples de données et des instructions détaillées.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body pt-4">
+                        <h5 class="card-title">Aide</h5>
+
+                        <div class="accordion" id="helpAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingCustomer">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCustomer">
+                                        Import Clients
+                                    </button>
+                                </h2>
+                                <div id="collapseCustomer" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                    <div class="accordion-body">
+                                        <small>
+                                            Permet d'importer ou mettre à jour des fiches clients.
+                                            <br><strong>Colonnes requises :</strong> Raison Sociale
+                                            <br><strong>Colonnes optionnelles :</strong> SIRET, Origine du lead
+                                            <br><br>
+                                            <a href="/examples/import_clients_exemple.xlsx" class="btn btn-sm btn-outline-primary" download>
+                                                <i class="bi bi-download"></i> Télécharger l'exemple
+                                            </a>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingEnergy">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEnergy">
+                                        Import Énergies
+                                    </button>
+                                </h2>
+                                <div id="collapseEnergy" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                    <div class="accordion-body">
+                                        <small>
+                                            Permet d'importer des contrats d'énergie liés aux clients.
+                                            <br><strong>Colonnes requises :</strong> SIRET Client OU Raison Sociale
+                                            <br><strong>Colonnes optionnelles :</strong> Fournisseur, PDL/PCE, Type Energie, Échéance
+                                            <br><br>
+                                            <a href="/examples/import_energies_exemple.xlsx" class="btn btn-sm btn-outline-warning" download>
+                                                <i class="bi bi-download"></i> Télécharger l'exemple
+                                            </a>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingContact">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContact">
+                                        Import Contacts
+                                    </button>
+                                </h2>
+                                <div id="collapseContact" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                    <div class="accordion-body">
+                                        <small>
+                                            Permet d'importer des contacts liés aux clients.
+                                            <br><strong>Colonnes requises :</strong> SIRET Client OU Raison Sociale, Prénom OU Nom
+                                            <br><strong>Colonnes optionnelles :</strong> Email, Téléphone
+                                            <br><br>
+                                            <a href="/examples/import_contacts_exemple.xlsx" class="btn btn-sm btn-outline-info" download>
+                                                <i class="bi bi-download"></i> Télécharger l'exemple
+                                            </a>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingFull">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFull">
+                                        Import Complet
+                                    </button>
+                                </h2>
+                                <div id="collapseFull" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                    <div class="accordion-body">
+                                        <small>
+                                            Permet d'importer simultanément clients, énergies, contacts et commentaires.
+                                            <br><strong>Colonnes requises :</strong> Raison Sociale
+                                            <br><strong>Colonnes optionnelles :</strong> SIRET, Contact, Email, Téléphone, Fournisseur, PDL/PCE, Type Energie, Échéance, Origine du lead, Commentaire
+                                            <br><br>
+                                            <a href="/examples/import_complet_exemple.xlsx" class="btn btn-sm btn-outline-success" download>
+                                                <i class="bi bi-download"></i> Télécharger l'exemple
+                                            </a>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

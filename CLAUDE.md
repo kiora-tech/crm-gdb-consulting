@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build & Run Commands
 - Tests: `docker-compose exec php bin/phpunit [path]` (e.g., `docker-compose exec php bin/phpunit tests/Controller/SecurityControllerTest.php`)
 - Single test: `docker-compose exec php bin/phpunit --filter=testName tests/Path/Class.php`
+- Reset test database: `make reset-test-db` (drops, recreates, and migrates symfony_test database)
 - Build: `make build` or `docker-compose up -d`
 - Build Docker image with tag: `make build_app TAG=0.11.1` (creates Docker image with version tag)
 - Update DB: `docker-compose exec php bin/console doctrine:migrations:migrate`
@@ -23,6 +24,17 @@ After making any code changes, ALWAYS run GrumPHP to verify that your changes pa
 docker-compose exec php vendor/bin/grumphp run
 ```
 This will run PHPStan static analysis and PHPUnit tests to ensure code quality and prevent regressions.
+
+## Testing Infrastructure
+- PHPUnit 11.5+ for unit and functional tests
+- Test database: `symfony_test` (separate from `symfony_docker` development database)
+- DAMA Doctrine Test Bundle: Automatically wraps each test in a transaction and rolls it back
+  - Provides test isolation without slow database resets between tests
+  - Compatible with both manual fixture creation and Liip Test Fixtures Bundle
+  - No need to manually clean up test data - rollback is automatic
+- Liip Test Fixtures Bundle: Available for tests that need fixtures (loadFixtures())
+- If tests show unexpected data pollution, run `make reset-test-db` to clean the test database
+- The test database configuration is in phpunit.xml.dist (DATABASE_URL with force="true")
 
 ## Project Architecture
 - Symfony 7.2 application with PHP 8.4

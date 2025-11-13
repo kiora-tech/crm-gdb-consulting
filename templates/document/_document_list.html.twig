@@ -1,7 +1,7 @@
 <table class="table">
 	<thead class="bg-gray-50">
 		<tr class="table-primary">
-			<th scope="col">{{ "document.name"|trans }}</th>
+			<th scope="col">{{ "menu.document_type"|trans }}</th>
 			<th scope="col">{{ "button.actions"|trans }}</th>
 		</tr>
 	</thead>
@@ -9,7 +9,11 @@
 		{% for document in documents %}
 			<tr>
 				<td>
-					<a href="{{ path('app_document_download', {'id': document.id}) }}" data-turbo="false">{{ document.name }}</a>
+					<a href="{{ path('app_document_download', {'id': document.id}) }}"
+					   data-turbo="false"
+					   title="{{ document.name }}">
+						{{ document.type ? document.type.label : ('document.no_type'|trans) }}
+					</a>
 				</td>
 				<td>
 					<div class="flexDoc">
