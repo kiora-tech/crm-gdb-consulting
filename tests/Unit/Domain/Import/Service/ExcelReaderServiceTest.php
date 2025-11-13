@@ -117,6 +117,12 @@ class ExcelReaderServiceTest extends TestCase
 
     public function testReadRowsInBatchesThrowsExceptionForNonReadableFile(): void
     {
+        // Skip on systems where chmod doesn't prevent root/process from reading
+        // (e.g., Docker containers running as root, CI environments)
+        if (posix_geteuid() === 0) {
+            $this->markTestSkipped('Cannot test file permissions when running as root');
+        }
+
         // Arrange - Create a file but make it unreadable
         $tempFile = tempnam(sys_get_temp_dir(), 'test_');
         file_put_contents($tempFile, 'content');
@@ -138,9 +144,9 @@ class ExcelReaderServiceTest extends TestCase
 
     public function testReadRowsInBatchesThrowsExceptionForInvalidExcelFile(): void
     {
-        // Arrange - Create a non-Excel file
+        // Arrange - Create a file with random binary data (truly invalid Excel file)
         $tempFile = tempnam(sys_get_temp_dir(), 'test_');
-        file_put_contents($tempFile, 'Not an Excel file');
+        file_put_contents($tempFile, random_bytes(1024));
 
         try {
             // Assert
@@ -206,9 +212,9 @@ class ExcelReaderServiceTest extends TestCase
 
     public function testGetTotalRowsThrowsExceptionForInvalidFile(): void
     {
-        // Arrange
+        // Arrange - Create a file with random binary data (truly invalid Excel file)
         $tempFile = tempnam(sys_get_temp_dir(), 'test_');
-        file_put_contents($tempFile, 'Invalid content');
+        file_put_contents($tempFile, random_bytes(1024));
 
         try {
             // Assert

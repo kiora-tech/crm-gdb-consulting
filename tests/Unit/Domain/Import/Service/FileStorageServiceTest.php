@@ -190,6 +190,12 @@ class FileStorageServiceTest extends TestCase
 
     public function testDeleteImportFileThrowsExceptionForNonWritableFile(): void
     {
+        // Skip on systems where chmod doesn't prevent root/process from writing
+        // (e.g., Docker containers running as root, CI environments)
+        if (posix_geteuid() === 0) {
+            $this->markTestSkipped('Cannot test file permissions when running as root');
+        }
+
         // Arrange
         $uploadedFile = $this->createRealExcelFile('test.xlsx');
         $fileInfo = $this->fileStorageService->storeUploadedFile($uploadedFile);

@@ -56,8 +56,7 @@ readonly class ImportFileValidator
     {
         $this->validateMimeType($file);
         $this->validateFileSize($file);
-        // Skip integrity check for now - will be validated during analysis
-        // $this->validateFileIntegrity($file);
+        $this->validateFileIntegrity($file);
     }
 
     /**

@@ -46,7 +46,7 @@ readonly class FileStorageService
 
         // Generate unique filename components
         $originalFilenamePath = pathinfo($originalFilename, PATHINFO_FILENAME);
-        $safeFilename = $this->slugger->slug($originalFilenamePath);
+        $safeFilename = $this->slugger->slug($originalFilenamePath)->lower();
         $extension = $file->guessExtension() ?? $file->getClientOriginalExtension() ?? 'bin';
         $storedFilename = sprintf('%s-%s.%s', $safeFilename, uniqid(), $extension);
 

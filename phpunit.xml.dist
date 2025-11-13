@@ -11,7 +11,8 @@
         <ini name="display_errors" value="1" />
         <ini name="error_reporting" value="-1" />
         <env name="APP_ENV" value="test" force="true"/>
-        <env name="DATABASE_URL" value="mysql://symfony:symfony@database:3306/symfony_test?serverVersion=8.0.40&amp;charset=utf8mb4" force="true"/>
+        <!-- DATABASE_URL default for local Docker environment - can be overridden by env var in CI -->
+        <env name="DATABASE_URL" value="mysql://symfony:symfony@database:3306/symfony_test?serverVersion=8.0.40&amp;charset=utf8mb4"/>
         <env name="KERNEL_CLASS" value="App\Kernel"/>
         <server name="SHELL_VERBOSITY" value="-1" />
         <server name="SYMFONY_PHPUNIT_REMOVE" value="" />

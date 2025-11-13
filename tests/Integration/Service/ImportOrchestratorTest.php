@@ -35,7 +35,7 @@ class ImportOrchestratorTest extends KernelTestCase
 
         // Create mocked dependencies
         $fileStorage = $this->createMock(FileStorageService::class);
-        $fileStorage->method('deleteImportFile')->willReturn(null);
+        // deleteImportFile() has void return type - no need to specify return value
 
         $analyzer = $this->createMock(ImportAnalyzer::class);
         $processor = $this->createMock(ImportProcessor::class);
@@ -53,9 +53,6 @@ class ImportOrchestratorTest extends KernelTestCase
         // Create test user
         $company = new Company();
         $company->setName('Test Company');
-        $company->setAddress('123 Test St');
-        $company->setPostalCode('12345');
-        $company->setCity('TestCity');
 
         $this->testUser = new User();
         $this->testUser->setEmail('test@example.com');
@@ -72,17 +69,8 @@ class ImportOrchestratorTest extends KernelTestCase
     {
         parent::tearDown();
 
-        // Clean up test data
-        $imports = $this->importRepository->findAll();
-        foreach ($imports as $import) {
-            $this->entityManager->remove($import);
-        }
-
-        if (null !== $this->testUser && null !== $this->testUser->getId()) {
-            $this->entityManager->remove($this->testUser);
-        }
-
-        $this->entityManager->flush();
+        // No manual cleanup needed - DAMA Doctrine Test Bundle automatically
+        // rolls back all database changes after each test
     }
 
     public function testInitializeImportCreatesImportEntity(): void

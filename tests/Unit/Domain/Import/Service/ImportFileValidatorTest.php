@@ -33,8 +33,38 @@ class ImportFileValidatorTest extends TestCase
      */
     public function testValidateAcceptsAllValidMimeTypes(string $mimeType, string $extension): void
     {
-        // Arrange
-        $file = $this->createTestFile('test_file.'.$extension, $mimeType, $extension);
+        // Arrange - Use mock for MIME type validation tests (faster and no fixture files needed)
+        // Create a valid Excel file structure in memory
+        $tempFile = tempnam(sys_get_temp_dir(), 'test_');
+
+        // Create a minimal valid Excel file using PhpSpreadsheet
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setCellValue('A1', 'Header 1');
+        $sheet->setCellValue('B1', 'Header 2');
+        $sheet->setCellValue('A2', 'Data 1');
+        $sheet->setCellValue('B2', 'Data 2');
+
+        // Determine writer type based on extension
+        $writerType = match($extension) {
+            'xlsx' => 'Xlsx',
+            'xls' => 'Xls',
+            'ods' => 'Ods',
+            default => 'Xlsx',
+        };
+
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, $writerType);
+        $writer->save($tempFile);
+        $spreadsheet->disconnectWorksheets();
+        unset($spreadsheet);
+
+        // Create mock with proper MIME type
+        $file = $this->createMock(UploadedFile::class);
+        $file->method('getMimeType')->willReturn($mimeType);
+        $file->method('getClientOriginalExtension')->willReturn($extension);
+        $file->method('getClientOriginalName')->willReturn('test_file.'.$extension);
+        $file->method('getSize')->willReturn(filesize($tempFile));
+        $file->method('getPathname')->willReturn($tempFile);
 
         // Act & Assert
         $this->validator->validate($file);
@@ -158,17 +188,18 @@ class ImportFileValidatorTest extends TestCase
 
     public function testValidateRejectsCorruptedExcelFile(): void
     {
-        // Arrange - Create a file with xlsx extension but invalid content
+        // Arrange - Create a file with xlsx extension but completely invalid binary content
         $tempFile = tempnam(sys_get_temp_dir(), 'corrupt_');
-        file_put_contents($tempFile, 'This is not a valid Excel file content');
+        // Write random binary data that will fail PhpSpreadsheet parsing
+        file_put_contents($tempFile, random_bytes(1024));
 
-        $file = new UploadedFile(
-            $tempFile,
-            'corrupt.xlsx',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            null,
-            true
-        );
+        // Use a mock to ensure MIME type and extension are correct
+        $file = $this->createMock(UploadedFile::class);
+        $file->method('getMimeType')->willReturn('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $file->method('getClientOriginalExtension')->willReturn('xlsx');
+        $file->method('getClientOriginalName')->willReturn('corrupt.xlsx');
+        $file->method('getSize')->willReturn(filesize($tempFile));
+        $file->method('getPathname')->willReturn($tempFile);
 
         // Assert
         $this->expectException(\InvalidArgumentException::class);
@@ -180,11 +211,27 @@ class ImportFileValidatorTest extends TestCase
 
     public function testValidateRejectsExcelFileWithOnlyHeaders(): void
     {
-        // Arrange - Use the empty test file (only headers, no data rows)
-        $file = $this->createTestFile(
-            'test_import_empty.xlsx',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        );
+        // Arrange - Create an Excel file with only headers (no data rows)
+        $tempFile = tempnam(sys_get_temp_dir(), 'empty_');
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setCellValue('A1', 'Header 1');
+        $sheet->setCellValue('B1', 'Header 2');
+        // No data rows - only headers
+
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save($tempFile);
+        $spreadsheet->disconnectWorksheets();
+        unset($spreadsheet);
+
+        // Use a mock to ensure MIME type is correct
+        $file = $this->createMock(UploadedFile::class);
+        $file->method('getMimeType')->willReturn('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $file->method('getClientOriginalExtension')->willReturn('xlsx');
+        $file->method('getClientOriginalName')->willReturn('empty.xlsx');
+        $file->method('getSize')->willReturn(filesize($tempFile));
+        $file->method('getPathname')->willReturn($tempFile);
 
         // Assert
         $this->expectException(\InvalidArgumentException::class);
@@ -260,6 +307,9 @@ class ImportFileValidatorTest extends TestCase
 
     /**
      * Create a mock UploadedFile for testing.
+     *
+     * Creates a PHPUnit mock that returns the specified MIME type and extension,
+     * avoiding issues with real MIME type detection in different environments (local vs CI).
      */
     private function createMockUploadedFile(
         string $originalName,
@@ -267,7 +317,11 @@ class ImportFileValidatorTest extends TestCase
         int $size,
         ?string $extension = null,
     ): UploadedFile {
-        // Create a temporary file
+        if (null === $extension) {
+            $extension = pathinfo($originalName, PATHINFO_EXTENSION);
+        }
+
+        // Create a real temporary file for methods that need a real path
         $tempFile = tempnam(sys_get_temp_dir(), 'test_');
 
         // Write dummy content of specified size
@@ -286,16 +340,15 @@ class ImportFileValidatorTest extends TestCase
             }
         }
 
-        if (null === $extension) {
-            $extension = pathinfo($originalName, PATHINFO_EXTENSION);
-        }
+        // Create a mock to control MIME type and extension return values
+        // This ensures consistent behavior across different environments (local vs CI)
+        $mock = $this->createMock(UploadedFile::class);
+        $mock->method('getMimeType')->willReturn($mimeType);
+        $mock->method('getClientOriginalExtension')->willReturn($extension);
+        $mock->method('getClientOriginalName')->willReturn($originalName);
+        $mock->method('getSize')->willReturn($size);
+        $mock->method('getPathname')->willReturn($tempFile);
 
-        return new UploadedFile(
-            $tempFile,
-            $originalName,
-            $mimeType,
-            null,
-            true
-        );
+        return $mock;
     }
 }
