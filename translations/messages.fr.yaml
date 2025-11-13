@@ -21,6 +21,7 @@ menu:
     outlook_calendar: "Mon Agenda Outlook"
     companies: Entreprises
     user: Utilisateur
+    import: Imports
     company: Entreprise
     customer: Client
     customers: Clients

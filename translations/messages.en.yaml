@@ -17,6 +17,7 @@ menu:
     home: Home
     companies: Companies
     user: User
+    import: Imports
     company: Company
     impersonate_exit: 'Exit impersonation'
     logout: Logout

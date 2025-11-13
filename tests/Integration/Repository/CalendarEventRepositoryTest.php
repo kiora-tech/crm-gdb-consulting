@@ -25,44 +25,6 @@ class CalendarEventRepositoryTest extends KernelTestCase
         $repository = $this->entityManager->getRepository(CalendarEvent::class);
         assert($repository instanceof CalendarEventRepository);
         $this->repository = $repository;
-
-        // Clean database before each test
-        $this->cleanDatabase();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->cleanDatabase();
-        parent::tearDown();
-    }
-
-    private function cleanDatabase(): void
-    {
-        // Remove all calendar events first (due to foreign key constraints)
-        foreach ($this->repository->findAll() as $event) {
-            $this->entityManager->remove($event);
-        }
-
-        // Remove customers
-        $customerRepo = $this->entityManager->getRepository(Customer::class);
-        foreach ($customerRepo->findAll() as $customer) {
-            $this->entityManager->remove($customer);
-        }
-
-        // Remove users
-        $userRepo = $this->entityManager->getRepository(User::class);
-        foreach ($userRepo->findAll() as $user) {
-            $this->entityManager->remove($user);
-        }
-
-        // Remove companies
-        $companyRepo = $this->entityManager->getRepository(Company::class);
-        foreach ($companyRepo->findAll() as $company) {
-            $this->entityManager->remove($company);
-        }
-
-        $this->entityManager->flush();
-        $this->entityManager->clear();
     }
 
     private function createTestCompany(): Company

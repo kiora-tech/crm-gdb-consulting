@@ -29,6 +29,20 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
  *
  * This analyzer processes Excel files containing customer data and determines
  * which customers would be created, updated, or skipped during import execution.
+ *
+ * Operation Type Determination:
+ * - CREATE: Entity does not exist in database
+ * - UPDATE: Entity exists AND has actual field changes detected
+ * - SKIP: Entity exists BUT no changes detected (identical data)
+ *
+ * Change Detection Strategy:
+ * - Uses case-insensitive string comparison (strcasecmp) for text fields
+ * - Normalizes phone numbers (removes spaces, dashes) before comparison
+ * - Only fields with actual value differences trigger UPDATE operation
+ * - Example: "Engie" vs "ENGIE" = no change (SKIP)
+ * - Example: "06 01 02 03 04" vs "0601020304" = no change (SKIP)
+ *
+ * This prevents false positive updates when re-importing identical data.
  */
 #[AutoconfigureTag('app.import_analyzer')]
 class CustomerImportAnalyzer implements ImportAnalyzerInterface
@@ -58,11 +72,6 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
      * Format: ['EntityClass' => [['entity_id' => 1, 'entity_label' => 'Name', 'fields' => ['field' => ['old' => 'X', 'new' => 'Y']]]]]
      */
     private array $updateDetails = [];
-
-    /**
-     * @var ?Energy Temporarily store the last found energy for change tracking
-     */
-    private ?Energy $lastFoundEnergy = null;
 
     private int $errorCount = 0;
 
@@ -246,9 +255,6 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
      */
     private function analyzeRow(Import $import, array $row, int $rowNumber): void
     {
-        // Reset last found energy for this row
-        $this->lastFoundEnergy = null;
-
         try {
             // Normalize and validate row data
             $rowData = $this->normalizeRowData($row);
@@ -269,6 +275,10 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
                 return;
             }
 
+            // Pre-calculate data presence checks to avoid repeated function calls
+            $hasContact = $this->hasContactData($rowData);
+            $hasEnergy = ImportType::FULL === $import->getType() && $this->hasEnergyData($rowData);
+
             // Determine customer operation and get existing customer if any
             $existingCustomer = $this->findExistingCustomer($rowData);
             $hasCustomerChanges = false;
@@ -278,7 +288,8 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
                 try {
                     $hasCustomerChanges = $this->captureCustomerChanges($existingCustomer, $rowData);
                 } catch (\Throwable $e) {
-                    // Log but don't fail the analysis if detail capture fails
+                    // If change capture fails, we conservatively treat it as no changes (SKIP)
+                    // to avoid unintended updates. The error is logged for investigation.
                     $this->logger->warning('Failed to capture customer changes', [
                         'error' => $e->getMessage(),
                         'customer_id' => $existingCustomer->getId(),
@@ -300,7 +311,7 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
             };
 
             // Analyze Contact if contact data is present
-            if ($this->hasContactData($rowData)) {
+            if ($hasContact) {
                 $existingContact = null;
                 $hasContactChanges = false;
 
@@ -335,27 +346,27 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
             }
 
             // Analyze Energy if energy data is present and it's a FULL import
-            if (ImportType::FULL === $import->getType() && $this->hasEnergyData($rowData)) {
-                // Determine energy operation
-                $this->determineEnergyOperationType($rowData, $existingCustomer); // Sets $this->lastFoundEnergy
+            if ($hasEnergy) {
+                // Find existing energy
+                $existingEnergy = $this->findExistingEnergy($rowData, $existingCustomer);
                 $hasEnergyChanges = false;
 
                 // Determine operation type based on existence and changes
-                if (!$this->lastFoundEnergy) {
+                if (!$existingEnergy) {
                     $energyOperationType = ImportOperationType::CREATE;
                 } else {
                     // Check if there are actual changes
-                    $this->logger->info('Attempting to capture energy changes', [
-                        'energy_id' => $this->lastFoundEnergy->getId(),
-                        'energy_code' => $this->lastFoundEnergy->getCode(),
+                    $this->logger->debug('Attempting to capture energy changes', [
+                        'energy_id' => $existingEnergy->getId(),
+                        'energy_code' => $existingEnergy->getCode(),
                         'row_number' => $rowNumber,
                     ]);
                     try {
-                        $hasEnergyChanges = $this->captureEnergyChanges($this->lastFoundEnergy, $rowData);
+                        $hasEnergyChanges = $this->captureEnergyChanges($existingEnergy, $rowData);
                     } catch (\Throwable $e) {
                         $this->logger->warning('Failed to capture energy changes', [
                             'error' => $e->getMessage(),
-                            'energy_id' => $this->lastFoundEnergy->getId(),
+                            'energy_id' => $existingEnergy->getId(),
                         ]);
                     }
                     $energyOperationType = $hasEnergyChanges ? ImportOperationType::UPDATE : ImportOperationType::SKIP;
@@ -677,73 +688,6 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
      * @param array<string, mixed> $rowData         Normalized row data
      * @param Customer|null        $existingCustomer Existing customer if found
      */
-    private function determineEnergyOperationType(array $rowData, ?Customer $existingCustomer): ImportOperationType
-    {
-        // If customer doesn't exist yet, energy will be created
-        if (!$existingCustomer) {
-            return ImportOperationType::CREATE;
-        }
-
-        // Extract energy information
-        $pceValue = $rowData['pce_pdl'] ?? null;
-        $pceCode = null;
-
-        if (is_numeric($pceValue) && $pceValue > 0) {
-            $pceCode = (int) $pceValue;
-        }
-
-        // Determine energy type (default to ELECTRICITY)
-        $energyType = EnergyType::ELEC;
-        if (!empty($rowData['energy_type']) && is_string($rowData['energy_type'])) {
-            $energyType = $this->parseEnergyType($rowData['energy_type']);
-        }
-
-        // Use the same matching logic as ProcessExcelBatchMessageHandler::processEnergy
-        $existingEnergy = null;
-
-        // 1. If we have a code PDL/PCE, search by code + type (unique)
-        if ($pceCode) {
-            $existingEnergy = $this->energyRepository->findOneBy([
-                'code' => (string) $pceCode,
-                'type' => $energyType,
-            ]);
-        }
-
-        // 2. If not found and we have a provider, search by customer + provider + type
-        if (!$existingEnergy && !empty($rowData['provider'])) {
-            // We can't easily check by provider name without loading the provider entity
-            // For now, check if customer has any energy of this type
-            // This matches the logic in ProcessExcelBatchMessageHandler
-            $energiesOfType = $this->energyRepository->findBy([
-                'customer' => $existingCustomer,
-                'type' => $energyType,
-            ]);
-
-            // If exactly one energy of this type exists, it will be updated
-            if (1 === count($energiesOfType)) {
-                $existingEnergy = $energiesOfType[0];
-            }
-        }
-
-        // 3. If still not found, check if customer has only one energy of this type
-        if (!$existingEnergy) {
-            $energiesOfType = $this->energyRepository->findBy([
-                'customer' => $existingCustomer,
-                'type' => $energyType,
-            ]);
-
-            // If exactly one energy of this type exists, it will be updated
-            if (1 === count($energiesOfType)) {
-                $existingEnergy = $energiesOfType[0];
-            }
-        }
-
-        // Store the found energy for later change tracking
-        $this->lastFoundEnergy = $existingEnergy;
-
-        return $existingEnergy ? ImportOperationType::UPDATE : ImportOperationType::CREATE;
-    }
-
     /**
      * Parse energy type from string.
      */
@@ -861,10 +805,13 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
     /**
      * Capture field-level changes for a customer update.
      *
+     * Compares import data with existing entity to detect actual changes.
+     * Uses case-insensitive comparison for strings to avoid false positives.
+     *
      * @param Customer             $existingCustomer The existing customer entity
      * @param array<string, mixed> $rowData          Normalized row data from import
      *
-     * @return bool True if changes were detected, false otherwise
+     * @return bool True if any field changes were detected, false if entity is identical to import data
      */
     private function captureCustomerChanges(Customer $existingCustomer, array $rowData): bool
     {
@@ -958,7 +905,13 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
     /**
      * Capture field-level changes for a contact update.
      *
-     * @return bool True if changes were detected, false otherwise
+     * Compares import data with existing entity to detect actual changes.
+     * Uses case-insensitive comparison for strings and normalized phone numbers.
+     *
+     * @param Contact              $existingContact The existing contact entity
+     * @param array<string, mixed> $rowData         Normalized row data from import
+     *
+     * @return bool True if any field changes were detected, false if entity is identical to import data
      */
     private function captureContactChanges(Contact $existingContact, array $rowData): bool
     {
@@ -980,10 +933,17 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
         if ($newEmail && 0 !== strcasecmp($newEmail, $existingContact->getEmail() ?? '')) {
             $changes['email'] = ['old' => $existingContact->getEmail(), 'new' => $newEmail];
         }
-        // Phone comparison - check against both phone and mobile phone fields
-        $existingPhone = $existingContact->getPhone() ?? $existingContact->getMobilePhone() ?? '';
-        if ($newPhone && 0 !== strcasecmp($newPhone, $existingPhone)) {
-            $changes['phone'] = ['old' => $existingContact->getPhone() ?? $existingContact->getMobilePhone(), 'new' => $newPhone];
+        // Phone comparison - normalize phone numbers to handle format differences (spaces, dashes, etc.)
+        $existingPhone = $existingContact->getPhone() ?? $existingContact->getMobilePhone();
+        if ($newPhone && $existingPhone) {
+            $normalizedNew = $this->normalizePhone($newPhone);
+            $normalizedExisting = $this->normalizePhone($existingPhone);
+            if ($normalizedNew !== $normalizedExisting) {
+                $changes['phone'] = ['old' => $existingPhone, 'new' => $newPhone];
+            }
+        } elseif ($newPhone && !$existingPhone) {
+            // New phone, no existing phone
+            $changes['phone'] = ['old' => null, 'new' => $newPhone];
         }
 
         if (!empty($changes)) {
@@ -1007,8 +967,21 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
      *
      * @param array<string, mixed> $rowData Normalized row data
      */
-    private function findExistingEnergy(array $rowData, Customer $customer): ?Energy
+    /**
+     * Find existing energy entity based on import row data.
+     *
+     * @param array<string, mixed> $rowData  Normalized row data
+     * @param Customer|null        $customer The customer to search energies for
+     *
+     * @return Energy|null The found energy or null if not found
+     */
+    private function findExistingEnergy(array $rowData, ?Customer $customer): ?Energy
     {
+        // If customer doesn't exist yet, no existing energy
+        if (!$customer) {
+            return null;
+        }
+
         $pceValue = $rowData['pce_pdl'] ?? null;
         $pceCode = null;
 
@@ -1044,7 +1017,13 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
     /**
      * Capture field-level changes for an energy update.
      *
-     * @return bool True if changes were detected, false otherwise
+     * Compares import data with existing entity to detect actual changes.
+     * Uses case-insensitive comparison for provider names.
+     *
+     * @param Energy               $existingEnergy The existing energy entity
+     * @param array<string, mixed> $rowData        Normalized row data from import
+     *
+     * @return bool True if any field changes were detected, false if entity is identical to import data
      */
     private function captureEnergyChanges(Energy $existingEnergy, array $rowData): bool
     {
@@ -1063,7 +1042,7 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
             $newContractEnd = $newContractEnd->format('Y-m-d');
         }
 
-        $this->logger->info('Capturing energy changes', [
+        $this->logger->debug('Capturing energy changes', [
             'energy_id' => $existingEnergy->getId(),
             'old_code' => $existingEnergy->getCode(),
             'new_code' => $newCode,
@@ -1090,7 +1069,7 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
             }
         }
 
-        $this->logger->info('Changes detected for energy', [
+        $this->logger->debug('Changes detected for energy', [
             'energy_id' => $existingEnergy->getId(),
             'changes_count' => count($changes),
             'changes' => $changes,
@@ -1111,5 +1090,24 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
         }
 
         return !empty($changes);
+    }
+
+    /**
+     * Normalize phone number for comparison.
+     *
+     * Removes spaces, dashes, dots, parentheses to allow format-insensitive comparison.
+     * Examples:
+     *  - "06 01 02 03 04" becomes "0601020304"
+     *  - "+33 6-01-02-03-04" becomes "+33601020304"
+     *  - "(06) 01.02.03.04" becomes "0601020304"
+     *
+     * @param string $phone The phone number to normalize
+     *
+     * @return string The normalized phone number (digits and + only)
+     */
+    private function normalizePhone(string $phone): string
+    {
+        // Remove all characters except digits and +
+        return preg_replace('/[^0-9+]/', '', $phone);
     }
 }

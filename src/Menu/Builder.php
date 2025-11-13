@@ -51,6 +51,10 @@ final readonly class Builder
                 ->setLabel((string) t('menu.user'))
                 ->setExtra('icon', 'bi bi-people')
                 ->setExtra('safe_label', true);
+            $menu->addChild('menu.import', ['route' => 'app_import_index'])
+                ->setLabel((string) t('menu.import'))
+                ->setExtra('icon', 'bi bi-cloud-upload')
+                ->setExtra('safe_label', true);
             $menu->addChild('menu.document_type', ['route' => 'app_document_type_index'])
                 ->setLabel((string) t('menu.document_type'))
                 ->setExtra('icon', 'bi bi-file-earmark-ruled')

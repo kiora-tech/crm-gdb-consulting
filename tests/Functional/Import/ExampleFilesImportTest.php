@@ -11,6 +11,7 @@ use App\Domain\Import\MessageHandler\ProcessImportBatchMessageHandler;
 use App\Entity\Company;
 use App\Entity\Customer;
 use App\Entity\Import;
+use App\Entity\ImportOperationType;
 use App\Entity\ImportStatus;
 use App\Entity\ImportType;
 use App\Entity\User;
@@ -349,6 +350,68 @@ class ExampleFilesImportTest extends KernelTestCase
             ['BOULANGERIE MARTIN', 'GARAGE DUPONT SARL', 'RESTAURANT LE BON COIN'],
             'Customer should be one from import_energies_exemple.xlsx'
         );
+    }
+
+    /**
+     * Test re-importing the same file should show 0 updates (all SKIP).
+     *
+     * This test reproduces the original bug where re-importing identical data
+     * showed UPDATE operations instead of SKIP operations.
+     */
+    public function testReImportSameFileShowsZeroUpdates(): void
+    {
+        // 1. First import - create initial data
+        $import1 = $this->createImport('import_complet_exemple.xlsx', ImportType::FULL);
+        $this->analyzeImport($import1);
+        $this->processImport($import1);
+
+        // Verify first import completed successfully
+        $this->entityManager->refresh($import1);
+        $this->assertSame(ImportStatus::COMPLETED, $import1->getStatus());
+        $this->assertGreaterThan(0, $import1->getSuccessRows(), 'First import should have success rows');
+
+        // 2. Second import - same file, identical data
+        $import2 = $this->createImport('import_complet_exemple.xlsx', ImportType::FULL);
+        $this->analyzeImport($import2);
+
+        // 3. Verify analysis shows SKIP for all entities (no CREATE or UPDATE)
+        $this->entityManager->refresh($import2);
+        $this->assertSame(ImportStatus::AWAITING_CONFIRMATION, $import2->getStatus());
+
+        $analysisResults = $import2->getAnalysisResults();
+        $this->assertGreaterThan(0, count($analysisResults), 'Analysis should have results');
+
+        // Check each analysis result - should all be SKIP
+        foreach ($analysisResults as $result) {
+            $entityType = basename(str_replace('\\', '/', $result->getEntityType()));
+
+            if ($result->getOperationType() === ImportOperationType::CREATE) {
+                $this->fail(
+                    "Expected SKIP but got CREATE for {$entityType}. ".
+                    "Re-importing identical data should not create new entities."
+                );
+            }
+
+            if ($result->getOperationType() === ImportOperationType::UPDATE) {
+                $this->fail(
+                    "Expected SKIP but got UPDATE for {$entityType} (count: {$result->getCount()}). ".
+                    "Re-importing identical data should not show updates when no changes exist."
+                );
+            }
+
+            // All operations should be SKIP
+            $this->assertSame(
+                ImportOperationType::SKIP,
+                $result->getOperationType(),
+                "All operations should be SKIP for {$entityType} when re-importing identical data"
+            );
+        }
+
+        // Verify we have SKIP operations for all entity types
+        $entityTypes = array_map(fn($r) => $r->getEntityType(), $analysisResults->toArray());
+        $this->assertContains(Customer::class, $entityTypes, 'Should have SKIP results for customers');
+        $this->assertContains(\App\Entity\Contact::class, $entityTypes, 'Should have SKIP results for contacts');
+        $this->assertContains(\App\Entity\Energy::class, $entityTypes, 'Should have SKIP results for energies');
     }
 
     /**
