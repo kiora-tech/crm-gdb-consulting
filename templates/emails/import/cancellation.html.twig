@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importation annulée</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .content p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .info-box {
+            background: #e2e3e5;
+            border-left: 4px solid #6c757d;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .info-box strong {
+            color: #6c757d;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            border-top: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Importation annulée</h1>
+        </div>
+
+        <div class="content">
+            <p>Bonjour,</p>
+
+            <p>Votre importation a été annulée.</p>
+
+            <div class="info-box">
+                <p><strong>Fichier :</strong> {{ fileName }}</p>
+                <p><strong>Statut :</strong> Annulé</p>
+            </div>
+
+            <p>Aucune donnée n'a été importée dans le système CRM.</p>
+
+            <p>Vous pouvez créer une nouvelle importation à tout moment.</p>
+        </div>
+
+        <div class="footer">
+            <p><strong>CRM GDB Consulting</strong></p>
+            <p>Cet email a été envoyé automatiquement depuis le système CRM.</p>
+        </div>
+    </div>
+</body>
+</html>

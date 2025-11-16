@@ -1,0 +1,48 @@
+health_check:
+    enabled: true
+    checks:
+        database:
+            enabled: true  # Default: true - Auto-registered
+        redis:
+            enabled: true  # Default: false - Explicitly enabled for this project
+
+services:
+    # Note: All services implementing HealthCheckInterface are automatically tagged
+    # with 'health_check.checker' thanks to the #[AutoconfigureTag] attribute on the interface.
+    # Just enable 'autoconfigure: true' for each service!
+
+    # Redis Health Check
+    Kiora\HealthCheckBundle\HealthCheck\Checks\RedisHealthCheck:
+        autoconfigure: true
+        arguments:
+            $host: '%env(REDIS_HOST)%'
+            $port: '%env(int:REDIS_PORT)%'
+            $critical: false
+
+    # S3 Documents Storage Health Check
+    Kiora\HealthCheckBundle\HealthCheck\Checks\S3HealthCheck:
+        autoconfigure: true
+        arguments:
+            $filesystem: '@documents.storage'
+            $name: 's3_documents'
+            $critical: false
+
+    # S3 Templates Storage Health Check
+    app.health_check.s3_templates:
+        class: Kiora\HealthCheckBundle\HealthCheck\Checks\S3HealthCheck
+        autoconfigure: true
+        arguments:
+            $filesystem: '@templates.storage'
+            $name: 's3_templates'
+            $critical: false
+
+    # Microsoft Graph API Health Check
+    app.health_check.microsoft_graph:
+        class: Kiora\HealthCheckBundle\HealthCheck\Checks\HttpHealthCheck
+        autoconfigure: true
+        arguments:
+            $url: 'https://graph.microsoft.com/v1.0/me'
+            $name: 'microsoft_graph'
+            $timeout: 5
+            $critical: false
+            $expectedStatusCodes: [401]  # 401 = API accessible, auth required (expected)

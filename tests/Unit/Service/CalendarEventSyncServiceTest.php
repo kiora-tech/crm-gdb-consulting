@@ -388,19 +388,6 @@ class CalendarEventSyncServiceTest extends TestCase
         $this->syncService->createEventInMicrosoft($event, $user);
     }
 
-    public function testCreateEventInMicrosoftWithoutMicrosoftEventIdThrowsException(): void
-    {
-        $user = $this->createMock(User::class);
-        $event = new CalendarEvent();
-        $event->setTitle('Test Event');
-        $event->setStartDateTime(new \DateTime('2025-10-20 10:00:00'));
-        $event->setEndDateTime(new \DateTime('2025-10-20 11:00:00'));
-
-        // The createEventFromCalendarEvent method is typed to always return an array with 'id'
-        // So this test is skipped as the scenario is prevented by type safety
-        $this->markTestSkipped('Type safety ensures id is always returned');
-    }
-
     public function testCreateEventInMicrosoftWithApiExceptionThrowsWrappedException(): void
     {
         $user = $this->createMock(User::class);

@@ -1,0 +1,100 @@
+name: Tests
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  tests:
+    name: PHPUnit Tests (PHP ${{ matrix.php-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version: ['8.4']
+
+    services:
+      mysql:
+        image: mysql:8.0.40
+        env:
+          MYSQL_ROOT_PASSWORD: symfony
+          MYSQL_DATABASE: symfony_test
+          MYSQL_USER: symfony
+          MYSQL_PASSWORD: symfony
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, json, zip
+          coverage: none
+          tools: composer:v2
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: Wait for MySQL
+        run: |
+          until mysqladmin ping -h 127.0.0.1 -u symfony -psymfony --silent; do
+            echo 'Waiting for MySQL...'
+            sleep 2
+          done
+          echo 'MySQL is ready!'
+
+      - name: Create test database
+        run: |
+          php bin/console doctrine:database:create --env=test --if-not-exists
+        env:
+          DATABASE_URL: mysql://symfony:symfony@127.0.0.1:3306/symfony_test?serverVersion=8.0.40&charset=utf8mb4
+          APP_ENV: test
+
+      - name: Run migrations
+        run: php bin/console doctrine:migrations:migrate --no-interaction --env=test
+        env:
+          DATABASE_URL: mysql://symfony:symfony@127.0.0.1:3306/symfony_test?serverVersion=8.0.40&charset=utf8mb4
+          APP_ENV: test
+
+      - name: Build SASS assets
+        run: php bin/console sass:build
+        env:
+          APP_ENV: test
+
+      - name: Run PHPUnit tests
+        run: vendor/bin/phpunit
+        env:
+          DATABASE_URL: mysql://symfony:symfony@127.0.0.1:3306/symfony_test?serverVersion=8.0.40&charset=utf8mb4
+          APP_ENV: test
+          MICROSOFT_CLIENT_ID: dummy-client-id-for-tests
+          MICROSOFT_CLIENT_SECRET: dummy-client-secret-for-tests
+          MICROSOFT_TENANT_ID: dummy-tenant-id-for-tests
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpunit-results
+          path: var/log/

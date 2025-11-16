@@ -17,6 +17,7 @@ menu:
     home: Home
     companies: Companies
     user: User
+    import: Imports
     company: Company
     impersonate_exit: 'Exit impersonation'
     logout: Logout
@@ -27,6 +28,10 @@ menu:
     client_document: 'Client Document'
     document_signature: 'Document Signature'
     create_account: 'Create an account'
+    document: Documents
+    contact: Contacts
+    document_type: 'Document type'
+    energy_provider: 'Energy Provider'
 choice:
     'yes': 'Yes'
     'no': 'No'
@@ -199,6 +204,14 @@ invitation_link:
     expired_title: 'Link Expired'
     expired_message: 'Sorry, this invitation link has expired or is invalid.'
 document:
+    name: Name
+    no_type: No type
+    customer: Customer
+    title: Documents
+    select_type: What type of document?
+    dropzone: File drop zone
+    add: Add
+    generate: Generate
     supporting_documents:
         label: 'Supporting documents'
         add_button: 'Add a document'
@@ -222,6 +235,7 @@ client_document:
         label: Name
     type:
         label: Type
+    no_type: No type
     generate_at:
         label: 'Generated at'
     index: 'Client documents list'
@@ -842,7 +856,7 @@ supportingDocuments: __supportingDocuments
 clientMetadata: __clientMetadata
 document_name: __document_name
 validity_date: __validity_date
-document_type: __document_type
+document_type: 'Document type'
 file_size: __file_size
 supportingDocumentPdfParsed: __supportingDocumentPdfParsed
 parsingStatus: __parsingStatus

@@ -1,0 +1,407 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Détails de l'import : {{ import.originalFilename }}
+{% endblock %}
+
+{% block body %}
+    <div class="pagetitle">
+        <h1>Détails de l'import</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_import_index') }}">Imports</a></li>
+                <li class="breadcrumb-item active">{{ import.originalFilename }}</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section">
+        {# Status and file information #}
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body pt-4">
+                        <h5 class="card-title">Informations générales</h5>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Fichier :</strong><br>
+                                <i class="bi bi-file-earmark-spreadsheet me-2"></i>
+                                {{ import.originalFilename }}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Type :</strong><br>
+                                <span class="badge bg-info">{{ import.type.label }}</span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Statut :</strong><br>
+                                {% set statusColors = {
+                                    'pending': 'secondary',
+                                    'analyzing': 'primary',
+                                    'awaiting_confirmation': 'warning',
+                                    'processing': 'info',
+                                    'completed': 'success',
+                                    'failed': 'danger',
+                                    'cancelled': 'secondary'
+                                } %}
+                                <span class="badge bg-{{ statusColors[import.status.value] ?? 'secondary' }}">
+                                    {{ import.status.label }}
+                                </span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Date de création :</strong><br>
+                                {{ import.createdAt|date('d/m/Y à H:i') }}
+                            </div>
+                        </div>
+
+                        {# Progress bar #}
+                        {% if import.totalRows > 0 %}
+                            <div class="mb-3">
+                                <strong>Progression :</strong>
+                                <div class="d-flex align-items-center gap-2 mt-2">
+                                    <div class="progress flex-grow-1" style="height: 25px;">
+                                        <div class="progress-bar {% if import.status.value == 'failed' %}bg-danger{% endif %}"
+                                             role="progressbar"
+                                             style="width: {{ import.progressPercentage }}%"
+                                             aria-valuenow="{{ import.progressPercentage }}"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100">
+                                            {{ import.progressPercentage }}%
+                                        </div>
+                                    </div>
+                                    <span class="text-nowrap">{{ import.processedRows }} / {{ import.totalRows }}</span>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {# Statistics #}
+                        {% if import.processedRows > 0 %}
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <div class="text-center p-3 border rounded">
+                                        <h3 class="text-success mb-0">{{ import.successRows }}</h3>
+                                        <small class="text-muted">Lignes réussies</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center p-3 border rounded">
+                                        <h3 class="text-danger mb-0">{{ import.errorRows }}</h3>
+                                        <small class="text-muted">Lignes en erreur</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center p-3 border rounded">
+                                        <h3 class="text-info mb-0">
+                                            {% if import.duration %}
+                                                {{ (import.duration / 60)|round }} min
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </h3>
+                                        <small class="text-muted">Durée</small>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {# Analysis results - only shown when awaiting confirmation #}
+                {% if import.status.value == 'awaiting_confirmation' and import.analysisResults|length > 0 %}
+                    {% set entityLabels = {
+                        'App\\Entity\\Customer': 'Clients',
+                        'App\\Entity\\Contact': 'Contacts',
+                        'App\\Entity\\Energy': 'Énergies'
+                    } %}
+
+                    <div class="card">
+                        <div class="card-body pt-4">
+                            <h5 class="card-title">Résultats de l'analyse</h5>
+
+                            <div class="alert alert-info" role="alert">
+                                <i class="bi bi-info-circle me-2"></i>
+                                L'analyse du fichier est terminée. Veuillez vérifier les modifications qui seront apportées avant de confirmer l'import.
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="table-light">
+                                        <tr class="text-center">
+                                            <th>Type d'entité</th>
+                                            <th>Créations</th>
+                                            <th>Mises à jour</th>
+                                            <th>Ignorés</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% set entityGroups = {} %}
+                                        {% for result in import.analysisResults %}
+                                            {% set entity = result.entityType %}
+                                            {% if entityGroups[entity] is not defined %}
+                                                {% set entityGroups = entityGroups|merge({(entity): {'create': 0, 'update': 0, 'skip': 0}}) %}
+                                            {% endif %}
+                                            {% set operation = result.operationType.value %}
+                                            {% set count = result.count %}
+                                            {% set entityGroups = entityGroups|merge({
+                                                (entity): entityGroups[entity]|merge({(operation): count})
+                                            }) %}
+                                        {% endfor %}
+
+                                        {% for entityType, counts in entityGroups %}
+                                            <tr class="text-center">
+                                                <td class="text-start">
+                                                    <strong>{{ entityLabels[entityType] ?? entityType }}</strong>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-success">{{ counts.create }}</span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-info">{{ counts.update }}</span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-secondary">{{ counts.skip }}</span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {# Detailed changes for updates #}
+                            {% set hasUpdateDetails = false %}
+                            {% for result in import.analysisResults %}
+                                {% if result.operationType.value == 'update' and result.details.changes is defined and result.details.changes|length > 0 %}
+                                    {% set hasUpdateDetails = true %}
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if hasUpdateDetails %}
+                                <div class="mt-4">
+                                    <h6 class="text-muted">Détails des modifications</h6>
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="bi bi-exclamation-triangle me-2"></i>
+                                        <strong>Attention :</strong> Les données suivantes seront modifiées lors de l'import.
+                                    </div>
+
+                                    {% set fieldLabels = {
+                                        'name': 'Nom',
+                                        'siret': 'SIRET',
+                                        'lead_origin': 'Origine du lead',
+                                        'firstName': 'Prénom',
+                                        'lastName': 'Nom',
+                                        'email': 'Email',
+                                        'phone': 'Téléphone',
+                                        'code': 'Code PDL/PCE',
+                                        'provider': 'Fournisseur',
+                                        'contractEnd': 'Date d\'échéance'
+                                    } %}
+
+                                    {% for result in import.analysisResults %}
+                                        {% if result.operationType.value == 'update' and result.details.changes is defined and result.details.changes|length > 0 %}
+                                            <div class="card mb-3">
+                                                <div class="card-header">
+                                                    <strong>{{ entityLabels[result.entityType] ?? result.entityType }}</strong>
+                                                    <span class="badge bg-info float-end">{{ result.details.changes|length }} modification(s)</span>
+                                                </div>
+                                                <div class="card-body p-0">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-sm table-hover mb-0">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th style="width: 30%;">Entité</th>
+                                                                    <th style="width: 20%;">Champ</th>
+                                                                    <th style="width: 25%;">Ancienne valeur</th>
+                                                                    <th style="width: 25%;">Nouvelle valeur</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for change in result.details.changes %}
+                                                                    {% set rowspan = change.fields|length %}
+                                                                    {% set firstField = true %}
+                                                                    {% for field, values in change.fields %}
+                                                                        <tr>
+                                                                            {% if firstField %}
+                                                                                <td rowspan="{{ rowspan }}" class="align-middle">
+                                                                                    <strong>{{ change.entity_label }}</strong>
+                                                                                    <br>
+                                                                                    <small class="text-muted">ID: {{ change.entity_id }}</small>
+                                                                                </td>
+                                                                                {% set firstField = false %}
+                                                                            {% endif %}
+                                                                            <td>{{ fieldLabels[field] ?? field }}</td>
+                                                                            <td>
+                                                                                {% if values.old is null or values.old == '' %}
+                                                                                    <span class="text-muted fst-italic">vide</span>
+                                                                                {% else %}
+                                                                                    {{ values.old }}
+                                                                                {% endif %}
+                                                                            </td>
+                                                                            <td>
+                                                                                <span class="text-success fw-bold">{{ values.new }}</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    {% endfor %}
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            {# Action buttons #}
+                            <div class="d-flex gap-2 justify-content-end mt-3">
+                                <form action="{{ path('app_import_cancel', {id: import.id}) }}" method="post" class="d-inline">
+                                    <button type="submit"
+                                            class="btn btn-danger"
+                                            onclick="return confirm('Êtes-vous sûr de vouloir annuler cet import ?');">
+                                        <i class="bi bi-x-circle"></i> Annuler
+                                    </button>
+                                </form>
+                                <form action="{{ path('app_import_confirm', {id: import.id}) }}" method="post" class="d-inline">
+                                    <button type="submit"
+                                            class="btn btn-success"
+                                            onclick="return confirm('Êtes-vous sûr de vouloir confirmer et lancer l\'import ?');">
+                                        <i class="bi bi-check-circle"></i> Confirmer et lancer l'import
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {# Error list #}
+                {% if import.errors|length > 0 %}
+                    <div class="card">
+                        <div class="card-body pt-4">
+                            <h5 class="card-title">
+                                Erreurs détectées
+                                <span class="badge bg-danger">{{ import.errors|length }}</span>
+                            </h5>
+
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 80px;">Ligne</th>
+                                            <th style="width: 100px;">Sévérité</th>
+                                            <th style="width: 150px;">Champ</th>
+                                            <th>Message</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for error in import.errors %}
+                                            <tr>
+                                                <td class="text-center">
+                                                    <span class="badge bg-light text-dark">{{ error.rowNumber }}</span>
+                                                </td>
+                                                <td>
+                                                    {% set severityColors = {
+                                                        'error': 'danger',
+                                                        'warning': 'warning',
+                                                        'info': 'info'
+                                                    } %}
+                                                    <span class="badge bg-{{ severityColors[error.severity.value] ?? 'secondary' }}">
+                                                        {{ error.severity.value|upper }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    {% if error.fieldName %}
+                                                        <code>{{ error.fieldName }}</code>
+                                                    {% else %}
+                                                        <span class="text-muted">-</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ error.message }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            {# Sidebar with actions #}
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body pt-4">
+                        <h5 class="card-title">Actions</h5>
+
+                        <div class="d-grid gap-2">
+                            <a href="{{ path('app_import_index') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Retour à la liste
+                            </a>
+
+                            {% if import.status.canBeCancelled %}
+                                <form action="{{ path('app_import_cancel', {id: import.id}) }}" method="post">
+                                    <button type="submit"
+                                            class="btn btn-outline-danger w-100"
+                                            onclick="return confirm('Êtes-vous sûr de vouloir annuler cet import ?');">
+                                        <i class="bi bi-x-circle"></i> Annuler l'import
+                                    </button>
+                                </form>
+                            {% endif %}
+
+                            {% if import.status.value == 'failed' %}
+                                <a href="{{ path('app_import_new') }}" class="btn btn-outline-primary">
+                                    <i class="bi bi-arrow-clockwise"></i> Réessayer
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {# Timeline card #}
+                <div class="card">
+                    <div class="card-body pt-4">
+                        <h5 class="card-title">Chronologie</h5>
+
+                        <div class="activity">
+                            <div class="activity-item d-flex">
+                                <div class="activite-label">{{ import.createdAt|date('H:i') }}</div>
+                                <i class="bi bi-circle-fill activity-badge text-success align-self-start"></i>
+                                <div class="activity-content">
+                                    Fichier téléchargé
+                                    <br><small class="text-muted">{{ import.createdAt|date('d/m/Y') }}</small>
+                                </div>
+                            </div>
+
+                            {% if import.startedAt %}
+                                <div class="activity-item d-flex">
+                                    <div class="activite-label">{{ import.startedAt|date('H:i') }}</div>
+                                    <i class="bi bi-circle-fill activity-badge text-primary align-self-start"></i>
+                                    <div class="activity-content">
+                                        Traitement démarré
+                                        <br><small class="text-muted">{{ import.startedAt|date('d/m/Y') }}</small>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if import.completedAt %}
+                                <div class="activity-item d-flex">
+                                    <div class="activite-label">{{ import.completedAt|date('H:i') }}</div>
+                                    <i class="bi bi-circle-fill activity-badge
+                                        {% if import.status.value == 'completed' %}text-success
+                                        {% elseif import.status.value == 'failed' %}text-danger
+                                        {% else %}text-secondary{% endif %} align-self-start"></i>
+                                    <div class="activity-content">
+                                        {{ import.status.label }}
+                                        <br><small class="text-muted">{{ import.completedAt|date('d/m/Y') }}</small>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

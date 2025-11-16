@@ -12,6 +12,26 @@ framework:
                 retry_strategy:
                     max_retries: 3
                     multiplier: 2
+            import_analysis:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    use_notify: true
+                    check_delayed_interval: 60000
+                    queue_name: import_analysis
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+                    delay: 1000
+            import_processing:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    use_notify: true
+                    check_delayed_interval: 60000
+                    queue_name: import_processing
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+                    delay: 1000
             failed: 'doctrine://default?queue_name=failed'
             sync: 'sync://'
 
@@ -21,6 +41,9 @@ framework:
             Symfony\Component\Notifier\Message\SmsMessage: async
             App\Message\StartImportMessage: async
             App\Message\ProcessExcelBatchMessage: async
+            # Import system messages
+            App\Domain\Import\Message\AnalyzeImportMessage: import_analysis
+            App\Domain\Import\Message\ProcessImportBatchMessage: import_processing
             # Microsoft Graph async refresh messages
             App\Message\RefreshMicrosoftCalendarsMessage: async
             App\Message\RefreshMicrosoftEventsMessage: async
