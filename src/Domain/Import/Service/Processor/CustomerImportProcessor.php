@@ -131,7 +131,7 @@ readonly class CustomerImportProcessor implements ImportProcessorInterface
             if (!isset($keyOccurrences[$normalizedKey])) {
                 $keyOccurrences[$normalizedKey] = 0;
             }
-            $keyOccurrences[$normalizedKey]++;
+            ++$keyOccurrences[$normalizedKey];
 
             // Handle duplicate "nom" columns: first occurrence is customer name, second is contact lastname
             if ('name' === $normalizedKey && $keyOccurrences[$normalizedKey] > 1) {

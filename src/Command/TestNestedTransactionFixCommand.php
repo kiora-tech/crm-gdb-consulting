@@ -96,7 +96,7 @@ class TestNestedTransactionFixCommand extends Command
             $sql = "SELECT id, name, siret FROM customer WHERE siret IN ($placeholders)";
             $customers = $connection->fetchAllAssociative($sql, $sirets);
 
-            if (count($customers) === 3) {
+            if (3 === count($customers)) {
                 $io->success('✅ SUCCÈS ! Les 3 clients ont été créés en base de données :');
                 foreach ($customers as $customer) {
                     $io->writeln("  - [{$customer['siret']}] {$customer['name']}");
@@ -115,10 +115,10 @@ class TestNestedTransactionFixCommand extends Command
             // Update import status
             $import->setSuccessRows(count($customers));
             $import->setErrorRows(3 - count($customers));
-            $import->setStatus(count($customers) === 3 ? ImportStatus::COMPLETED : ImportStatus::FAILED);
+            $import->setStatus(3 === count($customers) ? ImportStatus::COMPLETED : ImportStatus::FAILED);
             $this->entityManager->flush();
 
-            return count($customers) === 3 ? Command::SUCCESS : Command::FAILURE;
+            return 3 === count($customers) ? Command::SUCCESS : Command::FAILURE;
         } catch (\Exception $e) {
             $io->error('Erreur lors du traitement : '.$e->getMessage());
             $io->error($e->getTraceAsString());

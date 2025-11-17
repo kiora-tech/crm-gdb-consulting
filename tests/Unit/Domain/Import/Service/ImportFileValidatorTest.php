@@ -46,7 +46,7 @@ class ImportFileValidatorTest extends TestCase
         $sheet->setCellValue('B2', 'Data 2');
 
         // Determine writer type based on extension
-        $writerType = match($extension) {
+        $writerType = match ($extension) {
             'xlsx' => 'Xlsx',
             'xls' => 'Xls',
             'ods' => 'Ods',

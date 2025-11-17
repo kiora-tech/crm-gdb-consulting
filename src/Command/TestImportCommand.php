@@ -79,7 +79,7 @@ class TestImportCommand extends Command
             return Command::FAILURE;
         }
 
-        $io->info("Starting import test...");
+        $io->info('Starting import test...');
         $io->info("File: $filePath");
         $io->info("Type: {$type->value}");
         $io->info("User: {$user->getEmail()}");

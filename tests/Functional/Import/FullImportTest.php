@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Import;
 
-use App\Entity\Contact;
-use App\Entity\Customer;
 use App\Entity\Import;
 use App\Entity\ImportStatus;
 use App\Entity\ImportType;
@@ -14,7 +12,6 @@ use App\Repository\CustomerRepository;
 use App\Repository\ImportRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 
 /**
  * Test fonctionnel pour l'import complet (clients + contacts + énergies).
@@ -155,7 +152,7 @@ class FullImportTest extends KernelTestCase
         $this->entityManager->clear();
 
         $allCustomers = $this->customerRepository->findAll();
-        $customerDebug = array_map(fn($c) => sprintf('%s (SIRET: %s)', $c->getName(), $c->getSiret() ?? 'null'), $allCustomers);
+        $customerDebug = array_map(fn ($c) => sprintf('%s (SIRET: %s)', $c->getName(), $c->getSiret() ?? 'null'), $allCustomers);
 
         $customerBoulangerie = $this->customerRepository->findOneBy(['siret' => '12345678901234']);
         $this->assertNotNull(

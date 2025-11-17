@@ -192,7 +192,7 @@ class FileStorageServiceTest extends TestCase
     {
         // Skip on systems where chmod doesn't prevent root/process from writing
         // (e.g., Docker containers running as root, CI environments)
-        if (posix_geteuid() === 0) {
+        if (0 === posix_geteuid()) {
             $this->markTestSkipped('Cannot test file permissions when running as root');
         }
 

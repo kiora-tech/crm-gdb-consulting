@@ -112,7 +112,7 @@ class ExampleFilesImportTest extends KernelTestCase
         // Get expected customer count from analysis
         $expectedCustomers = 0;
         foreach ($import->getAnalysisResults() as $result) {
-            if ($result->getEntityType() === Customer::class) {
+            if (Customer::class === $result->getEntityType()) {
                 $expectedCustomers += $result->getCount();
             }
         }
@@ -280,7 +280,7 @@ class ExampleFilesImportTest extends KernelTestCase
         // Verify specific contacts from the file
         $contactJean = null;
         foreach ($allContacts as $contact) {
-            if ($contact->getEmail() === 'j.martin@boulangerie-martin.fr') {
+            if ('j.martin@boulangerie-martin.fr' === $contact->getEmail()) {
                 $contactJean = $contact;
                 break;
             }
@@ -342,7 +342,7 @@ class ExampleFilesImportTest extends KernelTestCase
         // Verify at least one energy exists with correct type
         $energyELEC = null;
         foreach ($allEnergies as $energy) {
-            if ($energy->getType() === \App\Entity\EnergyType::ELEC) {
+            if (\App\Entity\EnergyType::ELEC === $energy->getType()) {
                 $energyELEC = $energy;
                 break;
             }
@@ -395,17 +395,17 @@ class ExampleFilesImportTest extends KernelTestCase
         foreach ($analysisResults as $result) {
             $entityType = basename(str_replace('\\', '/', $result->getEntityType()));
 
-            if ($result->getOperationType() === ImportOperationType::CREATE) {
+            if (ImportOperationType::CREATE === $result->getOperationType()) {
                 $this->fail(
                     "Expected SKIP but got CREATE for {$entityType}. ".
-                    "Re-importing identical data should not create new entities."
+                    'Re-importing identical data should not create new entities.'
                 );
             }
 
-            if ($result->getOperationType() === ImportOperationType::UPDATE) {
+            if (ImportOperationType::UPDATE === $result->getOperationType()) {
                 $this->fail(
                     "Expected SKIP but got UPDATE for {$entityType} (count: {$result->getCount()}). ".
-                    "Re-importing identical data should not show updates when no changes exist."
+                    'Re-importing identical data should not show updates when no changes exist.'
                 );
             }
 
@@ -418,7 +418,7 @@ class ExampleFilesImportTest extends KernelTestCase
         }
 
         // Verify we have SKIP operations for all entity types
-        $entityTypes = array_map(fn($r) => $r->getEntityType(), $analysisResults->toArray());
+        $entityTypes = array_map(fn ($r) => $r->getEntityType(), $analysisResults->toArray());
         $this->assertContains(Customer::class, $entityTypes, 'Should have SKIP results for customers');
         $this->assertContains(\App\Entity\Contact::class, $entityTypes, 'Should have SKIP results for contacts');
         $this->assertContains(\App\Entity\Energy::class, $entityTypes, 'Should have SKIP results for energies');

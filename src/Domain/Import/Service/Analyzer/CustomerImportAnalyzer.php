@@ -69,7 +69,7 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
 
     /**
      * @var array<string, array<int, array<string, mixed>>> Track update details by entity type
-     * Format: ['EntityClass' => [['entity_id' => 1, 'entity_label' => 'Name', 'fields' => ['field' => ['old' => 'X', 'new' => 'Y']]]]]
+     *                                                      Format: ['EntityClass' => [['entity_id' => 1, 'entity_label' => 'Name', 'fields' => ['field' => ['old' => 'X', 'new' => 'Y']]]]]
      */
     private array $updateDetails = [];
 
@@ -206,7 +206,7 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
                 // The normalizeRowData method handles this by converting the second occurrence to "contact_lastname"
                 if ('name' === $normalized) {
                     // Count how many times we've seen "name"
-                    $occurrences = array_count_values(array_map(fn($h) => $this->normalizeHeaderKey((string) $h), array_filter($headers, fn($h) => '' !== trim((string) $h))));
+                    $occurrences = array_count_values(array_map(fn ($h) => $this->normalizeHeaderKey((string) $h), array_filter($headers, fn ($h) => '' !== trim((string) $h))));
 
                     // Allow exactly 2 occurrences of "name" (customer name + contact lastname)
                     if (isset($occurrences['name']) && $occurrences['name'] <= 2) {
@@ -418,7 +418,7 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
             if (!isset($keyOccurrences[$normalizedKey])) {
                 $keyOccurrences[$normalizedKey] = 0;
             }
-            $keyOccurrences[$normalizedKey]++;
+            ++$keyOccurrences[$normalizedKey];
 
             // Handle duplicate "nom" columns: first occurrence is customer name, second is contact lastname
             if ('name' === $normalizedKey && $keyOccurrences[$normalizedKey] > 1) {
@@ -645,7 +645,7 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
     /**
      * Determine the operation type for a contact.
      *
-     * @param array<string, mixed> $rowData         Normalized row data
+     * @param array<string, mixed> $rowData          Normalized row data
      * @param Customer|null        $existingCustomer Existing customer if found
      */
     private function determineContactOperationType(array $rowData, ?Customer $existingCustomer): ImportOperationType
@@ -686,9 +686,6 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
 
     /**
      * Determine the operation type for an energy.
-     *
-     * @param array<string, mixed> $rowData         Normalized row data
-     * @param Customer|null        $existingCustomer Existing customer if found
      */
     /**
      * Parse energy type from string.
