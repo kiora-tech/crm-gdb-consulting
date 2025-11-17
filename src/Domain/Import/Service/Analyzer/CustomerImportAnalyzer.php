@@ -496,6 +496,8 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
             'comment' => 'comment',
             'elec__gaz' => 'energy_type',
             'type_energie' => 'energy_type',
+            'commercial' => 'commercial_email',
+            'email_commercial' => 'commercial_email',
         ];
 
         return $mappings[$key] ?? $key;
@@ -852,6 +854,18 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
                 'old' => $existingCustomer->getLeadOrigin(),
                 'new' => $newLeadOrigin,
             ];
+        }
+
+        // Commercial - check if user assignment changes (case-insensitive email comparison)
+        $newCommercialEmail = isset($rowData['commercial_email']) && is_string($rowData['commercial_email']) ? trim($rowData['commercial_email']) : null;
+        if ($newCommercialEmail) {
+            $existingCommercialEmail = $existingCustomer->getUser()?->getEmail();
+            if (0 !== strcasecmp($newCommercialEmail, $existingCommercialEmail ?? '')) {
+                $changes['commercial_email'] = [
+                    'old' => $existingCommercialEmail,
+                    'new' => $newCommercialEmail,
+                ];
+            }
         }
 
         // Only record if there are changes

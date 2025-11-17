@@ -225,6 +225,16 @@ class ExampleFilesImportTest extends KernelTestCase
         // Verify energies
         $energies = $this->energyRepository->findBy(['customer' => $customerBoulangerie]);
         $this->assertGreaterThanOrEqual(1, count($energies), 'Customer should have energies');
+
+        // Verify commercial assignment from Excel column
+        // Row 2 (BOULANGERIE MARTIN) should have admin@test.com as commercial
+        $this->assertNotNull($customerBoulangerie->getUser(), 'Customer with commercial email should have a user assigned');
+        $this->assertSame('admin@test.com', $customerBoulangerie->getUser()->getEmail(), 'Customer should have correct commercial assigned from Excel');
+
+        // Row 4 (RESTAURANT LE BON COIN) has empty commercial column → should be unassigned (null)
+        $customerRestaurant = $this->customerRepository->findOneBy(['name' => 'RESTAURANT LE BON COIN']);
+        $this->assertNotNull($customerRestaurant, 'RESTAURANT LE BON COIN should exist');
+        $this->assertNull($customerRestaurant->getUser(), 'Customer with empty commercial column should be unassigned (null)');
     }
 
     /**

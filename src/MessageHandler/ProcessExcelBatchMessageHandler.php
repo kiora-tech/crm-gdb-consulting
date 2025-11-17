@@ -244,7 +244,14 @@ class ProcessExcelBatchMessageHandler
 
         try {
             // Créer ou récupérer le client
-            $customer = $this->getOrCreateCustomer($entityManager, $rowData['name'], (string) $rowData['siret'], $rowData['lead_origin'] ?? '', $userId);
+            $customer = $this->getOrCreateCustomer(
+                $entityManager,
+                $rowData['name'],
+                (string) $rowData['siret'],
+                $rowData['lead_origin'] ?? '',
+                $userId,
+                $rowData['commercial_email'] ?? null
+            );
 
             if (!empty($rowData['contact'])) {
                 $this->processContact($entityManager, $customer, $rowData);
@@ -397,12 +404,14 @@ class ProcessExcelBatchMessageHandler
             'comment' => 'comment',
             'elec__gaz' => 'energy_type',
             'type_energie' => 'energy_type',
+            'commercial' => 'commercial_email',
+            'email_commercial' => 'commercial_email',
         ];
 
         return $mappings[$key] ?? $key;
     }
 
-    private function getOrCreateCustomer(EntityManagerInterface $entityManager, string $name, string $siret, string $leadOrigin, int $userId): Customer
+    private function getOrCreateCustomer(EntityManagerInterface $entityManager, string $name, string $siret, string $leadOrigin, int $userId, ?string $commercialEmail = null): Customer
     {
         // Nettoyer le nom pour éviter les problèmes
         $name = trim($name);
@@ -416,6 +425,7 @@ class ProcessExcelBatchMessageHandler
 
         // Chercher d'abord par SIRET si fourni
         $customer = null;
+        $isNewCustomer = false;
         if (!empty($siret)) {
             $customer = $entityManager->getRepository(Customer::class)
                 ->findOneBy(['siret' => $siret]);
@@ -428,6 +438,7 @@ class ProcessExcelBatchMessageHandler
         }
 
         if (!$customer) {
+            $isNewCustomer = true;
             $customer = new Customer();
             $customer->setName($name);
             if (!empty($siret)) {
@@ -443,7 +454,24 @@ class ProcessExcelBatchMessageHandler
             }
         }
 
-        $customer->setUser($entityManager->getReference(User::class, $userId));
+        // Assign commercial user based on email column
+        if (!empty($commercialEmail)) {
+            // Commercial email provided → assign this user
+            $commercial = $entityManager->getRepository(User::class)->findOneBy(['email' => $commercialEmail]);
+            if ($commercial) {
+                $customer->setUser($commercial);
+            } else {
+                $this->logger->warning('Commercial not found by email, customer will be unassigned', [
+                    'commercial_email' => $commercialEmail,
+                    'customer_name' => $name,
+                ]);
+                $customer->setUser(null);
+            }
+        } elseif ($isNewCustomer) {
+            // New customer with empty commercial column → leave unassigned (null)
+            $customer->setUser(null);
+        }
+        // For existing customers with empty commercial column → keep existing assignment (don't change)
 
         return $customer;
     }
