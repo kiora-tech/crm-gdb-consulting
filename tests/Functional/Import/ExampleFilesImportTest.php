@@ -232,7 +232,7 @@ class ExampleFilesImportTest extends KernelTestCase
         // Find the specific contact from the Excel file
         $jeanMartin = null;
         foreach ($contacts as $contact) {
-            if ($contact->getEmail() === 'j.martin@boulangerie-martin.fr') {
+            if ('j.martin@boulangerie-martin.fr' === $contact->getEmail()) {
                 $jeanMartin = $contact;
                 break;
             }
