@@ -18,7 +18,6 @@ use App\Entity\User;
 use App\Repository\ContactRepository;
 use App\Repository\CustomerRepository;
 use App\Repository\EnergyRepository;
-use App\Repository\ImportRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -43,7 +42,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class ExampleFilesImportTest extends KernelTestCase
 {
     private EntityManagerInterface $entityManager;
-    private ImportRepository $importRepository;
     private CustomerRepository $customerRepository;
     private ContactRepository $contactRepository;
     private EnergyRepository $energyRepository;
@@ -59,7 +57,6 @@ class ExampleFilesImportTest extends KernelTestCase
 
         $container = static::getContainer();
         $this->entityManager = $container->get(EntityManagerInterface::class);
-        $this->importRepository = $container->get(ImportRepository::class);
         $this->customerRepository = $container->get(CustomerRepository::class);
         $this->contactRepository = $container->get(ContactRepository::class);
         $this->energyRepository = $container->get(EnergyRepository::class);
@@ -422,21 +419,6 @@ class ExampleFilesImportTest extends KernelTestCase
         $this->assertContains(Customer::class, $entityTypes, 'Should have SKIP results for customers');
         $this->assertContains(\App\Entity\Contact::class, $entityTypes, 'Should have SKIP results for contacts');
         $this->assertContains(\App\Entity\Energy::class, $entityTypes, 'Should have SKIP results for energies');
-    }
-
-    /**
-     * Helper: Create a customer with given name and SIRET.
-     */
-    private function createCustomer(string $name, string $siret): Customer
-    {
-        $customer = new Customer();
-        $customer->setName($name);
-        $customer->setSiret($siret);
-        $customer->setOrigin(\App\Entity\ProspectOrigin::ACQUISITION);
-
-        $this->entityManager->persist($customer);
-
-        return $customer;
     }
 
     /**

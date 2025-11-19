@@ -25,7 +25,7 @@ class ImportFileValidatorTest extends TestCase
 
         // Act & Assert - Should not throw exception
         $this->validator->validate($validFile);
-        $this->assertTrue(true); // If we get here, validation passed
+        // If we get here without exception, validation passed
     }
 
     /**
@@ -66,11 +66,14 @@ class ImportFileValidatorTest extends TestCase
         $file->method('getSize')->willReturn(filesize($tempFile));
         $file->method('getPathname')->willReturn($tempFile);
 
-        // Act & Assert
+        // Act & Assert - Should not throw exception
         $this->validator->validate($file);
-        $this->assertTrue(true);
+        // If we get here without exception, validation passed
     }
 
+    /**
+     * @return array<string, array{string, string}>
+     */
     public static function validMimeTypesProvider(): array
     {
         return [
@@ -144,6 +147,9 @@ class ImportFileValidatorTest extends TestCase
         $this->validator->validate($file);
     }
 
+    /**
+     * @return array<string, array{string, string}>
+     */
     public static function invalidMimeTypesProvider(): array
     {
         return [
@@ -183,7 +189,7 @@ class ImportFileValidatorTest extends TestCase
 
         // Act & Assert - Should not throw exception
         $this->validator->validate($file);
-        $this->assertTrue(true);
+        // If we get here without exception, validation passed
     }
 
     public function testValidateRejectsCorruptedExcelFile(): void

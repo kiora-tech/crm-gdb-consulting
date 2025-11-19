@@ -94,7 +94,8 @@ class ImportOrchestratorTest extends KernelTestCase
         $this->assertSame(ImportType::CUSTOMER, $import->getType());
         $this->assertSame($this->testUser, $import->getUser());
         $this->assertSame(ImportStatus::PENDING, $import->getStatus());
-        $this->assertInstanceOf(\DateTimeImmutable::class, $import->getCreatedAt());
+        // Verify created date is recent (within last minute)
+        $this->assertLessThan(60, (new \DateTimeImmutable())->getTimestamp() - $import->getCreatedAt()->getTimestamp());
     }
 
     public function testInitializeImportPersistsToDatabase(): void
@@ -228,6 +229,9 @@ class ImportOrchestratorTest extends KernelTestCase
         $this->assertSame(ImportStatus::CANCELLED, $import->getStatus());
     }
 
+    /**
+     * @return array<string, array{ImportStatus}>
+     */
     public static function cancellableStatusesProvider(): array
     {
         return [
@@ -254,6 +258,9 @@ class ImportOrchestratorTest extends KernelTestCase
         $this->orchestrator->cancelImport($import);
     }
 
+    /**
+     * @return array<string, array{ImportStatus}>
+     */
     public static function nonCancellableStatusesProvider(): array
     {
         return [

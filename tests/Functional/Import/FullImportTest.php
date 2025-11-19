@@ -9,7 +9,6 @@ use App\Entity\ImportStatus;
 use App\Entity\ImportType;
 use App\Repository\ContactRepository;
 use App\Repository\CustomerRepository;
-use App\Repository\ImportRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -19,7 +18,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class FullImportTest extends KernelTestCase
 {
     private EntityManagerInterface $entityManager;
-    private ImportRepository $importRepository;
     private CustomerRepository $customerRepository;
     private ContactRepository $contactRepository;
 
@@ -30,7 +28,6 @@ class FullImportTest extends KernelTestCase
 
         $container = static::getContainer();
         $this->entityManager = $container->get(EntityManagerInterface::class);
-        $this->importRepository = $container->get(ImportRepository::class);
         $this->customerRepository = $container->get(CustomerRepository::class);
         $this->contactRepository = $container->get(ContactRepository::class);
     }
