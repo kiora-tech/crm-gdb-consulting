@@ -20,6 +20,7 @@ use App\Entity\User;
 use App\Repository\ContactRepository;
 use App\Repository\CustomerRepository;
 use App\Repository\EnergyRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -36,6 +37,7 @@ readonly class CustomerImportProcessor implements ImportProcessorInterface
         private EntityManagerInterface $entityManager,
         private LoggerInterface $logger,
         private EnergyRepository $energyRepository,
+        private UserRepository $userRepository,
     ) {
     }
 
@@ -191,12 +193,14 @@ readonly class CustomerImportProcessor implements ImportProcessorInterface
             'fournisseur_actuel' => 'provider',
             'fournisseur' => 'provider',
             'echeance' => 'contract_end',
+            'cheance' => 'contract_end', // Fix for accented "Échéance" which becomes "cheance"
             'contract_end' => 'contract_end',
             'date_chance_elec' => 'contract_end',
             'pdl' => 'pce_pdl',
             'pce' => 'pce_pdl',
             'pce_pdl' => 'pce_pdl',
             'pdl_pce' => 'pce_pdl',
+            'pdlpce' => 'pce_pdl', // Fix for "PDL/PCE" which becomes "pdlpce" (slash removed)
             'pdl__pce' => 'pce_pdl',
             'origine_lead' => 'lead_origin',
             'origine_du_lead' => 'lead_origin',
@@ -206,6 +210,7 @@ readonly class CustomerImportProcessor implements ImportProcessorInterface
             'comment' => 'comment',
             'elec__gaz' => 'energy_type',
             'type_energie' => 'energy_type',
+            'commercial' => 'commercial_email', // For "Commercial" column
         ];
 
         return $mappings[$key] ?? $key;
@@ -253,12 +258,14 @@ readonly class CustomerImportProcessor implements ImportProcessorInterface
         $name = $rowData['name'] ?? '';
         $siret = $rowData['siret'] ?? '';
         $leadOrigin = $rowData['lead_origin'] ?? '';
+        $commercialEmail = $rowData['commercial_email'] ?? null;
 
         $customer = $this->getOrCreateCustomer(
             is_string($name) ? $name : '',
             is_string($siret) || is_numeric($siret) ? (string) $siret : '',
             is_string($leadOrigin) ? $leadOrigin : '',
-            $userId
+            $userId,
+            is_string($commercialEmail) ? $commercialEmail : null
         );
 
         $this->logger->info('Client créé/récupéré', [
@@ -293,7 +300,7 @@ readonly class CustomerImportProcessor implements ImportProcessorInterface
         }
     }
 
-    private function getOrCreateCustomer(string $name, string $siret, string $leadOrigin, int $userId): Customer
+    private function getOrCreateCustomer(string $name, string $siret, string $leadOrigin, int $userId, ?string $commercialEmail = null): Customer
     {
         // Clean the name
         $name = trim($name);
@@ -343,7 +350,29 @@ readonly class CustomerImportProcessor implements ImportProcessorInterface
         }
 
         // Set user reference
-        $customer->setUser($this->entityManager->getReference(User::class, $userId));
+        // If a commercial email is provided, try to find the user by email
+        // Otherwise, use the user who initiated the import
+        $assignedUserId = $userId;
+
+        if (!empty($commercialEmail)) {
+            $commercialUser = $this->userRepository->findOneBy(['email' => $commercialEmail]);
+            if ($commercialUser && $commercialUser->getId()) {
+                $assignedUserId = $commercialUser->getId();
+                $this->logger->debug('Commercial assigné depuis l\'email', [
+                    'customer' => $name,
+                    'commercial_email' => $commercialEmail,
+                    'commercial_id' => $assignedUserId,
+                ]);
+            } else {
+                $this->logger->warning('Commercial non trouvé, utilisation de l\'utilisateur de l\'import', [
+                    'customer' => $name,
+                    'commercial_email' => $commercialEmail,
+                    'fallback_user_id' => $userId,
+                ]);
+            }
+        }
+
+        $customer->setUser($this->entityManager->getReference(User::class, $assignedUserId));
 
         return $customer;
     }
