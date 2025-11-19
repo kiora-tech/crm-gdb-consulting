@@ -7,9 +7,9 @@ namespace App\MessageHandler;
 use App\Message\RefreshMicrosoftTasksMessage;
 use App\Repository\UserRepository;
 use App\Service\MicrosoftGraphService;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Contracts\Cache\CacheInterface;
 
 #[AsMessageHandler]
 class RefreshMicrosoftTasksHandler
@@ -19,7 +19,7 @@ class RefreshMicrosoftTasksHandler
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly MicrosoftGraphService $microsoftGraphService,
-        private readonly CacheInterface $microsoftGraphCache,
+        private readonly CacheItemPoolInterface $microsoftGraphCache,
         private readonly LoggerInterface $logger,
     ) {
     }
