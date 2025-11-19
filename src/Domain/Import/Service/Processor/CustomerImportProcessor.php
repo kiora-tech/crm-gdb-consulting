@@ -351,28 +351,23 @@ readonly class CustomerImportProcessor implements ImportProcessorInterface
 
         // Set user reference
         // If a commercial email is provided, try to find the user by email
-        // Otherwise, use the user who initiated the import
-        $assignedUserId = $userId;
-
+        // If no commercial email is provided or user not found, leave customer unassigned (null)
         if (!empty($commercialEmail)) {
             $commercialUser = $this->userRepository->findOneBy(['email' => $commercialEmail]);
             if ($commercialUser && $commercialUser->getId()) {
-                $assignedUserId = $commercialUser->getId();
+                $customer->setUser($this->entityManager->getReference(User::class, $commercialUser->getId()));
                 $this->logger->debug('Commercial assigné depuis l\'email', [
                     'customer' => $name,
                     'commercial_email' => $commercialEmail,
-                    'commercial_id' => $assignedUserId,
+                    'commercial_id' => $commercialUser->getId(),
                 ]);
             } else {
-                $this->logger->warning('Commercial non trouvé, utilisation de l\'utilisateur de l\'import', [
+                $this->logger->warning('Commercial non trouvé, customer non assigné', [
                     'customer' => $name,
                     'commercial_email' => $commercialEmail,
-                    'fallback_user_id' => $userId,
                 ]);
             }
         }
-
-        $customer->setUser($this->entityManager->getReference(User::class, $assignedUserId));
 
         return $customer;
     }

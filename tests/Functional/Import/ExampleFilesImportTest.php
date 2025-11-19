@@ -78,6 +78,19 @@ class ExampleFilesImportTest extends KernelTestCase
         $this->testUser->setCompany($this->testCompany);
         $this->entityManager->persist($this->testUser);
 
+        // Create or find admin user referenced in import_complet_exemple.xlsx
+        $userRepository = $this->entityManager->getRepository(User::class);
+        $adminUser = $userRepository->findOneBy(['email' => 'admin@test.com']);
+
+        if (!$adminUser) {
+            $adminUser = new User();
+            $adminUser->setEmail('admin@test.com');
+            $adminUser->setPassword('test');
+            $adminUser->setRoles(['ROLE_ADMIN']);
+            $adminUser->setCompany($this->testCompany);
+            $this->entityManager->persist($adminUser);
+        }
+
         $this->entityManager->flush();
     }
 
@@ -212,12 +225,22 @@ class ExampleFilesImportTest extends KernelTestCase
         $this->assertNotNull($customerBoulangerie, 'BOULANGERIE MARTIN should exist');
         $this->assertSame('BOULANGERIE MARTIN', $customerBoulangerie->getName());
 
-        // Verify contacts
+        // Verify contacts - search by email to avoid order dependency
         $contacts = $this->contactRepository->findBy(['customer' => $customerBoulangerie]);
         $this->assertGreaterThanOrEqual(1, count($contacts), 'Customer should have contacts');
-        $this->assertSame('Jean', $contacts[0]->getFirstName());
-        $this->assertSame('Martin', $contacts[0]->getLastName());
-        $this->assertSame('j.martin@boulangerie-martin.fr', $contacts[0]->getEmail());
+
+        // Find the specific contact from the Excel file
+        $jeanMartin = null;
+        foreach ($contacts as $contact) {
+            if ($contact->getEmail() === 'j.martin@boulangerie-martin.fr') {
+                $jeanMartin = $contact;
+                break;
+            }
+        }
+
+        $this->assertNotNull($jeanMartin, 'Contact j.martin@boulangerie-martin.fr should exist');
+        $this->assertSame('Jean', $jeanMartin->getFirstName());
+        $this->assertSame('Martin', $jeanMartin->getLastName());
 
         // Verify energies
         $energies = $this->energyRepository->findBy(['customer' => $customerBoulangerie]);
