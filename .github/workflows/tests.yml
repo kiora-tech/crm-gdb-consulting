@@ -83,8 +83,8 @@ jobs:
         env:
           APP_ENV: test
 
-      - name: Run PHPUnit tests
-        run: vendor/bin/phpunit
+      - name: Run GrumPHP (PHPStan + PHPUnit + PHP CS Fixer)
+        run: vendor/bin/grumphp run
         env:
           DATABASE_URL: mysql://symfony:symfony@127.0.0.1:3306/symfony_test?serverVersion=8.0.40&charset=utf8mb4
           APP_ENV: test
