@@ -394,7 +394,6 @@ class ImportErrorTracker
 
             $file = $frame['file'] ?? 'unknown';
             $line = $frame['line'] ?? 0;
-            // @phpstan-ignore-next-line
             $function = $frame['function'] ?? 'unknown';
             $class = $frame['class'] ?? '';
 
