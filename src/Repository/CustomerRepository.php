@@ -47,6 +47,9 @@ class CustomerRepository extends ServiceEntityRepository
         return $qb;
     }
 
+    /**
+     * @return Query<int, Customer>
+     */
     public function search(CustomerSearchData $search): Query
     {
         $query = $this->getQueryBuilder();
@@ -195,7 +198,9 @@ class CustomerRepository extends ServiceEntityRepository
                 ->setParameter('energyProvider', $search->energyProvider);
         }
 
-        return $query
-            ->getQuery();
+        /** @var Query<int, Customer> $result */
+        $result = $query->getQuery();
+
+        return $result;
     }
 }

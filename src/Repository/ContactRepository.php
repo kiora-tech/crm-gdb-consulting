@@ -50,6 +50,9 @@ class ContactRepository extends ServiceEntityRepository
             ->join('c.customer', 'cus');
     }
 
+    /**
+     * @return Query<int, Contact>
+     */
     public function search(ContactSearchData $search): Query
     {
         $query = $this->getQueryBuilder();
@@ -137,6 +140,9 @@ class ContactRepository extends ServiceEntityRepository
             $query->orderBy($search->sort, $search->order ?? 'ASC');
         }
 
-        return $query->getQuery();
+        /** @var Query<int, Contact> $result */
+        $result = $query->getQuery();
+
+        return $result;
     }
 }

@@ -28,8 +28,10 @@ class ExcelReaderServiceTest extends TestCase
         // Act
         $result = $this->excelReader->readRowsInBatches($filePath);
 
-        // Assert
-        $this->assertInstanceOf(\Generator::class, $result);
+        // Assert - Generator type is enforced by return type
+        // Simply iterating confirms it works as a Generator
+        $batches = iterator_to_array($result);
+        $this->assertNotEmpty($batches);
     }
 
     public function testReadRowsInBatchesReturnsCorrectData(): void

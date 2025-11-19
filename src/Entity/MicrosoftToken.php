@@ -11,7 +11,7 @@ class MicrosoftToken
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id; // @phpstan-ignore-line Doctrine sets this value
+    private int $id;
 
     #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'microsoftToken')]
     #[ORM\JoinColumn(nullable: false)]

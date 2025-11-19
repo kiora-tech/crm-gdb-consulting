@@ -18,7 +18,6 @@ class Company
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    /** @phpstan-ignore-next-line */
     private int $id;
 
     #[ORM\Column(length: 255)]

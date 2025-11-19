@@ -7,7 +7,6 @@ namespace App\Command;
 use App\Domain\Import\Service\ImportOrchestrator;
 use App\Domain\Import\ValueObject\ImportFileInfo;
 use App\Entity\ImportType;
-use App\Repository\ImportRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -27,7 +26,6 @@ class TestImportCommand extends Command
     public function __construct(
         private readonly ImportOrchestrator $orchestrator,
         private readonly UserRepository $userRepository,
-        private readonly ImportRepository $importRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct();

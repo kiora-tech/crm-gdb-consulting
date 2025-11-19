@@ -1,0 +1,7 @@
+services:
+    # Override cache.microsoft_graph service for test environment
+    cache.microsoft_graph:
+        class: Symfony\Component\Cache\Adapter\ArrayAdapter
+        arguments:
+            - 300 # default lifetime in seconds
+            - false # store serialized

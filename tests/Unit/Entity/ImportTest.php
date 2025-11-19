@@ -32,7 +32,8 @@ class ImportTest extends TestCase
 
         // Assert
         $this->assertSame(ImportStatus::PENDING, $import->getStatus());
-        $this->assertInstanceOf(\DateTimeImmutable::class, $import->getCreatedAt());
+        // Verify created date is recent (within last minute) - type enforced by return type
+        $this->assertLessThan(60, (new \DateTimeImmutable())->getTimestamp() - $import->getCreatedAt()->getTimestamp());
         $this->assertCount(0, $import->getErrors());
         $this->assertCount(0, $import->getAnalysisResults());
         $this->assertSame(0, $import->getTotalRows());

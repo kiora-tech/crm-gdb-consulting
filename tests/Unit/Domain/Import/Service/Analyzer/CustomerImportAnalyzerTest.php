@@ -22,9 +22,17 @@ use Psr\Log\LoggerInterface;
 class CustomerImportAnalyzerTest extends TestCase
 {
     private CustomerImportAnalyzer $analyzer;
+
+    /** @var ExcelReaderService&\PHPUnit\Framework\MockObject\MockObject */
     private ExcelReaderService $excelReader;
+
+    /** @var CustomerRepository&\PHPUnit\Framework\MockObject\MockObject */
     private CustomerRepository $customerRepository;
+
+    /** @var EntityManagerInterface&\PHPUnit\Framework\MockObject\MockObject */
     private EntityManagerInterface $entityManager;
+
+    /** @var LoggerInterface&\PHPUnit\Framework\MockObject\MockObject */
     private LoggerInterface $logger;
 
     protected function setUp(): void

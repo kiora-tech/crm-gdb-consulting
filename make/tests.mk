@@ -18,4 +18,10 @@ reset-test-db: ## Reset test database (drop, create, migrate)
 	docker compose exec database mysql -usymfony -psymfony -e "DROP DATABASE IF EXISTS symfony_test; CREATE DATABASE symfony_test;" || true
 	docker compose exec php sh -c 'DATABASE_URL="mysql://symfony:symfony@database:3306/symfony_test?serverVersion=8.0.40&charset=utf8mb4" bin/console doctrine:migrations:migrate --no-interaction'
 
-.PHONY: test test-coverage test-% reset-test-db
+grumphp: ## Run GrumPHP (PHPStan, PHPUnit, PHP CS Fixer)
+	$(PHP) vendor/bin/grumphp run
+
+grumphp-ci: ## Run GrumPHP for CI (non-interactive)
+	docker compose exec php vendor/bin/grumphp run
+
+.PHONY: test test-coverage test-% reset-test-db grumphp grumphp-ci

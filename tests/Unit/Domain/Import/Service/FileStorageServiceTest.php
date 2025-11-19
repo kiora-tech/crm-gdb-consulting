@@ -47,8 +47,7 @@ class FileStorageServiceTest extends TestCase
         // Act
         $fileInfo = $this->fileStorageService->storeUploadedFile($uploadedFile);
 
-        // Assert
-        $this->assertInstanceOf(ImportFileInfo::class, $fileInfo);
+        // Assert - ImportFileInfo type is enforced by return type
         $this->assertSame($originalFilename, $fileInfo->originalName);
         $this->assertNotSame($originalFilename, $fileInfo->storedFilename);
         $this->assertStringContainsString('test-import-', $fileInfo->storedFilename);
@@ -185,7 +184,7 @@ class FileStorageServiceTest extends TestCase
 
         // Act & Assert - Should not throw exception
         $this->fileStorageService->deleteImportFile($import);
-        $this->assertTrue(true); // If we get here, no exception was thrown
+        // If we get here without exception, deletion was successful
     }
 
     public function testDeleteImportFileThrowsExceptionForNonWritableFile(): void
@@ -265,42 +264,6 @@ class FileStorageServiceTest extends TestCase
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             null,
             true
-        );
-    }
-
-    /**
-     * Create a mock UploadedFile for testing.
-     */
-    private function createMockUploadedFile(
-        string $originalName,
-        string $mimeType,
-        ?string $extension = null,
-    ): UploadedFile {
-        // Create a temporary file with actual content
-        $tempFile = tempnam(sys_get_temp_dir(), 'test_upload_');
-
-        if (false === $tempFile) {
-            throw new \RuntimeException('Failed to create temporary file');
-        }
-
-        // Write some actual content to the file
-        file_put_contents($tempFile, 'test content for uploaded file');
-
-        // Determine extension
-        if (null === $extension) {
-            $extension = pathinfo($originalName, PATHINFO_EXTENSION);
-        }
-
-        // Rename the temp file to have the correct extension for MIME type detection
-        $tempFileWithExtension = $tempFile.'.'.$extension;
-        rename($tempFile, $tempFileWithExtension);
-
-        return new UploadedFile(
-            $tempFileWithExtension,
-            $originalName,
-            $mimeType,
-            null,
-            true // Mark as test mode
         );
     }
 
