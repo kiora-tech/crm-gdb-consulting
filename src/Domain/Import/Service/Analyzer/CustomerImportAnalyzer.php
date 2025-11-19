@@ -561,22 +561,6 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
     }
 
     /**
-     * Determine the operation type for a row.
-     *
-     * Checks if the customer exists by SIRET or name and determines
-     * whether this would be a CREATE or UPDATE operation.
-     *
-     * @param array<string, mixed> $rowData Normalized row data
-     */
-    private function determineOperationType(array $rowData): ImportOperationType
-    {
-        $existingCustomer = $this->findExistingCustomer($rowData);
-
-        // Determine operation type
-        return $existingCustomer ? ImportOperationType::UPDATE : ImportOperationType::CREATE;
-    }
-
-    /**
      * Find existing customer by SIRET or name.
      *
      * @param array<string, mixed> $rowData Normalized row data
@@ -642,51 +626,6 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
             || !empty($rowData['energy_type']);
     }
 
-    /**
-     * Determine the operation type for a contact.
-     *
-     * @param array<string, mixed> $rowData          Normalized row data
-     * @param Customer|null        $existingCustomer Existing customer if found
-     */
-    private function determineContactOperationType(array $rowData, ?Customer $existingCustomer): ImportOperationType
-    {
-        // If customer doesn't exist yet, contact will be created
-        if (!$existingCustomer) {
-            return ImportOperationType::CREATE;
-        }
-
-        // Extract contact information - handle both 'contact' field and separate firstname/lastname
-        $contactName = '';
-        if (!empty($rowData['contact']) && is_string($rowData['contact'])) {
-            $contactName = trim($rowData['contact']);
-        } elseif (!empty($rowData['contact_firstname']) || !empty($rowData['contact_lastname'])) {
-            $firstName = isset($rowData['contact_firstname']) && is_string($rowData['contact_firstname']) ? trim($rowData['contact_firstname']) : '';
-            $lastName = isset($rowData['contact_lastname']) && is_string($rowData['contact_lastname']) ? trim($rowData['contact_lastname']) : '';
-            $contactName = trim($firstName.' '.$lastName);
-        }
-
-        $email = isset($rowData['email']) && is_string($rowData['email']) ? $rowData['email'] : null;
-        $phone = isset($rowData['phone']) && is_string($rowData['phone']) ? $rowData['phone'] : null;
-
-        // Use the same logic as ProcessExcelBatchMessageHandler
-        // which uses ContactRepository::findContactByCustomerAndEmailOrNumber
-        if (empty($contactName) && empty($email) && empty($phone)) {
-            return ImportOperationType::SKIP;
-        }
-
-        $existingContact = $this->contactRepository->findContactByCustomerAndEmailOrNumber(
-            $existingCustomer,
-            $contactName,
-            $email,
-            $phone
-        );
-
-        return $existingContact ? ImportOperationType::UPDATE : ImportOperationType::CREATE;
-    }
-
-    /**
-     * Determine the operation type for an energy.
-     */
     /**
      * Parse energy type from string.
      */
