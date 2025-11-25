@@ -21,9 +21,9 @@ class PaginationService
     }
 
     /**
-     * @param Query|array<mixed> $query
+     * @param Query<int, mixed>|array<mixed> $query
      *
-     * @return PaginationInterface<TKey, TValue>
+     * @return PaginationInterface<int, mixed>
      */
     public function paginate(Query|array $query, Request $request, int $defaultLimit = 30, string $pageParamName = 'page'): PaginationInterface
     {

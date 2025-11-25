@@ -1,0 +1,7 @@
+framework:
+    cache:
+        # Override the app cache to use filesystem in tests (no Redis)
+        app: cache.adapter.filesystem
+
+        # The cache.microsoft_graph pool is defined as a service in config/packages/test/services.yaml
+        # to avoid Redis dependency issues in tests

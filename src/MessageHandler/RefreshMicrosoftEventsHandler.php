@@ -6,10 +6,10 @@ namespace App\MessageHandler;
 
 use App\Message\RefreshMicrosoftEventsMessage;
 use App\Repository\UserRepository;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Contracts\Cache\CacheInterface;
 
 #[AsMessageHandler]
 class RefreshMicrosoftEventsHandler
@@ -18,7 +18,7 @@ class RefreshMicrosoftEventsHandler
 
     public function __construct(
         private readonly UserRepository $userRepository,
-        private readonly CacheInterface $microsoftGraphCache,
+        private readonly CacheItemPoolInterface $microsoftGraphCache,
         private readonly LoggerInterface $logger,
     ) {
     }

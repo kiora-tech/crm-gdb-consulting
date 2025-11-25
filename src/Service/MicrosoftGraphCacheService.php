@@ -9,9 +9,9 @@ use App\Message\RefreshMicrosoftCalendarsMessage;
 use App\Message\RefreshMicrosoftCategoriesMessage;
 use App\Message\RefreshMicrosoftEventsMessage;
 use App\Message\RefreshMicrosoftTasksMessage;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Contracts\Cache\CacheInterface;
 
 class MicrosoftGraphCacheService
 {
@@ -20,7 +20,7 @@ class MicrosoftGraphCacheService
     private const int TTL_CATEGORIES = 3600; // 1 hour
     private const int TTL_EVENTS = 300; // 5 minutes
     private const int TTL_TASKS = 180; // 3 minutes
-    private const int TTL_SINGLE_EVENT = 120; // 2 minutes
+    // private const int TTL_SINGLE_EVENT = 120; // 2 minutes - unused, kept for future use
 
     // Refresh threshold (déclencher refresh async si cache plus vieux que ça)
     private const int REFRESH_THRESHOLD_CALENDARS = 1800; // 30 min
@@ -29,7 +29,7 @@ class MicrosoftGraphCacheService
     private const int REFRESH_THRESHOLD_TASKS = 90; // 1.5 min
 
     public function __construct(
-        private readonly CacheInterface $microsoftGraphCache,
+        private readonly CacheItemPoolInterface $microsoftGraphCache,
         private readonly MessageBusInterface $messageBus,
         private readonly MicrosoftGraphService $microsoftGraphService,
         private readonly LoggerInterface $logger,
@@ -47,7 +47,7 @@ class MicrosoftGraphCacheService
         $cacheKey = $this->getCacheKey($user->getId(), 'calendars');
 
         if ($forceRefresh) {
-            $this->microsoftGraphCache->delete($cacheKey);
+            $this->microsoftGraphCache->deleteItem($cacheKey);
         }
 
         try {
@@ -102,7 +102,7 @@ class MicrosoftGraphCacheService
         $cacheKey = $this->getCacheKey($user->getId(), 'categories');
 
         if ($forceRefresh) {
-            $this->microsoftGraphCache->delete($cacheKey);
+            $this->microsoftGraphCache->deleteItem($cacheKey);
         }
 
         try {
@@ -152,7 +152,7 @@ class MicrosoftGraphCacheService
         );
 
         if ($forceRefresh) {
-            $this->microsoftGraphCache->delete($cacheKey);
+            $this->microsoftGraphCache->deleteItem($cacheKey);
         }
 
         try {
@@ -200,7 +200,7 @@ class MicrosoftGraphCacheService
         $cacheKey = $this->getCacheKey($user->getId(), 'tasks');
 
         if ($forceRefresh) {
-            $this->microsoftGraphCache->delete($cacheKey);
+            $this->microsoftGraphCache->deleteItem($cacheKey);
         }
 
         try {
@@ -257,7 +257,7 @@ class MicrosoftGraphCacheService
     public function invalidateCategoryCache(User $user): void
     {
         $cacheKey = $this->getCacheKey($user->getId(), 'categories');
-        $this->microsoftGraphCache->delete($cacheKey);
+        $this->microsoftGraphCache->deleteItem($cacheKey);
     }
 
     /**
@@ -266,7 +266,7 @@ class MicrosoftGraphCacheService
     public function invalidateTaskCache(User $user): void
     {
         $cacheKey = $this->getCacheKey($user->getId(), 'tasks');
-        $this->microsoftGraphCache->delete($cacheKey);
+        $this->microsoftGraphCache->deleteItem($cacheKey);
     }
 
     /**
@@ -315,7 +315,7 @@ class MicrosoftGraphCacheService
     /**
      * Store data in cache with timestamp.
      */
-    private function storeCachedData(string $cacheKey, $data, int $ttl): void
+    private function storeCachedData(string $cacheKey, mixed $data, int $ttl): void
     {
         $cacheItem = $this->microsoftGraphCache->getItem($cacheKey);
         $cacheItem->set([

@@ -36,7 +36,6 @@ class ImportController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly ImportOrchestrator $orchestrator,
         private readonly FileStorageService $fileStorage,
-        private readonly ImportFileValidator $validator,
     ) {
     }
 
@@ -117,7 +116,7 @@ class ImportController extends AbstractController
 
         // Validate file extension
         $allowedExtensions = ['xls', 'xlsx', 'ods'];
-        $extension = strtolower($file->getClientOriginalExtension() ?? '');
+        $extension = strtolower($file->getClientOriginalExtension());
         if (!in_array($extension, $allowedExtensions, true)) {
             $this->addFlash('error', 'Format de fichier non supporté. Formats acceptés : '.implode(', ', $allowedExtensions));
 

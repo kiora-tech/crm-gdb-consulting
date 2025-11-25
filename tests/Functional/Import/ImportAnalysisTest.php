@@ -16,8 +16,6 @@ use App\Entity\ImportOperationType;
 use App\Entity\ImportStatus;
 use App\Entity\ImportType;
 use App\Entity\User;
-use App\Repository\CustomerRepository;
-use App\Repository\ImportRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -32,8 +30,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class ImportAnalysisTest extends KernelTestCase
 {
     private EntityManagerInterface $entityManager;
-    private ImportRepository $importRepository;
-    private CustomerRepository $customerRepository;
     private AnalyzeImportMessageHandler $analyzeHandler;
     private Company $testCompany;
     private User $testUser;
@@ -45,8 +41,6 @@ class ImportAnalysisTest extends KernelTestCase
 
         $container = static::getContainer();
         $this->entityManager = $container->get(EntityManagerInterface::class);
-        $this->importRepository = $container->get(ImportRepository::class);
-        $this->customerRepository = $container->get(CustomerRepository::class);
         $this->analyzeHandler = $container->get(AnalyzeImportMessageHandler::class);
 
         // Create test company and user
