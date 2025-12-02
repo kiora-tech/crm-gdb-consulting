@@ -90,6 +90,7 @@ class MicrosoftGraphService
             return $allTasks;
         } catch (\Exception $e) {
             $this->logger->error('Error fetching Microsoft tasks', [
+                'exception' => $e,
                 'user_id' => $user->getId(),
                 'error' => $e->getMessage(),
             ]);
@@ -168,6 +169,7 @@ class MicrosoftGraphService
                 // Don't log 404 errors as they're expected for missing resources
                 if (!str_contains($e->getMessage(), '404')) {
                     $this->logger->error('Network error making Graph request', [
+                        'exception' => $e,
                         'url' => $url,
                         'attempt' => $attempt + 1,
                         'error' => $e->getMessage(),
@@ -241,6 +243,7 @@ class MicrosoftGraphService
             return $token;
         } catch (\Exception $e) {
             $this->logger->error('Error refreshing Microsoft token', [
+                'exception' => $e,
                 'user_id' => $token->getUser()->getId(),
                 'error' => $e->getMessage(),
             ]);
@@ -390,6 +393,7 @@ class MicrosoftGraphService
             ];
         } catch (\Exception $e) {
             $this->logger->error('Error creating test Microsoft task', [
+                'exception' => $e,
                 'user_id' => $user->getId(),
                 'error' => $e->getMessage(),
             ]);
@@ -452,6 +456,7 @@ class MicrosoftGraphService
             return $allTasks;
         } catch (\Exception $e) {
             $this->logger->error('Error fetching Outlook tasks', [
+                'exception' => $e,
                 'user_id' => $user->getId(),
                 'error' => $e->getMessage(),
             ]);
@@ -509,6 +514,7 @@ class MicrosoftGraphService
             ];
         } catch (\Exception $e) {
             $this->logger->error('Error creating test Outlook task', [
+                'exception' => $e,
                 'user_id' => $user->getId(),
                 'error' => $e->getMessage(),
             ]);
@@ -553,6 +559,7 @@ class MicrosoftGraphService
             return $result;
         } catch (\Exception $e) {
             $this->logger->error('Error fetching calendars', [
+                'exception' => $e,
                 'user_id' => $user->getId(),
                 'error' => $e->getMessage(),
             ]);
@@ -636,6 +643,7 @@ class MicrosoftGraphService
             ];
         } catch (\Exception $e) {
             $this->logger->error('Error creating calendar event', [
+                'exception' => $e,
                 'user_id' => $user->getId(),
                 'error' => $e->getMessage(),
             ]);
@@ -732,6 +740,7 @@ class MicrosoftGraphService
             return $createdEvent;
         } catch (\Exception $e) {
             $this->logger->error('Error creating calendar event from entity', [
+                'exception' => $e,
                 'user_id' => $user->getId(),
                 'title' => $title,
                 'error' => $e->getMessage(),
@@ -790,6 +799,7 @@ class MicrosoftGraphService
             return json_decode($response->getContent(), true);
         } catch (\Exception $e) {
             $this->logger->error('Error fetching event by ID', [
+                'exception' => $e,
                 'user_id' => $user->getId(),
                 'event_id' => $eventId,
                 'error' => $e->getMessage(),
@@ -856,6 +866,7 @@ class MicrosoftGraphService
             return $updatedEvent;
         } catch (\Exception $e) {
             $this->logger->error('Error updating calendar event', [
+                'exception' => $e,
                 'user_id' => $user->getId(),
                 'event_id' => $eventId,
                 'error' => $e->getMessage(),
@@ -904,6 +915,7 @@ class MicrosoftGraphService
             ]);
         } catch (\Exception $e) {
             $this->logger->error('Error deleting calendar event', [
+                'exception' => $e,
                 'user_id' => $user->getId(),
                 'event_id' => $eventId,
                 'error' => $e->getMessage(),
@@ -971,6 +983,7 @@ class MicrosoftGraphService
             return $categories;
         } catch (\Exception $e) {
             $this->logger->error('Error fetching Outlook categories', [
+                'exception' => $e,
                 'user_id' => $user->getId(),
                 'error' => $e->getMessage(),
             ]);
@@ -1065,6 +1078,7 @@ class MicrosoftGraphService
             ]);
         } catch (\Exception $e) {
             $this->logger->error('Error sending email via Microsoft Graph', [
+                'exception' => $e,
                 'user_id' => $user->getId(),
                 'to' => $to,
                 'error' => $e->getMessage(),
@@ -1101,6 +1115,7 @@ class MicrosoftGraphService
             return json_decode($response->getContent(), true);
         } catch (\Exception $e) {
             $this->logger->error('Error fetching Microsoft user profile', [
+                'exception' => $e,
                 'user_id' => $user->getId(),
                 'error' => $e->getMessage(),
             ]);

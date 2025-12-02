@@ -117,6 +117,7 @@ class CalendarEventSyncService
             ]);
         } catch (\Exception $e) {
             $this->logger->error('Error syncing event with Microsoft', [
+                'exception' => $e,
                 'event_id' => $event->getId(),
                 'microsoft_event_id' => $microsoftEventId,
                 'error' => $e->getMessage(),
@@ -141,6 +142,7 @@ class CalendarEventSyncService
                 ++$syncedCount;
             } catch (\Exception $e) {
                 $this->logger->error('Failed to sync event', [
+                    'exception' => $e,
                     'event_id' => $event->getId(),
                     'error' => $e->getMessage(),
                 ]);
@@ -187,6 +189,7 @@ class CalendarEventSyncService
             return $microsoftEvent;
         } catch (\Exception $e) {
             $this->logger->error('Error creating event in Microsoft', [
+                'exception' => $e,
                 'event_id' => $event->getId(),
                 'title' => $event->getTitle(),
                 'error' => $e->getMessage(),
