@@ -383,7 +383,10 @@ readonly class CustomerImportProcessor implements ImportProcessorInterface
         $contactRepository = $this->entityManager->getRepository(Contact::class);
 
         $email = isset($rowData['email']) && is_string($rowData['email']) ? $rowData['email'] : null;
-        $phone = isset($rowData['phone']) && is_string($rowData['phone']) ? $rowData['phone'] : null;
+        // Bug fix: Excel renvoie les numéros de téléphone comme des int, pas des string
+        $phone = isset($rowData['phone']) && (is_string($rowData['phone']) || is_numeric($rowData['phone']))
+            ? (string) $rowData['phone']
+            : null;
 
         // Determine first name and last name from available data
         $firstName = '';
@@ -513,7 +516,9 @@ readonly class CustomerImportProcessor implements ImportProcessorInterface
         }
 
         // 3. If customer has exactly one energy of this type, use it
-        if (!$energy) {
+        // Bug fix: Ne réutiliser que si on n'a PAS de code PDL/PCE dans les données
+        // Si on a un code PDL/PCE différent, c'est un nouveau compteur à créer
+        if (!$energy && !$pceCode) {
             $energiesOfType = $this->energyRepository->findBy([
                 'customer' => $customer,
                 'type' => $energyType,

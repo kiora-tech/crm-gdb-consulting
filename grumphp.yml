@@ -8,6 +8,7 @@ grumphp:
             config_file: phpunit.xml.dist
             testsuite: null
             group: [ ]
+            always_execute: true
         phpstan:
             autoload_file: ~
             configuration: ~

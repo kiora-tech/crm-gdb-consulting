@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\Import\Service;
 
 use App\Domain\Import\Service\ImportFileValidator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -28,9 +29,7 @@ class ImportFileValidatorTest extends TestCase
         // If we get here without exception, validation passed
     }
 
-    /**
-     * @dataProvider validMimeTypesProvider
-     */
+    #[DataProvider('validMimeTypesProvider')]
     public function testValidateAcceptsAllValidMimeTypes(string $mimeType, string $extension): void
     {
         // Arrange - Use mock for MIME type validation tests (faster and no fixture files needed)
@@ -132,9 +131,7 @@ class ImportFileValidatorTest extends TestCase
         $this->validator->validate($file);
     }
 
-    /**
-     * @dataProvider invalidMimeTypesProvider
-     */
+    #[DataProvider('invalidMimeTypesProvider')]
     public function testValidateRejectsVariousInvalidMimeTypes(string $filename, string $mimeType): void
     {
         // Arrange

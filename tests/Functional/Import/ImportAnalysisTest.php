@@ -300,7 +300,7 @@ class ImportAnalysisTest extends KernelTestCase
         }
 
         // 6. Verify all customers are new
-        $customerResults = $resultsByEntityAndOperation[Customer::class];
+        $customerResults = $resultsByEntityAndOperation[Customer::class] ?? [];
 
         $this->assertSame(
             3,

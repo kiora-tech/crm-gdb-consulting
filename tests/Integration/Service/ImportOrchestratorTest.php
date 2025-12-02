@@ -17,6 +17,7 @@ use App\Entity\ImportType;
 use App\Entity\User;
 use App\Repository\ImportRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ImportOrchestratorTest extends KernelTestCase
@@ -214,9 +215,7 @@ class ImportOrchestratorTest extends KernelTestCase
         $this->assertNotNull($import->getCompletedAt());
     }
 
-    /**
-     * @dataProvider cancellableStatusesProvider
-     */
+    #[DataProvider('cancellableStatusesProvider')]
     public function testCancelImportWorksForAllCancellableStatuses(ImportStatus $status): void
     {
         // Arrange
@@ -242,9 +241,7 @@ class ImportOrchestratorTest extends KernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider nonCancellableStatusesProvider
-     */
+    #[DataProvider('nonCancellableStatusesProvider')]
     public function testCancelImportThrowsExceptionForTerminalStatuses(ImportStatus $status): void
     {
         // Arrange
