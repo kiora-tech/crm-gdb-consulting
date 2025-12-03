@@ -506,8 +506,10 @@ readonly class CustomerImportProcessor implements ImportProcessorInterface
             ]);
         }
 
-        // 2. If not found and we have a provider, try by customer + provider + type
-        if (!$energy && $provider) {
+        // 2. If not found and we have a provider AND no PDL/PCE code, try by customer + provider + type
+        // Bug fix: Si on a un code PDL/PCE non trouvé, c'est un nouveau compteur à créer
+        // On ne doit pas réutiliser un compteur existant du même client/fournisseur/type
+        if (!$energy && $provider && !$pceCode) {
             $energy = $this->energyRepository->findOneBy([
                 'customer' => $customer,
                 'energyProvider' => $provider,

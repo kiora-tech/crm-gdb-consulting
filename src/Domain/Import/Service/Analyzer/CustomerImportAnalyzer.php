@@ -488,6 +488,7 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
             'pce_pdl' => 'pce_pdl',
             'pdl_pce' => 'pce_pdl',
             'pdl__pce' => 'pce_pdl',
+            'pdlpce' => 'pce_pdl',
             'origine_lead' => 'lead_origin',
             'origine_du_lead' => 'lead_origin',
             'origine' => 'lead_origin',
