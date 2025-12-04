@@ -33,7 +33,7 @@ class MicrosoftAuthController extends AbstractController
                 'https://graph.microsoft.com/Mail.ReadWrite',
                 'https://graph.microsoft.com/Calendars.ReadWrite',
             ], [
-                'prompt' => 'consent', // Force Microsoft to ask for consent again
+                'prompt' => 'select_account',
             ]);
     }
 
