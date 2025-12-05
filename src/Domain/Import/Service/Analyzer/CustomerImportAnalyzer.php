@@ -576,11 +576,15 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
         $siret = '';
 
         // Handle SIRET from Excel (can be integer or string)
+        // Clean SIRET: keep only digits and limit to 14 characters
         if (isset($rowData['siret'])) {
             if (is_string($rowData['siret'])) {
-                $siret = str_replace(' ', '', $rowData['siret']);
+                $siret = preg_replace('/[^0-9]/', '', $rowData['siret']);
             } elseif (is_numeric($rowData['siret'])) {
                 $siret = (string) $rowData['siret'];
+            }
+            if (strlen($siret) > 14) {
+                $siret = substr($siret, 0, 14);
             }
         }
 
@@ -758,12 +762,16 @@ class CustomerImportAnalyzer implements ImportAnalyzerInterface
 
         // Extract new values from row data
         $newName = isset($rowData['name']) && is_string($rowData['name']) ? trim($rowData['name']) : null;
+        // Clean SIRET: keep only digits and limit to 14 characters
         $newSiret = '';
         if (isset($rowData['siret'])) {
             if (is_string($rowData['siret'])) {
-                $newSiret = str_replace(' ', '', $rowData['siret']);
+                $newSiret = preg_replace('/[^0-9]/', '', $rowData['siret']);
             } elseif (is_numeric($rowData['siret'])) {
                 $newSiret = (string) $rowData['siret'];
+            }
+            if (strlen($newSiret) > 14) {
+                $newSiret = substr($newSiret, 0, 14);
             }
         }
         $newLeadOrigin = isset($rowData['lead_origin']) && is_string($rowData['lead_origin']) ? trim($rowData['lead_origin']) : null;

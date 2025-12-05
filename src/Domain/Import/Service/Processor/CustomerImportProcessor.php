@@ -310,7 +310,11 @@ readonly class CustomerImportProcessor implements ImportProcessorInterface
             $name = substr($name, 0, 252).'...';
         }
 
-        $siret = str_replace(' ', '', $siret);
+        // Clean SIRET: keep only digits and limit to 14 characters
+        $siret = preg_replace('/[^0-9]/', '', $siret);
+        if (strlen($siret) > 14) {
+            $siret = substr($siret, 0, 14);
+        }
 
         // Try to find by SIRET first
         $customer = null;
