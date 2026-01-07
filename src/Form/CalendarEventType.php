@@ -63,13 +63,13 @@ class CalendarEventType extends AbstractType
                     'class' => 'form-control',
                 ],
                 'constraints' => [
-                    new Assert\NotBlank([
-                        'message' => 'Le titre est obligatoire',
-                    ]),
-                    new Assert\Length([
-                        'max' => 255,
-                        'maxMessage' => 'Le titre ne peut pas dépasser {{ limit }} caractères',
-                    ]),
+                    new Assert\NotBlank(
+                        message: 'Le titre est obligatoire',
+                    ),
+                    new Assert\Length(
+                        max: 255,
+                        maxMessage: 'Le titre ne peut pas dépasser {{ limit }} caractères',
+                    ),
                 ],
             ])
             ->add('description', TextareaType::class, [

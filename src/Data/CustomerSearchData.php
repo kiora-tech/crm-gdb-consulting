@@ -6,7 +6,7 @@ use App\Entity\EnergyProvider;
 use App\Entity\ProspectOrigin;
 use App\Entity\ProspectStatus;
 use App\Entity\User;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 class CustomerSearchData
 {
