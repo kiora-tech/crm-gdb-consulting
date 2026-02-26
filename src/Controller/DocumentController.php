@@ -220,7 +220,6 @@ class DocumentController extends CustomerInfoController
         Customer $customer,
         TemplateProcessor $templateProcessor,
         SluggerInterface $slugger,
-        EntityManagerInterface $entityManager,
         LoggerInterface $logger,
     ): Response {
         try {
@@ -264,81 +263,37 @@ class DocumentController extends CustomerInfoController
                 throw new \RuntimeException('Le nom de fichier original du template est manquant');
             }
 
-            // Crée le nouveau nom de fichier
+            // Crée le nom de fichier pour le téléchargement
             $originalFilename = pathinfo($originalFilenameRaw, PATHINFO_FILENAME);
             $extension = pathinfo($originalFilenameRaw, PATHINFO_EXTENSION);
             $safeFilename = $slugger->slug($originalFilename.'_'.$customer->getName());
-            $newFilename = $safeFilename.'-'.uniqid().'.'.$extension;
+            $downloadFilename = $safeFilename.'.'.$extension;
 
-            $logger->info('Déplacement du fichier temporaire', [
-                'from' => $tempFile,
-                'to' => $newFilename,
-            ]);
-
-            // Copie le fichier temporaire vers le stockage Flysystem
-            $stream = fopen($tempFile, 'r');
-            if (!$stream) {
-                $logger->error('Impossible d\'ouvrir le fichier temporaire', [
+            // Lit le contenu du fichier temporaire
+            $fileContent = file_get_contents($tempFile);
+            if (false === $fileContent) {
+                $logger->error('Impossible de lire le fichier temporaire', [
                     'file' => $tempFile,
                     'error' => error_get_last(),
                 ]);
-                throw new \RuntimeException('Impossible d\'ouvrir le fichier temporaire');
-            }
-
-            $this->documentsStorage->writeStream($newFilename, $stream);
-            if (is_resource($stream)) {
-                fclose($stream);
+                throw new \RuntimeException('Impossible de lire le fichier temporaire');
             }
 
             // Supprime le fichier temporaire
             unlink($tempFile);
 
-            $logger->info('Fichier déplacé avec succès');
-
-            // Crée une nouvelle entité Document
-            $document = new Document();
-            $document->setCustomer($customer);
-            $document->setName($originalFilename.' - '.$customer->getName());
-            $document->setPath($newFilename);
-            $document->setType($template->getDocumentType());
-
-            // Persiste le nouveau document
-            $entityManager->persist($document);
-            $entityManager->flush();
-
-            $logger->info('Document enregistré en base de données', [
-                'document_id' => $document->getId(),
-                'document_path' => $document->getPath(),
+            $logger->info('Document généré avec succès (téléchargement uniquement, non stocké dans la GED)', [
+                'file_size' => strlen($fileContent),
+                'download_filename' => $downloadFilename,
             ]);
 
-            // Vérifie que le fichier peut être lu
-            if (!$this->documentsStorage->fileExists($newFilename)) {
-                $logger->error('Le fichier final n\'existe pas', [
-                    'path' => $newFilename,
-                ]);
-                throw new \RuntimeException('Le fichier généré n\'existe pas');
-            }
-
-            // Retourne le fichier
-            $fileContent = $this->documentsStorage->read($newFilename);
-            if (empty($fileContent)) {
-                $logger->error('Impossible de lire le contenu du fichier', [
-                    'path' => $newFilename,
-                    'error' => error_get_last(),
-                ]);
-                throw new \RuntimeException('Impossible de lire le contenu du fichier généré');
-            }
-
+            // Retourne le fichier en téléchargement sans le stocker dans S3 ni créer d'entité Document
             $response = new Response($fileContent);
             $response->headers->set('Content-Type', $template->getMimeType());
             $response->headers->set(
                 'Content-Disposition',
-                'attachment; filename="'.$newFilename.'"'
+                'attachment; filename="'.$downloadFilename.'"'
             );
-
-            $logger->info('Document généré avec succès', [
-                'file_size' => strlen($fileContent),
-            ]);
 
             return $response;
         } catch (\Exception $e) {
