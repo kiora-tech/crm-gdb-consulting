@@ -60,13 +60,13 @@ class VariableResolver
             } elseif (str_starts_with($customerVar, 'energiesFutureGaz[')) {
                 // Filtre pour les énergies gaz avec contrats futurs
                 return $this->resolveFilteredEnergies($customer, $customerVar, 'GAZ', true);
-            } else {
-                return $this->resolveValue($customer, $customerVar);
             }
-        } else {
-            // Variables normales du customer
-            return $this->resolveValue($customer, $variable);
+
+            return $this->resolveValue($customer, $customerVar);
         }
+
+        // Variables normales du customer
+        return $this->resolveValue($customer, $variable);
     }
 
     /**

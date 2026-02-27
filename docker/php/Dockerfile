@@ -29,11 +29,13 @@ RUN echo 'eval "$(/var/www/website/bin/console completion bash )"\n' >> ~/.bashr
 
 RUN install-php-extensions xdebug
 
-FROM registry.kiora.tech/kiora/crm-gdb_php_base:0.4.1 AS prod
+FROM build AS prod
 
 COPY . /var/www/website
 
 COPY ./docker/php/conf.d/prod-php.ini /usr/local/etc/php/conf.d/prod-php.ini
+
+RUN /usr/local/bin/composer install --no-dev --optimize-autoloader
 
 RUN chown -R www-data:www-data /var/www/website/var \
     && chmod -R 775 /var/www/website/var

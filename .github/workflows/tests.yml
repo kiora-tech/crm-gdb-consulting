@@ -83,14 +83,24 @@ jobs:
         env:
           APP_ENV: test
 
-      - name: Run GrumPHP (PHPStan + PHPUnit + PHP CS Fixer)
-        run: vendor/bin/grumphp run
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse
+        env:
+          APP_ENV: test
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit
         env:
           DATABASE_URL: mysql://symfony:symfony@127.0.0.1:3306/symfony_test?serverVersion=8.0.40&charset=utf8mb4
           APP_ENV: test
           MICROSOFT_CLIENT_ID: dummy-client-id-for-tests
           MICROSOFT_CLIENT_SECRET: dummy-client-secret-for-tests
           MICROSOFT_TENANT_ID: dummy-tenant-id-for-tests
+
+      - name: Run PHP CS Fixer
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff
+        env:
+          APP_ENV: test
 
       - name: Upload test results
         if: failure()

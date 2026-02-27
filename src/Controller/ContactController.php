@@ -9,7 +9,7 @@ use App\Repository\ContactRepository;
 use App\Service\PaginationService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/contact', name: 'app_contact')]
 final class ContactController extends CustomerInfoController
