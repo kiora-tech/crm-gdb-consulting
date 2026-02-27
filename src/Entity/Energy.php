@@ -3,12 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\EnergyRepository;
+use App\Validator\UniqueEnergyCode;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: EnergyRepository::class)]
-#[UniqueEntity(['code', 'type', 'contractEnd'], message: 'Ce code est déjà utilisé pour ce type d\'énergie avec cette date de fin de contrat')]
+#[UniqueEnergyCode]
 class Energy
 {
     #[ORM\Id]
