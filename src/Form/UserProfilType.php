@@ -22,14 +22,14 @@ class UserProfilType extends AbstractType
                 'required' => false,
                 'mapped' => false,
                 'constraints' => [
-                    new File([
-                        'maxSize' => '2M',
-                        'mimeTypes' => [
+                    new File(
+                        maxSize: '2M',
+                        mimeTypes: [
                             'image/jpeg',
                             'image/png',
                         ],
-                        'mimeTypesMessage' => 'Veuillez télécharger une image valide (JPEG/PNG)',
-                    ]),
+                        mimeTypesMessage: 'Veuillez télécharger une image valide (JPEG/PNG)',
+                    ),
                 ],
             ])
             ->add('email', EmailType::class)

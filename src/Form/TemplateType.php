@@ -26,10 +26,10 @@ class TemplateType extends AbstractType
                 'mapped' => false,
                 'required' => true,
                 'constraints' => [
-                    new File([
-                        'mimeTypes' => array_keys(TemplateTypeEnum::MIME_TYPE_MAPPING),
-                        'mimeTypesMessage' => 'template.invalid_mime_type',
-                    ]),
+                    new File(
+                        mimeTypes: array_keys(TemplateTypeEnum::MIME_TYPE_MAPPING),
+                        mimeTypesMessage: 'template.invalid_mime_type',
+                    ),
                 ],
             ])
             ->add('documentType', EntityType::class, [

@@ -88,9 +88,9 @@ class CalendarEventType extends AbstractType
                     'class' => 'form-control',
                 ],
                 'constraints' => [
-                    new Assert\NotBlank([
-                        'message' => 'La date de début est obligatoire',
-                    ]),
+                    new Assert\NotBlank(
+                        message: 'La date de début est obligatoire',
+                    ),
                 ],
             ])
             ->add('endDateTime', DateTimeType::class, [
@@ -100,13 +100,13 @@ class CalendarEventType extends AbstractType
                     'class' => 'form-control',
                 ],
                 'constraints' => [
-                    new Assert\NotBlank([
-                        'message' => 'La date de fin est obligatoire',
-                    ]),
-                    new Assert\GreaterThan([
-                        'propertyPath' => 'parent.all[startDateTime].data',
-                        'message' => 'La date de fin doit être après la date de début',
-                    ]),
+                    new Assert\NotBlank(
+                        message: 'La date de fin est obligatoire',
+                    ),
+                    new Assert\GreaterThan(
+                        propertyPath: 'parent.all[startDateTime].data',
+                        message: 'La date de fin doit être après la date de début',
+                    ),
                 ],
             ])
             ->add('location', TextType::class, [
