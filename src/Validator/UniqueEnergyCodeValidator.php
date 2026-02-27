@@ -68,7 +68,7 @@ class UniqueEnergyCodeValidator extends ConstraintValidator
             'id' => $customer->getId(),
         ]);
 
-        $customerName = $customer->getName() ?? 'Client #' . $customer->getId();
+        $customerName = $customer->getName() ?? 'Client #'.$customer->getId();
 
         $this->context->buildViolation($constraint->message)
             ->atPath('code')

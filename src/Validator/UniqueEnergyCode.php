@@ -13,9 +13,6 @@ class UniqueEnergyCode extends Constraint
 {
     public string $message = 'Ce code est déjà utilisé pour ce type d\'énergie avec cette date de fin de contrat. <a href="{{ customerUrl }}" class="text-blue-600 underline hover:text-blue-800" target="_blank">Voir le client {{ customerName }}</a>';
 
-    /**
-     * {@inheritdoc}
-     */
     public function getTargets(): string
     {
         return self::CLASS_CONSTRAINT;

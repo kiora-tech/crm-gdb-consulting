@@ -82,7 +82,7 @@ class UniqueEnergyCodeFunctionalTest extends WebTestCase
         // Act: Navigate to the energy creation page for the different customer
         $crawler = $this->client->request(
             'GET',
-            '/energy/new/' . $differentCustomer->getId() . '?energyType=ELEC'
+            '/energy/new/'.$differentCustomer->getId().'?energyType=ELEC'
         );
 
         $this->assertResponseIsSuccessful();
@@ -136,7 +136,7 @@ class UniqueEnergyCodeFunctionalTest extends WebTestCase
         // Verify the link points to the correct customer
         $linkHref = $errorLink->attr('href');
         $this->assertStringContainsString(
-            '/customer/' . $existingCustomer->getId(),
+            '/customer/'.$existingCustomer->getId(),
             $linkHref,
             'Link should point to the existing customer page'
         );
@@ -170,7 +170,7 @@ class UniqueEnergyCodeFunctionalTest extends WebTestCase
         // Act: Navigate to the energy creation page
         $crawler = $this->client->request(
             'GET',
-            '/energy/new/' . $customer->getId() . '?energyType=ELEC'
+            '/energy/new/'.$customer->getId().'?energyType=ELEC'
         );
 
         $this->assertResponseIsSuccessful();
@@ -186,7 +186,7 @@ class UniqueEnergyCodeFunctionalTest extends WebTestCase
 
         // Assert: Should redirect to customer page on success
         $this->assertResponseRedirects(
-            '/customer/' . $customer->getId(),
+            '/customer/'.$customer->getId(),
             null,
             'Should redirect to customer page after successful creation'
         );
