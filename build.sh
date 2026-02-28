@@ -72,6 +72,7 @@ docker run --rm \
 # Compilation des assets
 echo "Compilation des assets..."
 docker run --rm \
+  --network host \
   -v $BUILD_DIR:/app \
   -w /app \
   -e APP_ENV=prod \
@@ -81,21 +82,23 @@ docker run --rm \
 # Construction et publication des images finales
 cd $BUILD_DIR
 echo "Construction et publication de l'image php principale..."
-docker buildx build --platform linux/arm/v7,linux/arm64,linux/amd64 --target prod -f docker/php/Dockerfile -t ${DOCKER_IMAGE_PREFIX}php:$TAG --push .
+docker buildx build --platform linux/arm64,linux/amd64 --target prod -f docker/php/Dockerfile -t ${DOCKER_IMAGE_PREFIX}php:$TAG --push .
 
 echo "Construction et publication de l'image supervisor..."
-docker buildx build --platform linux/arm/v7,linux/arm64,linux/amd64 --target supervisor -f docker/php/Dockerfile -t ${DOCKER_IMAGE_PREFIX}php:$TAG-supervisor --push .
+docker buildx build --platform linux/arm64,linux/amd64 --target supervisor -f docker/php/Dockerfile -t ${DOCKER_IMAGE_PREFIX}php:$TAG-supervisor --push .
 
 echo "Construction et publication de l'image nginx..."
-docker buildx build --platform linux/arm/v7,linux/arm64,linux/amd64 --target prod -f docker/nginx/Dockerfile -t ${DOCKER_IMAGE_PREFIX}nginx:$TAG --push .
+docker buildx build --platform linux/arm64,linux/amd64 --target prod -f docker/nginx/Dockerfile -t ${DOCKER_IMAGE_PREFIX}nginx:$TAG --push .
 
 # Retour au répertoire du projet
 cd -
 
-# Mise à jour des références dans le fichier compose.yaml du projet original
-echo "Mise à jour des références de tags dans compose.yaml..."
+# Mise à jour des références de version dans le projet original
+echo "Mise à jour des versions dans le projet..."
 sed -i "s/\(registry\.kiora\.tech\/kiora\/crm-gdb_php:\)[0-9.]\+/\1$TAG/" compose.yaml
 sed -i "s/\(registry\.kiora\.tech\/kiora\/crm-gdb_nginx:\)[0-9.]\+/\1$TAG/" compose.yaml
+sed -i "s/APP_VERSION=.*/APP_VERSION=$TAG/" .env
+sed -i "s/version-[0-9.]\+-blue/version-$TAG-blue/" README.md
 
 # Nettoyage du dossier temporaire
 echo "Nettoyage du dossier temporaire..."

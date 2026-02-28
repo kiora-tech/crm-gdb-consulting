@@ -76,9 +76,9 @@ when@prod:
 
             # Handler Sentry (si vous utilisez Sentry)
             sentry:
-                type: sentry
+                type: service
+                id: Sentry\Monolog\Handler
                 level: error
-                hub_id: Sentry\State\HubInterface
                 channels: ["!deprecation"]
 
 services:

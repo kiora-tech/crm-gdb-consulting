@@ -8,13 +8,11 @@ when@prod:
             environment: '%env(APP_ENV)%'
             release: '%env(APP_VERSION)%'
 
-    monolog:
-        handlers:
-            sentry:
-                type: sentry
-                level: error
-                hub_id: Sentry\State\HubInterface
-
     services:
+        Sentry\Monolog\Handler:
+            arguments:
+                $hub: '@Sentry\State\HubInterface'
+                $fillExtraContext: true
+
         Monolog\Processor\PsrLogMessageProcessor:
             tags: { name: monolog.processor, handler: sentry }
