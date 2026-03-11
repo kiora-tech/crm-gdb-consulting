@@ -17,6 +17,7 @@ class Energy
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'energies')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Customer $customer = null;
 
     #[ORM\Column(type: Types::STRING, enumType: EnergyType::class)]

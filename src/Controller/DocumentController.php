@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\UX\Turbo\TurboBundle;
 
 #[Route('/document', name: 'app_document')]
 class DocumentController extends CustomerInfoController
@@ -206,7 +205,7 @@ class DocumentController extends CustomerInfoController
             $this->entityManager->remove($document);
             $this->entityManager->flush();
 
-            if (TurboBundle::STREAM_FORMAT === $request->getPreferredFormat() && isset($customerId)) {
+            if (isset($customerId)) {
                 return $this->redirectToRoute('app_customer_show', ['id' => $customerId], Response::HTTP_SEE_OTHER);
             }
         }
