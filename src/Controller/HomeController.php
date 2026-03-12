@@ -37,9 +37,9 @@ class HomeController extends AbstractController
         $statsQb = $customerRepo->createQueryBuilder('c')
             ->select(
                 'COUNT(c.id) AS total',
-                "SUM(CASE WHEN c.status = :in_progress THEN 1 ELSE 0 END) AS inProgress",
-                "SUM(CASE WHEN c.status = :won THEN 1 ELSE 0 END) AS won",
-                "SUM(CASE WHEN c.status = :lost THEN 1 ELSE 0 END) AS lost",
+                'SUM(CASE WHEN c.status = :in_progress THEN 1 ELSE 0 END) AS inProgress',
+                'SUM(CASE WHEN c.status = :won THEN 1 ELSE 0 END) AS won',
+                'SUM(CASE WHEN c.status = :lost THEN 1 ELSE 0 END) AS lost',
                 'SUM(c.worth) AS totalWorth'
             )
             ->setParameter('in_progress', ProspectStatus::IN_PROGRESS)
