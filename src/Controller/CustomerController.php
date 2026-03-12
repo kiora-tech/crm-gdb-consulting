@@ -10,6 +10,7 @@ use App\Entity\ProspectStatus;
 use App\Entity\Template;
 use App\Entity\User;
 use App\Form\CustomerSearchType;
+use App\Repository\CalendarEventRepository;
 use App\Form\CustomerType;
 use App\Form\DropzoneForm;
 use App\Repository\CustomerRepository;
@@ -196,7 +197,7 @@ class CustomerController extends AbstractController
     }
 
     #[Route('/{id}', name: '_show', methods: ['GET'])]
-    public function show(Customer $customer, EntityManagerInterface $entityManager, MicrosoftGraphService $microsoftGraphService, LoggerInterface $logger): Response
+    public function show(Customer $customer, EntityManagerInterface $entityManager, MicrosoftGraphService $microsoftGraphService, LoggerInterface $logger, CalendarEventRepository $calendarEventRepository): Response
     {
         // Vérifier si l'utilisateur a le droit de voir ce client
         $this->denyAccessUnlessGranted('view', $customer);
@@ -205,6 +206,9 @@ class CustomerController extends AbstractController
         $document->setCustomer($customer);
         $formDocument = $this->createForm(DropzoneForm::class, $document, ['customer' => $customer]);
         $templates = $entityManager->getRepository(Template::class)->findAll();
+
+        // Pre-fetch calendar events sorted DESC, filtered in SQL instead of Twig
+        $calendarEvents = $calendarEventRepository->findActiveByCustomer($customer);
 
         // Get category colors from Outlook
         $categoryColors = [];
@@ -229,6 +233,7 @@ class CustomerController extends AbstractController
             'formDocument' => $formDocument->createView(),
             'templates' => $templates,
             'categoryColors' => $categoryColors,
+            'calendarEvents' => $calendarEvents,
         ]);
     }
 

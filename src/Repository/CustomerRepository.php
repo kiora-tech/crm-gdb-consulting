@@ -27,11 +27,7 @@ class CustomerRepository extends ServiceEntityRepository
 
     public function getQueryBuilder(): QueryBuilder
     {
-        $qb = $this->createQueryBuilder('c')
-            ->addSelect('co')
-            ->addSelect('e')
-            ->leftJoin('c.contacts', 'co')
-            ->leftJoin('c.energies', 'e');
+        $qb = $this->createQueryBuilder('c');
         $user = $this->tokenStorage->getToken()?->getUser();
 
         if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
@@ -52,7 +48,10 @@ class CustomerRepository extends ServiceEntityRepository
      */
     public function search(CustomerSearchData $search): Query
     {
-        $query = $this->getQueryBuilder();
+        $query = $this->getQueryBuilder()
+            ->leftJoin('c.contacts', 'co')
+            ->leftJoin('c.energies', 'e')
+            ->distinct();
 
         if (!empty($search->name)) {
             $query

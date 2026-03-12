@@ -10,6 +10,7 @@ doctrine:
     orm:
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         auto_mapping: true
+        fetch_mode_subselect_batch_size: 50
         mappings:
             App:
                 type: attribute
@@ -21,6 +22,7 @@ doctrine:
 when@prod:
     doctrine:
         orm:
+            fetch_mode_subselect_batch_size: 50
             query_cache_driver:
                 type: pool
                 pool: doctrine.system_cache_pool

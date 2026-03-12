@@ -8,6 +8,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EnergyRepository::class)]
+#[ORM\Index(columns: ['contract_end'], name: 'idx_energy_contract_end')]
+#[ORM\Index(columns: ['code'], name: 'idx_energy_code')]
 #[UniqueEnergyCode]
 class Energy
 {

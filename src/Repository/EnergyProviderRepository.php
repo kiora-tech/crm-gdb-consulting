@@ -26,6 +26,19 @@ class EnergyProviderRepository extends ServiceEntityRepository
             ->setParameter('term', '%'.$searchTerm.'%')
             ->orderBy('p.name', 'ASC')
             ->getQuery()
+            ->enableResultCache(3600, 'energy_provider_search_'.md5($searchTerm))
+            ->getResult();
+    }
+
+    /**
+     * @return EnergyProvider[] Returns all energy providers (cached 1h)
+     */
+    public function findAllCached(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.name', 'ASC')
+            ->getQuery()
+            ->enableResultCache(3600, 'energy_provider_all')
             ->getResult();
     }
 }

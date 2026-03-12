@@ -6,6 +6,7 @@ use App\Repository\ContactRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ContactRepository::class)]
+#[ORM\Index(columns: ['first_name', 'last_name'], name: 'idx_contact_name')]
 class Contact
 {
     /**

@@ -20,7 +20,7 @@
                 />
             </div>
 
-            {% set allEvents = customer.calendarEvents|filter(e => not e.isCancelled)|sort((a, b) => b.startDateTime <=> a.startDateTime) %}
+            {% set allEvents = calendarEvents is defined ? calendarEvents : customer.calendarEvents|filter(e => not e.isCancelled)|sort((a, b) => b.startDateTime <=> a.startDateTime) %}
 
             {% if allEvents|length > 0 %}
                 <div class="table-responsive">

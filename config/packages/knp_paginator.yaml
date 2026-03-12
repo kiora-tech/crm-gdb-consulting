@@ -3,7 +3,7 @@ knp_paginator:
   default_options:
     page_name: page
     default_limit: 25
-    distinct: false
+    distinct: true
     sort_direction_name: order
   template:
     pagination: knpPaginator/pagination/custom_bootstrap_v5_pagination.html.twig

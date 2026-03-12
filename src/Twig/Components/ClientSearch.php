@@ -40,10 +40,14 @@ class ClientSearch
 
         /** @var Customer[] $result */
         $result = $repository->getQueryBuilder()
+            ->leftJoin('c.energies', 'e')
+            ->leftJoin('c.contacts', 'co')
+            ->leftJoin('e.energyProvider', 'p')
+            ->distinct()
             ->andWhere(
-                'c.name LIKE :query OR 
-                e.type LIKE :query OR 
-                e.code LIKE :query OR 
+                'c.name LIKE :query OR
+                e.type LIKE :query OR
+                e.code LIKE :query OR
                 p.name LIKE :query OR
                 co.lastName LIKE :query OR
                 co.firstName LIKE :query OR
@@ -53,7 +57,6 @@ class ClientSearch
                 c.siret LIKE :query
                 '
             )
-            ->leftJoin('e.energyProvider', 'p')
             ->setParameter('query', '%'.$this->query.'%')
             // Ordre de priorité: SIRET exact > SIRET partiel > autres champs
             ->orderBy('CASE WHEN c.siret = :exact_siret THEN 0 WHEN c.siret LIKE :start_siret THEN 1 ELSE 2 END', 'ASC')
@@ -61,6 +64,7 @@ class ClientSearch
             ->setParameter('start_siret', $this->query.'%')
             // Tri secondaire par nom pour les résultats de même priorité
             ->addOrderBy('c.name', 'ASC')
+            ->setMaxResults(10)
             ->getQuery()
             ->getResult();
 

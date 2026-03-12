@@ -12,6 +12,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[UniqueEntity(fields: 'siret', ignoreNull: true)]
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
+#[ORM\Index(columns: ['status'], name: 'idx_customer_status')]
+#[ORM\Index(columns: ['name'], name: 'idx_customer_name')]
+#[ORM\Index(columns: ['siret'], name: 'idx_customer_siret')]
+#[ORM\Index(columns: ['user_id'], name: 'idx_customer_user')]
 class Customer
 {
     /**

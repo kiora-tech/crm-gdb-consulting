@@ -39,6 +39,26 @@ class CalendarEventRepository extends ServiceEntityRepository
     }
 
     /**
+     * Find all active (non-cancelled) events for a customer, sorted by startDateTime DESC.
+     *
+     * @return CalendarEvent[]
+     */
+    public function findActiveByCustomer(Customer $customer): array
+    {
+        return $this->createQueryBuilder('ce')
+            ->addSelect('contact', 'creator')
+            ->leftJoin('ce.contact', 'contact')
+            ->leftJoin('ce.createdBy', 'creator')
+            ->andWhere('ce.customer = :customer')
+            ->andWhere('ce.isCancelled = :false')
+            ->setParameter('customer', $customer)
+            ->setParameter('false', false)
+            ->orderBy('ce.startDateTime', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Find all events for a specific customer.
      *
      * @return CalendarEvent[]
