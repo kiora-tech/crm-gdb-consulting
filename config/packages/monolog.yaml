@@ -74,12 +74,12 @@ when@prod:
                 path: php://stderr
                 formatter: monolog.formatter.json
 
-            # Handler Sentry - level critical pour éviter les timeouts sur les erreurs courantes
+            # Handler Sentry - uniquement les vraies erreurs applicatives
             sentry:
                 type: service
                 id: Sentry\Monolog\Handler
-                level: critical
-                channels: ["!deprecation"]
+                level: error
+                channels: ["!deprecation", "!security"]
 
 services:
     # Processer les placeholders PSR-3 pour Sentry
