@@ -8,7 +8,8 @@ when@prod:
             environment: '%env(APP_ENV)%'
             release: '%env(APP_VERSION)%'
             http_connect_timeout: 1
-            http_timeout: 2
+            http_timeout: 1
+            send_attempts: 1
             ignore_exceptions:
                 - 'Symfony\Component\Security\Core\Exception\AccessDeniedException'
                 - 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException'

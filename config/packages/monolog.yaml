@@ -74,11 +74,11 @@ when@prod:
                 path: php://stderr
                 formatter: monolog.formatter.json
 
-            # Handler Sentry (si vous utilisez Sentry)
+            # Handler Sentry - level critical pour éviter les timeouts sur les erreurs courantes
             sentry:
                 type: service
                 id: Sentry\Monolog\Handler
-                level: error
+                level: critical
                 channels: ["!deprecation"]
 
 services:
