@@ -35,7 +35,7 @@ class Template
     #[ORM\Column(length: 255)]
     private ?string $path = null;
 
-    #[ORM\Column(type: Types::ENUM, length: 50, enumType: TemplateType::class)]
+    #[ORM\Column(type: Types::STRING, length: 50, enumType: TemplateType::class)]
     private ?TemplateType $type = null;
 
     #[ORM\Column(length: 255)]

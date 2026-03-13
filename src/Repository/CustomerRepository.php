@@ -52,13 +52,13 @@ class CustomerRepository extends ServiceEntityRepository
 
         if (!empty($search->name)) {
             $query
-                ->andWhere('c.name LIKE :name')
+                ->andWhere('LOWER(c.name) LIKE LOWER(:name)')
                 ->setParameter('name', '%'.$search->name.'%');
         }
 
         if (!empty($search->leadOrigin)) {
             $query
-                ->andWhere('c.leadOrigin LIKE :leadOrigin')
+                ->andWhere('LOWER(c.leadOrigin) LIKE LOWER(:leadOrigin)')
                 ->setParameter('leadOrigin', '%'.$search->leadOrigin.'%');
         }
 
@@ -79,7 +79,7 @@ class CustomerRepository extends ServiceEntityRepository
                 ->select('1')
                 ->from('App\Entity\Contact', 'co')
                 ->where('co.customer = c.id')
-                ->andWhere('(co.firstName LIKE :contactName OR co.lastName LIKE :contactName)')
+                ->andWhere('(LOWER(co.firstName) LIKE LOWER(:contactName) OR LOWER(co.lastName) LIKE LOWER(:contactName))')
                 ->getDQL();
             $query->andWhere($query->expr()->exists($contactSubQuery))
                 ->setParameter('contactName', '%'.$search->contactName.'%');
@@ -87,37 +87,37 @@ class CustomerRepository extends ServiceEntityRepository
 
         if (!empty($search->address)) {
             $query
-                ->andWhere('c.address LIKE :address')
+                ->andWhere('LOWER(c.address) LIKE LOWER(:address)')
                 ->setParameter('address', '%'.$search->address.'%');
         }
 
         if (!empty($search->action)) {
             $query
-                ->andWhere('c.action LIKE :action')
+                ->andWhere('LOWER(c.action) LIKE LOWER(:action)')
                 ->setParameter('action', '%'.$search->action.'%');
         }
 
         if (!empty($search->worth)) {
             $query
-                ->andWhere('c.worth LIKE :worth')
+                ->andWhere('LOWER(c.worth) LIKE LOWER(:worth)')
                 ->setParameter('worth', '%'.$search->worth.'%');
         }
 
         if (!empty($search->commision)) {
             $query
-                ->andWhere('c.commision LIKE :commision')
+                ->andWhere('LOWER(c.commision) LIKE LOWER(:commision)')
                 ->setParameter('commision', '%'.$search->commision.'%');
         }
 
         if (!empty($search->margin)) {
             $query
-                ->andWhere('c.margin LIKE :margin')
+                ->andWhere('LOWER(c.margin) LIKE LOWER(:margin)')
                 ->setParameter('margin', '%'.$search->margin.'%');
         }
 
         if (!empty($search->companyGroup)) {
             $query
-                ->andWhere('c.companyGroup LIKE :companyGroup')
+                ->andWhere('LOWER(c.companyGroup) LIKE LOWER(:companyGroup)')
                 ->setParameter('companyGroup', '%'.$search->companyGroup.'%');
         }
 
@@ -191,7 +191,7 @@ class CustomerRepository extends ServiceEntityRepository
                 ->select('1')
                 ->from('App\Entity\Energy', 'e_code')
                 ->where('e_code.customer = c.id')
-                ->andWhere('e_code.code LIKE :code')
+                ->andWhere('LOWER(e_code.code) LIKE LOWER(:code)')
                 ->getDQL();
             $query->andWhere($query->expr()->exists($codeSubQuery))
                 ->setParameter('code', '%'.$search->code.'%');
