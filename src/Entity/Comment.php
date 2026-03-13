@@ -27,7 +27,7 @@ class Comment
         return $this;
     }
 
-    #[ORM\Column(type: Types::TEXT, length: 65535)]
+    #[ORM\Column(type: Types::TEXT)]
     private ?string $note = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]

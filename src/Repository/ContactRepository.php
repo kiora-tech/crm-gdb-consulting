@@ -59,25 +59,25 @@ class ContactRepository extends ServiceEntityRepository
 
         // Filter by contact first name
         if (!empty($search->firstName)) {
-            $query->andWhere('c.firstName LIKE :firstName')
+            $query->andWhere('LOWER(c.firstName) LIKE LOWER(:firstName)')
                 ->setParameter('firstName', '%'.$search->firstName.'%');
         }
 
         // Filter by contact last name
         if (!empty($search->lastName)) {
-            $query->andWhere('c.lastName LIKE :lastName')
+            $query->andWhere('LOWER(c.lastName) LIKE LOWER(:lastName)')
                 ->setParameter('lastName', '%'.$search->lastName.'%');
         }
 
         // Filter by contact email
         if (!empty($search->email)) {
-            $query->andWhere('c.email LIKE :email')
+            $query->andWhere('LOWER(c.email) LIKE LOWER(:email)')
                 ->setParameter('email', '%'.$search->email.'%');
         }
 
         // Filter by lead origin (from customer)
         if (!empty($search->leadOrigin)) {
-            $query->andWhere('cus.leadOrigin LIKE :leadOrigin')
+            $query->andWhere('LOWER(cus.leadOrigin) LIKE LOWER(:leadOrigin)')
                 ->setParameter('leadOrigin', '%'.$search->leadOrigin.'%');
         }
 

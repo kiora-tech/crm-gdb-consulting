@@ -20,7 +20,7 @@
         <!-- Allow indirect deprecations (from vendor libraries like Twig) without failing -->
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" force="true"/>
         <!-- DATABASE_URL for test environment - no force to allow CI to override with 127.0.0.1 -->
-        <env name="DATABASE_URL" value="mysql://symfony:symfony@database:3306/symfony_test?serverVersion=8.0.40&amp;charset=utf8mb4"/>
+        <env name="DATABASE_URL" value="postgresql://symfony:symfony@database:5432/symfony_test?serverVersion=16&amp;charset=utf8"/>
         <env name="KERNEL_CLASS" value="App\Kernel"/>
         <server name="SHELL_VERBOSITY" value="-1" />
         <server name="SYMFONY_PHPUNIT_REMOVE" value="" />
