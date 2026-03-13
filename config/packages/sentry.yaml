@@ -4,9 +4,14 @@ when@prod:
         register_error_listener: false
         register_error_handler: false
         options:
-            traces_sample_rate: 0.1
+            traces_sample_rate: 0.0
             environment: '%env(APP_ENV)%'
             release: '%env(APP_VERSION)%'
+            http_connect_timeout: 1
+            http_timeout: 2
+            ignore_exceptions:
+                - 'Symfony\Component\Security\Core\Exception\AccessDeniedException'
+                - 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException'
 
     services:
         Sentry\Monolog\Handler:
