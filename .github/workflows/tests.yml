@@ -16,17 +16,16 @@ jobs:
         php-version: ['8.4']
 
     services:
-      mysql:
-        image: mysql:8.0.40
+      postgres:
+        image: postgres:16-alpine
         env:
-          MYSQL_ROOT_PASSWORD: symfony
-          MYSQL_DATABASE: symfony_test
-          MYSQL_USER: symfony
-          MYSQL_PASSWORD: symfony
+          POSTGRES_DB: symfony_test
+          POSTGRES_USER: symfony
+          POSTGRES_PASSWORD: symfony
         ports:
-          - 3306:3306
+          - 5432:5432
         options: >-
-          --health-cmd="mysqladmin ping -h localhost"
+          --health-cmd="pg_isready -U symfony -d symfony_test"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -39,7 +38,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, json, zip
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_pgsql, dom, filter, gd, json, zip
           coverage: none
           tools: composer:v2
 
@@ -57,25 +56,25 @@ jobs:
       - name: Install dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
-      - name: Wait for MySQL
+      - name: Wait for PostgreSQL
         run: |
-          until mysqladmin ping -h 127.0.0.1 -u symfony -psymfony --silent; do
-            echo 'Waiting for MySQL...'
+          until pg_isready -h 127.0.0.1 -p 5432 -U symfony; do
+            echo 'Waiting for PostgreSQL...'
             sleep 2
           done
-          echo 'MySQL is ready!'
+          echo 'PostgreSQL is ready!'
 
       - name: Create test database
         run: |
           php bin/console doctrine:database:create --env=test --if-not-exists
         env:
-          DATABASE_URL: mysql://symfony:symfony@127.0.0.1:3306/symfony_test?serverVersion=8.0.40&charset=utf8mb4
+          DATABASE_URL: postgresql://symfony:symfony@127.0.0.1:5432/symfony_test?serverVersion=16&charset=utf8
           APP_ENV: test
 
       - name: Run migrations
         run: php bin/console doctrine:migrations:migrate --no-interaction --env=test
         env:
-          DATABASE_URL: mysql://symfony:symfony@127.0.0.1:3306/symfony_test?serverVersion=8.0.40&charset=utf8mb4
+          DATABASE_URL: postgresql://symfony:symfony@127.0.0.1:5432/symfony_test?serverVersion=16&charset=utf8
           APP_ENV: test
 
       - name: Build SASS assets
@@ -91,7 +90,7 @@ jobs:
       - name: Run PHPUnit
         run: vendor/bin/phpunit
         env:
-          DATABASE_URL: mysql://symfony:symfony@127.0.0.1:3306/symfony_test?serverVersion=8.0.40&charset=utf8mb4
+          DATABASE_URL: postgresql://symfony:symfony@127.0.0.1:5432/symfony_test?serverVersion=16&charset=utf8
           APP_ENV: test
           MICROSOFT_CLIENT_ID: dummy-client-id-for-tests
           MICROSOFT_CLIENT_SECRET: dummy-client-secret-for-tests

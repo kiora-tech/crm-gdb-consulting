@@ -45,15 +45,15 @@ class ClientSearch
             ->leftJoin('e.energyProvider', 'p')
             ->distinct()
             ->andWhere(
-                'c.name LIKE :query OR
-                e.type LIKE :query OR
-                e.code LIKE :query OR
-                p.name LIKE :query OR
-                co.lastName LIKE :query OR
-                co.firstName LIKE :query OR
-                co.email LIKE :query OR
+                'LOWER(c.name) LIKE LOWER(:query) OR
+                LOWER(e.type) LIKE LOWER(:query) OR
+                LOWER(e.code) LIKE LOWER(:query) OR
+                LOWER(p.name) LIKE LOWER(:query) OR
+                LOWER(co.lastName) LIKE LOWER(:query) OR
+                LOWER(co.firstName) LIKE LOWER(:query) OR
+                LOWER(co.email) LIKE LOWER(:query) OR
                 co.phone LIKE :query OR
-                co.position LIKE :query OR
+                LOWER(co.position) LIKE LOWER(:query) OR
                 c.siret LIKE :query
                 '
             )
