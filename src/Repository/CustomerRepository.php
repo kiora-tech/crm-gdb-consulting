@@ -48,10 +48,7 @@ class CustomerRepository extends ServiceEntityRepository
      */
     public function search(CustomerSearchData $search): Query
     {
-        $query = $this->getQueryBuilder()
-            ->leftJoin('c.contacts', 'co')
-            ->leftJoin('c.energies', 'e')
-            ->distinct();
+        $query = $this->getQueryBuilder();
 
         if (!empty($search->name)) {
             $query
@@ -78,8 +75,13 @@ class CustomerRepository extends ServiceEntityRepository
         }
 
         if (!empty($search->contactName)) {
-            $query
+            $contactSubQuery = $this->getEntityManager()->createQueryBuilder()
+                ->select('1')
+                ->from('App\Entity\Contact', 'co')
+                ->where('co.customer = c.id')
                 ->andWhere('(co.firstName LIKE :contactName OR co.lastName LIKE :contactName)')
+                ->getDQL();
+            $query->andWhere($query->expr()->exists($contactSubQuery))
                 ->setParameter('contactName', '%'.$search->contactName.'%');
         }
 
@@ -136,64 +138,73 @@ class CustomerRepository extends ServiceEntityRepository
                 ->andWhere('c.user IS NULL');
         }
 
-        // Filtre par contrats expirants
+        // Filtre par contrats expirants (via subquery EXISTS pour éviter les problèmes de DISTINCT/GROUP BY)
         //
         // LOGIQUE DE FILTRAGE:
         // Cas 1: Filtre "avant" uniquement (contractEndBefore = 31/12/2025)
         //   - Trouve les clients avec au moins un contrat expirant <= 31/12/2025
         //   - EXCLUT les clients qui ont un contrat plus récent expirant après cette date
-        //   - Exemple: Client avec contrat au 30/06/2025 et 15/03/2026 -> EXCLU (a un contrat en 2026)
-        //   - Exemple: Client avec contrat au 30/06/2025 uniquement -> INCLUS
         //
         // Cas 2: Filtre "après" uniquement (contractEndAfter = 01/01/2025)
         //   - Trouve les clients avec au moins un contrat expirant >= 01/01/2025
-        //   - Utile pour trouver les contrats à renouveler à partir d'une date
         //
         // Cas 3: Les deux filtres (periode entre deux dates)
         //   - Trouve les clients avec au moins un contrat dans cette période
         //   - EXCLUT les clients qui ont un contrat plus récent après la période
         if ($search->contractEndBefore || $search->contractEndAfter) {
-            $query->andWhere('e.contractEnd IS NOT NULL');
+            $energySubQb = $this->getEntityManager()->createQueryBuilder()
+                ->select('1')
+                ->from('App\Entity\Energy', 'e_sub')
+                ->where('e_sub.customer = c.id')
+                ->andWhere('e_sub.contractEnd IS NOT NULL');
 
-            // Filtrer par la période demandée
             if ($search->contractEndBefore) {
-                $query->andWhere('e.contractEnd <= :expirationDateBefore')
-                    ->setParameter('expirationDateBefore', $search->contractEndBefore);
+                $energySubQb->andWhere('e_sub.contractEnd <= :expirationDateBefore');
+                $query->setParameter('expirationDateBefore', $search->contractEndBefore);
             }
 
             if ($search->contractEndAfter) {
-                $query->andWhere('e.contractEnd >= :expirationDateAfter')
-                    ->setParameter('expirationDateAfter', $search->contractEndAfter);
+                $energySubQb->andWhere('e_sub.contractEnd >= :expirationDateAfter');
+                $query->setParameter('expirationDateAfter', $search->contractEndAfter);
             }
 
-            // Exclusion intelligente: si on filtre avec "contractEndBefore",
-            // on exclut les clients qui ont un contrat plus récent que cette date.
-            // Cela permet de trouver les clients dont le dernier contrat expire avant la date cible.
+            $query->andWhere($query->expr()->exists($energySubQb->getDQL()));
+
+            // Exclusion intelligente: exclure les clients qui ont un contrat plus récent
             if ($search->contractEndBefore) {
-                // Créer un sous-query pour vérifier s'il existe un contrat plus récent
-                $subQuery = $this->createQueryBuilder('c2')
+                $excludeSubQuery = $this->getEntityManager()->createQueryBuilder()
                     ->select('1')
-                    ->join('c2.energies', 'e2')
-                    ->where('c2.id = c.id')
-                    ->andWhere('e2.contractEnd IS NOT NULL')
-                    ->andWhere('e2.contractEnd > :expirationDateBefore')
+                    ->from('App\Entity\Energy', 'e_excl')
+                    ->where('e_excl.customer = c.id')
+                    ->andWhere('e_excl.contractEnd IS NOT NULL')
+                    ->andWhere('e_excl.contractEnd > :expirationDateBefore')
                     ->getDQL();
 
-                $query->andWhere($query->expr()->not($query->expr()->exists($subQuery)));
+                $query->andWhere($query->expr()->not($query->expr()->exists($excludeSubQuery)));
             }
 
-            $query->orderBy('e.contractEnd', 'ASC');
+            $query->orderBy('c.name', 'ASC');
         }
 
         if (!empty($search->code)) {
-            $query
-                ->andWhere('e.code LIKE :code')
+            $codeSubQuery = $this->getEntityManager()->createQueryBuilder()
+                ->select('1')
+                ->from('App\Entity\Energy', 'e_code')
+                ->where('e_code.customer = c.id')
+                ->andWhere('e_code.code LIKE :code')
+                ->getDQL();
+            $query->andWhere($query->expr()->exists($codeSubQuery))
                 ->setParameter('code', '%'.$search->code.'%');
         }
 
         if (!empty($search->energyProvider)) {
-            $query
-                ->andWhere('e.energyProvider = :energyProvider')
+            $providerSubQuery = $this->getEntityManager()->createQueryBuilder()
+                ->select('1')
+                ->from('App\Entity\Energy', 'e_prov')
+                ->where('e_prov.customer = c.id')
+                ->andWhere('e_prov.energyProvider = :energyProvider')
+                ->getDQL();
+            $query->andWhere($query->expr()->exists($providerSubQuery))
                 ->setParameter('energyProvider', $search->energyProvider);
         }
 

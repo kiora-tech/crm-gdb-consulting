@@ -1,6 +1,6 @@
 # CRM-GDB
 
-![Version](https://img.shields.io/badge/version-0.14.2-blue.svg)
+![Version](https://img.shields.io/badge/version-0.14.6-blue.svg)
 ![PHP](https://img.shields.io/badge/PHP-8.4-purple.svg)
 ![Symfony](https://img.shields.io/badge/Symfony-8.0-black.svg)
 

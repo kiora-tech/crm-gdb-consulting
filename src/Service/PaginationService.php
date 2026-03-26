@@ -33,7 +33,8 @@ class PaginationService
         return $this->paginator->paginate(
             $query,
             $page,
-            $limit
+            $limit,
+            ['wrap-queries' => true]
         );
     }
 }
