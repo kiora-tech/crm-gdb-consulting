@@ -54,7 +54,7 @@ class HomeController extends AbstractController
         $stats = $statsQb->getQuery()->getSingleResult();
 
         // SUM(worth) via native SQL with CAST for PostgreSQL compatibility (worth is VARCHAR)
-        $worthSql = 'SELECT COALESCE(SUM(CAST(NULLIF(worth, \'\') AS NUMERIC)), 0) FROM customer';
+        $worthSql = 'SELECT COALESCE(SUM(CAST(NULLIF(REGEXP_REPLACE(worth, \'[^0-9.]\', \'\', \'g\'), \'\') AS NUMERIC)), 0) FROM customer';
         $worthParams = [];
         if (!$isAdmin && $user) {
             $worthSql .= ' WHERE user_id = :userId';
