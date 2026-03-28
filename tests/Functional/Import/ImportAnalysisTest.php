@@ -67,9 +67,9 @@ class ImportAnalysisTest extends KernelTestCase
     public function testAnalysisWithAllExistingCustomersBySiret(): void
     {
         // 1. Create 3 existing customers with the exact SIRETs from the example file
-        $customer1 = $this->createCustomer('BOULANGERIE MARTIN', '12345678901234');
-        $customer2 = $this->createCustomer('GARAGE DUPONT SARL', '98765432109876');
-        $customer3 = $this->createCustomer('RESTAURANT LE BON COIN', '11122233344455');
+        $customer1 = $this->createCustomer('BOULANGERIE MARTIN', '55566677788899');
+        $customer2 = $this->createCustomer('GARAGE DUPONT SARL', '99988877766655');
+        $customer3 = $this->createCustomer('RESTAURANT LE BON COIN', '44433322211100');
 
         $this->entityManager->flush();
         $this->entityManager->clear();
@@ -186,9 +186,9 @@ class ImportAnalysisTest extends KernelTestCase
     public function testAnalysisWithMixedCustomers(): void
     {
         // 1. Create only 2 existing customers (leave one to be created)
-        $customer1 = $this->createCustomer('BOULANGERIE MARTIN', '12345678901234');
-        $customer2 = $this->createCustomer('GARAGE DUPONT SARL', '98765432109876');
-        // customer3 with SIRET 11122233344455 will be NEW
+        $customer1 = $this->createCustomer('BOULANGERIE MARTIN', '55566677788899');
+        $customer2 = $this->createCustomer('GARAGE DUPONT SARL', '99988877766655');
+        // customer3 with SIRET 44433322211100 will be NEW
 
         $this->entityManager->flush();
         $this->entityManager->clear();
@@ -229,12 +229,12 @@ class ImportAnalysisTest extends KernelTestCase
         $this->assertSame(
             1,
             $customerResults[ImportOperationType::CREATE->value] ?? 0,
-            'Should show 1 customer to CREATE (SIRET 11122233344455)'
+            'Should show 1 customer to CREATE (SIRET 44433322211100)'
         );
         $this->assertSame(
             2,
             $customerResults[ImportOperationType::UPDATE->value] ?? 0,
-            'Should show 2 customers to UPDATE (SIRETs 12345678901234 and 98765432109876)'
+            'Should show 2 customers to UPDATE (SIRETs 55566677788899 and 99988877766655)'
         );
 
         // 7. Verify all contacts will be created (even for existing customers)
@@ -344,7 +344,7 @@ class ImportAnalysisTest extends KernelTestCase
     public function testCustomerMatchingBySiretNotByName(): void
     {
         // 1. Create a customer with same SIRET but different name
-        $customer = $this->createCustomer('OLD NAME', '12345678901234');
+        $customer = $this->createCustomer('OLD NAME', '55566677788899');
 
         $this->entityManager->flush();
         $this->entityManager->clear();
@@ -389,7 +389,7 @@ class ImportAnalysisTest extends KernelTestCase
     public function testAnalysisWithExistingCustomersAndRelatedEntities(): void
     {
         // 1. Create customer with existing contact and energy
-        $customer = $this->createCustomer('BOULANGERIE MARTIN', '12345678901234');
+        $customer = $this->createCustomer('BOULANGERIE MARTIN', '55566677788899');
 
         $existingContact = new Contact();
         $existingContact->setCustomer($customer);

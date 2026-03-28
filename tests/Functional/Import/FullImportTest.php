@@ -151,18 +151,18 @@ class FullImportTest extends KernelTestCase
         $allCustomers = $this->customerRepository->findAll();
         $customerDebug = array_map(fn ($c) => sprintf('%s (SIRET: %s)', $c->getName(), $c->getSiret() ?? 'null'), $allCustomers);
 
-        $customerBoulangerie = $this->customerRepository->findOneBy(['siret' => '12345678901234']);
+        $customerBoulangerie = $this->customerRepository->findOneBy(['siret' => '55566677788899']);
         $this->assertNotNull(
             $customerBoulangerie,
             sprintf('Le client BOULANGERIE MARTIN devrait exister. Found %d customers: %s', count($allCustomers), implode(', ', $customerDebug))
         );
         $this->assertSame('BOULANGERIE MARTIN', $customerBoulangerie->getName());
 
-        $customerGarage = $this->customerRepository->findOneBy(['siret' => '98765432109876']);
+        $customerGarage = $this->customerRepository->findOneBy(['siret' => '99988877766655']);
         $this->assertNotNull($customerGarage, 'Le client GARAGE DUPONT SARL devrait exister');
         $this->assertSame('GARAGE DUPONT SARL', $customerGarage->getName());
 
-        $customerRestaurant = $this->customerRepository->findOneBy(['siret' => '11122233344455']);
+        $customerRestaurant = $this->customerRepository->findOneBy(['siret' => '44433322211100']);
         $this->assertNotNull($customerRestaurant, 'Le client RESTAURANT LE BON COIN devrait exister');
         $this->assertSame('RESTAURANT LE BON COIN', $customerRestaurant->getName());
 

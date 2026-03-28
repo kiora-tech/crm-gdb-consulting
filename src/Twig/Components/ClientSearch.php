@@ -38,32 +38,43 @@ class ClientSearch
             return [];
         }
 
-        /** @var Customer[] $result */
-        $result = $repository->getQueryBuilder()
-            ->leftJoin('c.energies', 'e')
-            ->leftJoin('c.contacts', 'co')
+        $qb = $repository->getQueryBuilder();
+
+        $energySubQuery = $this->entityManager->createQueryBuilder()
+            ->select('1')
+            ->from('App\Entity\Energy', 'e')
             ->leftJoin('e.energyProvider', 'p')
-            ->distinct()
+            ->where('e.customer = c.id')
             ->andWhere(
-                'LOWER(c.name) LIKE LOWER(:query) OR
-                LOWER(e.type) LIKE LOWER(:query) OR
+                'LOWER(e.type) LIKE LOWER(:query) OR
                 LOWER(e.code) LIKE LOWER(:query) OR
-                LOWER(p.name) LIKE LOWER(:query) OR
-                LOWER(co.lastName) LIKE LOWER(:query) OR
+                LOWER(p.name) LIKE LOWER(:query)'
+            )
+            ->getDQL();
+
+        $contactSubQuery = $this->entityManager->createQueryBuilder()
+            ->select('1')
+            ->from('App\Entity\Contact', 'co')
+            ->where('co.customer = c.id')
+            ->andWhere(
+                'LOWER(co.lastName) LIKE LOWER(:query) OR
                 LOWER(co.firstName) LIKE LOWER(:query) OR
                 LOWER(co.email) LIKE LOWER(:query) OR
                 co.phone LIKE :query OR
-                LOWER(co.position) LIKE LOWER(:query) OR
-                c.siret LIKE :query
-                '
+                LOWER(co.position) LIKE LOWER(:query)'
+            )
+            ->getDQL();
+
+        /** @var Customer[] $result */
+        $result = $qb
+            ->andWhere(
+                'LOWER(c.name) LIKE LOWER(:query) OR
+                c.siret LIKE :query OR
+                EXISTS ('.$energySubQuery.') OR
+                EXISTS ('.$contactSubQuery.')'
             )
             ->setParameter('query', '%'.$this->query.'%')
-            // Ordre de priorité: SIRET exact > SIRET partiel > autres champs
-            ->orderBy('CASE WHEN c.siret = :exact_siret THEN 0 WHEN c.siret LIKE :start_siret THEN 1 ELSE 2 END', 'ASC')
-            ->setParameter('exact_siret', $this->query)
-            ->setParameter('start_siret', $this->query.'%')
-            // Tri secondaire par nom pour les résultats de même priorité
-            ->addOrderBy('c.name', 'ASC')
+            ->orderBy('c.name', 'ASC')
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();
