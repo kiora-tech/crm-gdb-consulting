@@ -33,14 +33,13 @@ class HomeController extends AbstractController
 
         $customerRepo = $entityManager->getRepository(Customer::class);
 
-        // Single query for all status counts + total + SUM(worth)
+        // Single query for all status counts + total
         $statsQb = $customerRepo->createQueryBuilder('c')
             ->select(
                 'COUNT(c.id) AS total',
                 'SUM(CASE WHEN c.status = :in_progress THEN 1 ELSE 0 END) AS inProgress',
                 'SUM(CASE WHEN c.status = :won THEN 1 ELSE 0 END) AS won',
-                'SUM(CASE WHEN c.status = :lost THEN 1 ELSE 0 END) AS lost',
-                'SUM(c.worth) AS totalWorth'
+                'SUM(CASE WHEN c.status = :lost THEN 1 ELSE 0 END) AS lost'
             )
             ->setParameter('in_progress', ProspectStatus::IN_PROGRESS)
             ->setParameter('won', ProspectStatus::WON)
@@ -51,8 +50,17 @@ class HomeController extends AbstractController
                 ->setParameter('user', $user);
         }
 
-        /** @var array{total: string, inProgress: string, won: string, lost: string, totalWorth: string|null} $stats */
+        /** @var array{total: string, inProgress: string, won: string, lost: string} $stats */
         $stats = $statsQb->getQuery()->getSingleResult();
+
+        // SUM(worth) via native SQL with CAST for PostgreSQL compatibility (worth is VARCHAR)
+        $worthSql = 'SELECT COALESCE(SUM(CAST(NULLIF(worth, \'\') AS NUMERIC)), 0) FROM customer';
+        $worthParams = [];
+        if (!$isAdmin && $user) {
+            $worthSql .= ' WHERE user_id = :userId';
+            $worthParams['userId'] = $user->getId();
+        }
+        $totalWorth = (float) $entityManager->getConnection()->executeQuery($worthSql, $worthParams)->fetchOne();
 
         // Clients récents
         $recentCustomers = $customerRepo->createQueryBuilder('c')
@@ -99,7 +107,7 @@ class HomeController extends AbstractController
             'recentCustomers' => $recentCustomers,
             'expiringContracts' => $expiringContracts,
             'recentDocuments' => $recentDocuments,
-            'totalWorth' => (float) ($stats['totalWorth'] ?? 0),
+            'totalWorth' => $totalWorth,
             'monthlyWonCustomers' => (int) $stats['won'],
             'upcomingEvents' => $upcomingEvents,
         ]);

@@ -140,16 +140,16 @@ class ExampleFilesImportTest extends KernelTestCase
         );
 
         // Verify specific customers from import_clients_exemple.xlsx
-        $customer1 = $this->customerRepository->findOneBy(['siret' => '12345678901234']);
-        $this->assertNotNull($customer1, 'Customer with SIRET 12345678901234 should exist');
+        $customer1 = $this->customerRepository->findOneBy(['siret' => '55566677788899']);
+        $this->assertNotNull($customer1, 'Customer with SIRET 55566677788899 should exist');
         $this->assertSame('ENTREPRISE EXEMPLE SAS', $customer1->getName());
 
-        $customer2 = $this->customerRepository->findOneBy(['siret' => '98765432109876']);
-        $this->assertNotNull($customer2, 'Customer with SIRET 98765432109876 should exist');
+        $customer2 = $this->customerRepository->findOneBy(['siret' => '99988877766655']);
+        $this->assertNotNull($customer2, 'Customer with SIRET 99988877766655 should exist');
         $this->assertSame('SOCIETE TEST SARL', $customer2->getName());
 
-        $customer3 = $this->customerRepository->findOneBy(['siret' => '11122233344455']);
-        $this->assertNotNull($customer3, 'Customer with SIRET 11122233344455 should exist');
+        $customer3 = $this->customerRepository->findOneBy(['siret' => '44433322211100']);
+        $this->assertNotNull($customer3, 'Customer with SIRET 44433322211100 should exist');
         $this->assertSame('DEMO COMPANY', $customer3->getName());
     }
 
@@ -207,7 +207,7 @@ class ExampleFilesImportTest extends KernelTestCase
         $this->entityManager->clear();
 
         // Verify customers
-        $customerBoulangerie = $this->customerRepository->findOneBy(['siret' => '12345678901234']);
+        $customerBoulangerie = $this->customerRepository->findOneBy(['siret' => '55566677788899']);
         $this->assertNotNull($customerBoulangerie, 'BOULANGERIE MARTIN should exist');
         $this->assertSame('BOULANGERIE MARTIN', $customerBoulangerie->getName());
 
@@ -301,7 +301,7 @@ class ExampleFilesImportTest extends KernelTestCase
         $this->assertSame('BOULANGERIE MARTIN', $customer->getName());
         // Note: SIRET may or may not be populated depending on whether customer was created or found
         if ($customer->getSiret()) {
-            $this->assertSame('12345678901234', $customer->getSiret());
+            $this->assertSame('55566677788899', $customer->getSiret());
         }
     }
 
@@ -345,25 +345,27 @@ class ExampleFilesImportTest extends KernelTestCase
         $allEnergies = $this->energyRepository->findAll();
         $this->assertGreaterThanOrEqual(3, count($allEnergies), 'At least 3 energies should be created');
 
-        // Verify at least one energy exists with correct type
+        // Verify at least one energy exists with correct type and is linked to an imported customer
+        $expectedCustomerNames = ['BOULANGERIE MARTIN', 'GARAGE DUPONT SARL', 'RESTAURANT LE BON COIN'];
         $energyELEC = null;
         foreach ($allEnergies as $energy) {
-            if (\App\Entity\EnergyType::ELEC === $energy->getType()) {
+            if (\App\Entity\EnergyType::ELEC === $energy->getType()
+                && $energy->getCustomer()
+                && in_array($energy->getCustomer()->getName(), $expectedCustomerNames, true)) {
                 $energyELEC = $energy;
                 break;
             }
         }
-        $this->assertNotNull($energyELEC, 'At least one ELEC energy should exist');
+        $this->assertNotNull($energyELEC, 'At least one ELEC energy linked to an imported customer should exist');
         $this->assertSame(\App\Entity\EnergyType::ELEC, $energyELEC->getType());
         $this->assertNotNull($energyELEC->getCustomer(), 'Energy should be associated with a customer');
 
         // Verify customer exists with correct name from import_energies_exemple.xlsx
         $customer = $energyELEC->getCustomer();
         $this->assertNotNull($customer->getName(), 'Customer should have a name');
-        // Customer should be one of the 3 from the file
         $this->assertContains(
             $customer->getName(),
-            ['BOULANGERIE MARTIN', 'GARAGE DUPONT SARL', 'RESTAURANT LE BON COIN'],
+            $expectedCustomerNames,
             'Customer should be one from import_energies_exemple.xlsx'
         );
     }

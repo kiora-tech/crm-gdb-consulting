@@ -54,7 +54,7 @@ class ExcelReaderServiceTest extends TestCase
         $this->assertArrayHasKey('Email', $firstRow);
         $this->assertSame('ACME Corporation', $firstRow['Raison sociale']);
         // SIRET is returned as integer by PhpSpreadsheet when stored as number in Excel
-        $this->assertEquals(12345678901234, $firstRow['SIRET']);
+        $this->assertEquals(55566677788899, $firstRow['SIRET']);
         $this->assertSame('contact@acme.fr', $firstRow['Email']);
     }
 

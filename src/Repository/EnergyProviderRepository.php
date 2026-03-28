@@ -22,7 +22,7 @@ class EnergyProviderRepository extends ServiceEntityRepository
     public function findBySearchTerm(string $searchTerm): array
     {
         return $this->createQueryBuilder('p')
-            ->andWhere('p.name LIKE :term')
+            ->andWhere('LOWER(p.name) LIKE LOWER(:term)')
             ->setParameter('term', '%'.$searchTerm.'%')
             ->orderBy('p.name', 'ASC')
             ->getQuery()

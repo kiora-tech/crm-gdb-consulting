@@ -79,9 +79,9 @@ class GenerateImportExamplesCommand extends Command
 
         // Example data
         $examples = [
-            ['ENTREPRISE EXEMPLE SAS', '12345678901234', 'Apport partenaire'],
-            ['SOCIETE TEST SARL', '98765432109876', 'Prospection téléphonique'],
-            ['DEMO COMPANY', '11122233344455', 'Salon professionnel'],
+            ['ENTREPRISE EXEMPLE SAS', '55566677788899', 'Apport partenaire'],
+            ['SOCIETE TEST SARL', '99988877766655', 'Prospection téléphonique'],
+            ['DEMO COMPANY', '44433322211100', 'Salon professionnel'],
         ];
 
         $row = 2;
@@ -133,9 +133,9 @@ class GenerateImportExamplesCommand extends Command
 
         // Example data
         $examples = [
-            ['12345678901234', 'BOULANGERIE MARTIN', 'EDF', '12345678901234', 'ELEC', '31/12/2025'],
-            ['98765432109876', 'GARAGE DUPONT SARL', 'ENGIE', '98765432109876', 'GAZ', '15/06/2026'],
-            ['11122233344455', 'RESTAURANT LE BON COIN', 'TOTAL ENERGIES', '11122233344455', 'ELEC', '01/03/2026'],
+            ['55566677788899', 'BOULANGERIE MARTIN', 'EDF', '55566677788899', 'ELEC', '31/12/2025'],
+            ['99988877766655', 'GARAGE DUPONT SARL', 'ENGIE', '99988877766655', 'GAZ', '15/06/2026'],
+            ['44433322211100', 'RESTAURANT LE BON COIN', 'TOTAL ENERGIES', '44433322211100', 'ELEC', '01/03/2026'],
         ];
 
         $row = 2;
@@ -222,9 +222,9 @@ class GenerateImportExamplesCommand extends Command
 
         // Example data
         $examples = [
-            ['12345678901234', 'BOULANGERIE MARTIN', 'Jean', 'Martin', 'j.martin@boulangerie-martin.fr', '0601020304'],
-            ['98765432109876', 'GARAGE DUPONT SARL', 'Marie', 'Dupont', 'contact@garage-dupont.com', '0612345678'],
-            ['11122233344455', 'RESTAURANT LE BON COIN', 'Pierre', 'Leblanc', 'pierre@leboncoin-resto.fr', '0623456789'],
+            ['55566677788899', 'BOULANGERIE MARTIN', 'Jean', 'Martin', 'j.martin@boulangerie-martin.fr', '0601020304'],
+            ['99988877766655', 'GARAGE DUPONT SARL', 'Marie', 'Dupont', 'contact@garage-dupont.com', '0612345678'],
+            ['44433322211100', 'RESTAURANT LE BON COIN', 'Pierre', 'Leblanc', 'pierre@leboncoin-resto.fr', '0623456789'],
         ];
 
         $row = 2;
@@ -318,13 +318,13 @@ class GenerateImportExamplesCommand extends Command
         $examples = [
             [
                 'BOULANGERIE MARTIN',
-                '12345678901234',
+                '55566677788899',
                 'Jean',
                 'Martin',
                 'j.martin@boulangerie-martin.fr',
                 '0601020304',
                 'EDF',
-                '12345678901234',
+                '55566677788899',
                 'ELEC',
                 '31/12/2025',
                 'Apport partenaire',
@@ -332,13 +332,13 @@ class GenerateImportExamplesCommand extends Command
             ],
             [
                 'GARAGE DUPONT SARL',
-                '98765432109876',
+                '99988877766655',
                 'Marie',
                 'Dupont',
                 'contact@garage-dupont.com',
                 '0612345678',
                 'ENGIE',
-                '98765432109876',
+                '99988877766655',
                 'GAZ',
                 '15/06/2026',
                 'Prospection téléphonique',
@@ -346,13 +346,13 @@ class GenerateImportExamplesCommand extends Command
             ],
             [
                 'RESTAURANT LE BON COIN',
-                '11122233344455',
+                '44433322211100',
                 'Pierre',
                 'Leblanc',
                 'pierre@leboncoin-resto.fr',
                 '0623456789',
                 'TOTAL ENERGIES',
-                '11122233344455',
+                '44433322211100',
                 'ELEC',
                 '01/03/2026',
                 'Site web',
