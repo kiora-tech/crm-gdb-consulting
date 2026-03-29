@@ -3,25 +3,25 @@ flysystem:
         documents.storage:
             adapter: 'aws'
             options:
-                client: 'minio.client'
-                bucket: '%env(MINIO_BUCKET_DOCUMENTS)%'
-                prefix: ''
-                
+                client: 's3.client'
+                bucket: '%env(S3_BUCKET)%'
+                prefix: 'documents'
+
         templates.storage:
             adapter: 'aws'
             options:
-                client: 'minio.client'
-                bucket: '%env(MINIO_BUCKET_TEMPLATES)%'
-                prefix: ''
+                client: 's3.client'
+                bucket: '%env(S3_BUCKET)%'
+                prefix: 'templates'
 
 services:
-    minio.client:
+    s3.client:
         class: Aws\S3\S3Client
         arguments:
-            - endpoint: '%env(MINIO_ENDPOINT)%'
+            - endpoint: '%env(S3_ENDPOINT)%'
               credentials:
-                key: '%env(MINIO_KEY)%'
-                secret: '%env(MINIO_SECRET)%'
-              region: '%env(MINIO_REGION)%'
+                key: '%env(S3_ACCESS_KEY)%'
+                secret: '%env(S3_SECRET_KEY)%'
+              region: '%env(S3_REGION)%'
               version: 'latest'
               use_path_style_endpoint: true

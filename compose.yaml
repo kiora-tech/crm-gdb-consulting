@@ -25,7 +25,7 @@ services:
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/postgresql:/var/lib/postgresql/data
 
   migrations:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.15.0
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.15.1
     networks:
       - crm-gdb-dev_default
     command: sh -c "php bin/console doctrine:migrations:migrate --no-interaction"
@@ -41,7 +41,7 @@ services:
       restart_policy:
         condition: none
   php:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.15.0
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.15.1
     networks:
       - crm-gdb-dev_default
     depends_on:
@@ -51,8 +51,11 @@ services:
       - DATABASE_URL=${DATABASE_URL:-postgresql://symfony:symfony@database:5432/symfony_docker?serverVersion=16&charset=utf8}
       - MAILER_DSN=${MAILER_DSN:-smtp://mailer:1025}
       - SYMFONY_TRUSTED_PROXIES=${SYMFONY_TRUSTED_PROXIES:-127.0.0.1}
-      - MINIO_KEY=${MINIO_KEY:-minio}
-      - MINIO_SECRET=${MINIO_SECRET:-minio123}
+      - S3_ENDPOINT=${S3_ENDPOINT:-http://minio:9000}
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY:-minio}
+      - S3_SECRET_KEY=${S3_SECRET_KEY:-minio123}
+      - S3_BUCKET=${S3_BUCKET:-gdbcrmdocuments}
+      - S3_REGION=${S3_REGION:-us-east-1}
     volumes:
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/uploads:/var/www/website/public/uploads
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/import:/var/www/website/var/import
@@ -66,31 +69,8 @@ services:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-  minio:
-    image: minio/minio
-    environment:
-      - MINIO_ROOT_USER=${MINIO_KEY:-minio}
-      - MINIO_ROOT_PASSWORD=${MINIO_SECRET:-minio123}
-    deploy:
-      replicas: 1
-      placement:
-        constraints:
-          - node.hostname == raspberrypi5peo16
-    volumes:
-      - /srv/swarm-data/${ENV:-prod}/crm-gdb/minio:/data
-    command: server /data --console-address ":9001"
-    ports:
-      - "${MINIO_CONSOLE_PORT:-9001}:9001"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
-      interval: 30s
-      timeout: 20s
-      retries: 3
-    restart: unless-stopped
-    networks:
-      - crm-gdb-dev_default
   nginx:
-    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.15.0
+    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.15.1
     networks:
       - crm-gdb-dev_default
     depends_on:
@@ -108,7 +88,7 @@ services:
         delay: 5s
         max_attempts: 3
   supervisor:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.15.0-supervisor
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.15.1-supervisor
     networks:
       - crm-gdb-dev_default
     volumes:
