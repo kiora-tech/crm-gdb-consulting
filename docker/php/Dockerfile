@@ -34,16 +34,11 @@ FROM build AS prod
 COPY . /var/www/website
 
 COPY ./docker/php/conf.d/prod-php.ini /usr/local/etc/php/conf.d/prod-php.ini
-COPY ./docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 RUN /usr/local/bin/composer install --no-dev --optimize-autoloader
 
 RUN chown -R www-data:www-data /var/www/website/var \
     && chmod -R 775 /var/www/website/var
-
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["php-fpm"]
 
 #supervisor version
 FROM prod AS supervisor
@@ -52,5 +47,4 @@ RUN apt-get update && apt-get install -y supervisor
 
 COPY ./docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
