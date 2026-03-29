@@ -15,6 +15,7 @@ class ReferenceResource
     ) {
     }
 
+    /** @return list<TextContent> */
     #[McpResource(
         uri: 'crm://reference/energy-providers',
         name: 'energy-providers',
@@ -33,6 +34,7 @@ class ReferenceResource
         return [new TextContent(text: json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))];
     }
 
+    /** @return list<TextContent> */
     #[McpResource(
         uri: 'crm://reference/fta',
         name: 'fta-list',
@@ -52,6 +54,7 @@ class ReferenceResource
         return [new TextContent(text: json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))];
     }
 
+    /** @return list<TextContent> */
     #[McpResource(
         uri: 'crm://reference/enums',
         name: 'reference-enums',

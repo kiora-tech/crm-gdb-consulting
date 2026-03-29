@@ -38,6 +38,7 @@ class CustomerResource
         return [new TextContent(text: json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))];
     }
 
+    /** @return list<TextContent> */
     #[McpResourceTemplate(
         uriTemplate: 'crm://customers/{customerId}',
         name: 'customer-detail',
@@ -60,6 +61,7 @@ class CustomerResource
         return [new TextContent(text: json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))];
     }
 
+    /** @return list<TextContent> */
     #[McpResourceTemplate(
         uriTemplate: 'crm://customers/{customerId}/energies',
         name: 'customer-energies',
@@ -98,6 +100,7 @@ class CustomerResource
         return [new TextContent(text: json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))];
     }
 
+    /** @return list<TextContent> */
     #[McpResourceTemplate(
         uriTemplate: 'crm://customers/{customerId}/contacts',
         name: 'customer-contacts',
@@ -124,6 +127,7 @@ class CustomerResource
         return [new TextContent(text: json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))];
     }
 
+    /** @return list<TextContent> */
     #[McpResourceTemplate(
         uriTemplate: 'crm://customers/{customerId}/comments',
         name: 'customer-comments',
@@ -150,6 +154,7 @@ class CustomerResource
         return [new TextContent(text: json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))];
     }
 
+    /** @return list<TextContent> */
     #[McpResourceTemplate(
         uriTemplate: 'crm://customers/{customerId}/documents',
         name: 'customer-documents',
@@ -175,6 +180,7 @@ class CustomerResource
         return [new TextContent(text: json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))];
     }
 
+    /** @return array<string, mixed> */
     private function serializeCustomerSummary(Customer $customer): array
     {
         return [
@@ -192,6 +198,7 @@ class CustomerResource
         ];
     }
 
+    /** @return array<string, mixed> */
     private function serializeCustomerDetail(Customer $customer): array
     {
         $isAdmin = $this->security->isGranted('ROLE_ADMIN');
