@@ -1,6 +1,13 @@
 mcp:
-    app: 'crm-gdb-consulting'
+    app: 'CRM GDB Consulting'
     version: '1.0.0'
+    icons:
+        - src: 'https://crm.gdb-consulting.fr/assets/NiceAdmin/img/favicon-wNAWkIc.png'
+          mime_type: 'image/png'
+          sizes: ['32x32']
+        - src: 'https://crm.gdb-consulting.fr/assets/NiceAdmin/img/logo-lcP4lLW.png'
+          mime_type: 'image/png'
+          sizes: ['any']
     pagination_limit: 50
     instructions: |
         CRM de courtage en énergie pour GDB Consulting.
