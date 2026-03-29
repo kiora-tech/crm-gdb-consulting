@@ -12,6 +12,7 @@ use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Mcp\Capability\Attribute\McpTool;
 use Mcp\Schema\Content\TextContent;
+use Mcp\Schema\Result\CallToolResult;
 use Symfony\Bundle\SecurityBundle\Security;
 
 class SearchTool
@@ -34,7 +35,7 @@ class SearchTool
      * @param string|null $contractEndAfter  Contrats expirant après (YYYY-MM-DD)
      * @param int         $limit            Nombre max de résultats (max 50)
      *
-     * @return list<TextContent>
+     * @return CallToolResult
      */
     #[McpTool(name: 'search_customers', description: 'Rechercher des clients dans le CRM par nom, statut, fournisseur d\'energie ou date de fin de contrat.')]
     public function searchCustomers(
@@ -45,7 +46,7 @@ class SearchTool
         ?string $contractEndBefore = null,
         ?string $contractEndAfter = null,
         int $limit = 20,
-    ): array {
+    ): CallToolResult {
         $search = new CustomerSearchData();
         $search->name = $name;
         $search->contactName = $contactName;
@@ -83,10 +84,10 @@ class SearchTool
             'commercial' => $c->getUser() ? $c->getUser()->getFirstName() . ' ' . $c->getUser()->getLastName() : 'Non assigné',
         ], $results);
 
-        return [new TextContent(text: json_encode([
+        return CallToolResult::success([new TextContent(text: json_encode([
             'total' => count($data),
             'clients' => $data,
-        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))];
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))]);
     }
 
     /**
@@ -96,10 +97,10 @@ class SearchTool
      * @param string $toDate   Date de fin (YYYY-MM-DD)
      * @param int    $limit    Nombre max de résultats (max 50)
      *
-     * @return list<TextContent>
+     * @return CallToolResult
      */
     #[McpTool(name: 'search_expiring_contracts', description: 'Trouver les contrats energie qui expirent dans une periode donnee. Utile pour preparer les renouvellements.')]
-    public function searchExpiringContracts(string $fromDate, string $toDate, int $limit = 30): array
+    public function searchExpiringContracts(string $fromDate, string $toDate, int $limit = 30): CallToolResult
     {
         $limit = min($limit, 50);
         $isAdmin = $this->security->isGranted('ROLE_ADMIN');
@@ -133,20 +134,20 @@ class SearchTool
             'consommation_totale' => $energy->getTotalConsumption(),
         ], $results);
 
-        return [new TextContent(text: json_encode([
+        return CallToolResult::success([new TextContent(text: json_encode([
             'periode' => ['du' => $fromDate, 'au' => $toDate],
             'total' => count($data),
             'contrats' => $data,
-        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))];
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))]);
     }
 
     /**
      * Obtenir un résumé du pipeline commercial.
      *
-     * @return list<TextContent>
+     * @return CallToolResult
      */
     #[McpTool(name: 'pipeline_summary', description: 'Resume du pipeline commercial : nombre de clients par statut et contrats expirant bientot.')]
-    public function pipelineSummary(): array
+    public function pipelineSummary(): CallToolResult
     {
         $isAdmin = $this->security->isGranted('ROLE_ADMIN');
         $user = $this->security->getUser();
@@ -194,6 +195,6 @@ class SearchTool
             'contrats_expirant_3_mois' => (int) $expiringCount,
         ];
 
-        return [new TextContent(text: json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))];
+        return CallToolResult::success([new TextContent(text: json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))]);
     }
 }
