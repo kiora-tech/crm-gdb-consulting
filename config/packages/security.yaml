@@ -25,7 +25,7 @@ security:
         api:
             pattern: ^/_mcp
             stateless: true
-            jwt: ~
+            oauth2: true
         main:
             entry_point: form_login
             form_login:
@@ -58,6 +58,9 @@ security:
          - { path: ^/health, roles: PUBLIC_ACCESS }
          - { path: ^/login, roles: PUBLIC_ACCESS }
          - { path: ^/api/login, roles: PUBLIC_ACCESS }
+         - { path: ^/.well-known, roles: PUBLIC_ACCESS }
+         - { path: ^/token, roles: PUBLIC_ACCESS }
+         - { path: ^/oauth/register, roles: PUBLIC_ACCESS }
          - { path: ^/_mcp, roles: ROLE_USER }
          - { path: ^/, roles: ROLE_USER }
 

@@ -22,6 +22,7 @@
         "league/flysystem-aws-s3-v3": "^3.29",
         "league/flysystem-bundle": "^3.4",
         "league/oauth2-client": "^2.8",
+        "league/oauth2-server-bundle": "^1.1",
         "lexik/jwt-authentication-bundle": "^3.2",
         "microsoft/microsoft-graph": "^2.48",
         "phpdocumentor/reflection-docblock": "^5.6",
