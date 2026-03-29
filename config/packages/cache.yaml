@@ -20,3 +20,7 @@ framework:
                 adapter: cache.adapter.redis
                 provider: 'redis://redis:6379'
                 default_lifetime: 300  # 5 minutes par défaut
+            cache.mcp.sessions:
+                adapter: cache.adapter.redis
+                provider: 'redis://redis:6379'
+                default_lifetime: 7200  # 2 heures
