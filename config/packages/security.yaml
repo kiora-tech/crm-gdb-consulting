@@ -25,7 +25,9 @@ security:
         api:
             pattern: ^/_mcp
             stateless: true
+            entry_point: jwt
             oauth2: true
+            jwt: ~
         main:
             entry_point: form_login
             form_login:
