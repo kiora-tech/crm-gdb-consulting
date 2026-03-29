@@ -1,6 +1,6 @@
 services:
   php:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.17.0
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.18.0
     networks:
       - crm-gdb-dev_default
     environment:
@@ -27,7 +27,7 @@ services:
         delay: 5s
         max_attempts: 3
   nginx:
-    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.17.0
+    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.18.0
     networks:
       - crm-gdb-dev_default
     depends_on:
@@ -45,7 +45,7 @@ services:
         delay: 5s
         max_attempts: 3
   supervisor:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.17.0-supervisor
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.18.0-supervisor
     networks:
       - crm-gdb-dev_default
     volumes:
