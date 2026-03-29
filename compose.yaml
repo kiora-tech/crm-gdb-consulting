@@ -1,6 +1,6 @@
 services:
   migrations:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.18.6
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.18.7
     networks:
       - crm-gdb-dev_default
     command: sh -c "php bin/console doctrine:migrations:migrate --no-interaction"
@@ -14,7 +14,7 @@ services:
       restart_policy:
         condition: none
   php:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.18.6
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.18.7
     networks:
       - crm-gdb-dev_default
     environment:
@@ -45,7 +45,7 @@ services:
         delay: 5s
         max_attempts: 3
   nginx:
-    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.18.6
+    image: registry.kiora.tech/kiora/crm-gdb_nginx:0.18.7
     networks:
       - crm-gdb-dev_default
     depends_on:
@@ -63,7 +63,7 @@ services:
         delay: 5s
         max_attempts: 3
   supervisor:
-    image: registry.kiora.tech/kiora/crm-gdb_php:0.18.6-supervisor
+    image: registry.kiora.tech/kiora/crm-gdb_php:0.18.7-supervisor
     networks:
       - crm-gdb-dev_default
     volumes:
