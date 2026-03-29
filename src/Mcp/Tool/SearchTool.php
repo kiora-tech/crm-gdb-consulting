@@ -33,11 +33,12 @@ class SearchTool
      * @param string|null $energyProviderName Nom du fournisseur d'énergie
      * @param string|null $contractEndBefore Contrats expirant avant (YYYY-MM-DD)
      * @param string|null $contractEndAfter  Contrats expirant après (YYYY-MM-DD)
+     * @param string      $sort             Tri: newest (plus recents), oldest, name (alphabetique)
      * @param int         $limit            Nombre max de résultats (max 50)
      *
      * @return CallToolResult
      */
-    #[McpTool(name: 'search_customers', description: 'Rechercher des clients dans le CRM par nom, statut, fournisseur d\'energie ou date de fin de contrat.')]
+    #[McpTool(name: 'search_customers', description: 'Rechercher des clients dans le CRM par nom, statut, fournisseur d\'energie ou date de fin de contrat. Supporte le tri par date d\'ajout (newest/oldest) ou par nom.')]
     public function searchCustomers(
         ?string $name = null,
         ?string $status = null,
@@ -45,6 +46,7 @@ class SearchTool
         ?string $energyProviderName = null,
         ?string $contractEndBefore = null,
         ?string $contractEndAfter = null,
+        string $sort = 'newest',
         int $limit = 20,
     ): CallToolResult {
         $search = new CustomerSearchData();
@@ -70,10 +72,18 @@ class SearchTool
 
         $limit = min($limit, 50);
 
+        // Récupérer plus de résultats pour trier côté PHP
         /** @var Customer[] $results */
         $results = $this->customerRepository->search($search)
             ->setMaxResults($limit)
             ->getResult();
+
+        // Appliquer le tri
+        usort($results, match ($sort) {
+            'oldest' => fn (Customer $a, Customer $b) => $a->getId() <=> $b->getId(),
+            'name' => fn (Customer $a, Customer $b) => ($a->getName() ?? '') <=> ($b->getName() ?? ''),
+            default => fn (Customer $a, Customer $b) => $b->getId() <=> $a->getId(), // newest
+        });
 
         $data = array_map(fn (Customer $c) => [
             'id' => $c->getId(),
