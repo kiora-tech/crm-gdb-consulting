@@ -46,7 +46,7 @@ class CustomerRepository extends ServiceEntityRepository
     /**
      * @return Query<int, Customer>
      */
-    public function search(CustomerSearchData $search): Query
+    public function search(CustomerSearchData $search, ?string $sort = null): Query
     {
         $query = $this->getQueryBuilder();
 
@@ -206,6 +206,15 @@ class CustomerRepository extends ServiceEntityRepository
                 ->getDQL();
             $query->andWhere($query->expr()->exists($providerSubQuery))
                 ->setParameter('energyProvider', $search->energyProvider);
+        }
+
+        if ($sort && !$query->getDQLPart('orderBy')) {
+            match ($sort) {
+                'newest' => $query->orderBy('c.id', 'DESC'),
+                'oldest' => $query->orderBy('c.id', 'ASC'),
+                'name' => $query->orderBy('c.name', 'ASC'),
+                default => null,
+            };
         }
 
         /** @var Query<int, Customer> $result */

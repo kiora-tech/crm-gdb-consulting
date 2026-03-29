@@ -72,18 +72,10 @@ class SearchTool
 
         $limit = min($limit, 50);
 
-        // Récupérer plus de résultats pour trier côté PHP
         /** @var Customer[] $results */
-        $results = $this->customerRepository->search($search)
+        $results = $this->customerRepository->search($search, $sort)
             ->setMaxResults($limit)
             ->getResult();
-
-        // Appliquer le tri
-        usort($results, match ($sort) {
-            'oldest' => fn (Customer $a, Customer $b) => $a->getId() <=> $b->getId(),
-            'name' => fn (Customer $a, Customer $b) => ($a->getName() ?? '') <=> ($b->getName() ?? ''),
-            default => fn (Customer $a, Customer $b) => $b->getId() <=> $a->getId(), // newest
-        });
 
         $data = array_map(fn (Customer $c) => [
             'id' => $c->getId(),
