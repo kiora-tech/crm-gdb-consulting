@@ -1,12 +1,12 @@
 league_oauth2_server:
     authorization_server:
-        private_key: '%env(resolve:JWT_SECRET_KEY)%'
+        private_key: '%kernel.project_dir%/config/jwt/private.pem'
         private_key_passphrase: '%env(JWT_PASSPHRASE)%'
         encryption_key: '%env(OAUTH_ENCRYPTION_KEY)%'
         enable_auth_code_grant: true
         enable_refresh_token_grant: true
     resource_server:
-        public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
+        public_key: '%kernel.project_dir%/config/jwt/public.pem'
     scopes:
         available: ['crm:read']
         default: ['crm:read']
