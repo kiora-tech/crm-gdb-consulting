@@ -1,0 +1,20 @@
+mcp:
+    app: 'crm-gdb-consulting'
+    version: '1.0.0'
+    pagination_limit: 50
+    instructions: |
+        CRM de courtage en énergie pour GDB Consulting.
+        Données disponibles : clients, contrats énergie, contacts, commentaires, documents, événements calendrier.
+        Les données sont filtrées par utilisateur (un commercial ne voit que ses clients).
+        Les codes PDL/PCE sont masqués par défaut pour des raisons réglementaires.
+        Les données personnelles des contacts (email, téléphone) sont masquées par défaut (RGPD).
+
+    client_transports:
+        stdio: true
+        http: true
+
+    http:
+        path: '/_mcp'
+
+    discovery:
+        scan_dirs: ['src/Mcp']

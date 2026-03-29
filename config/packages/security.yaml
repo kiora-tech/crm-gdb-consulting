@@ -13,6 +13,19 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        api_login:
+            pattern: ^/api/login
+            stateless: true
+            json_login:
+                check_path: /api/login
+                username_path: email
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        api:
+            pattern: ^/_mcp
+            stateless: true
+            jwt: ~
         main:
             entry_point: form_login
             form_login:
@@ -44,6 +57,8 @@ security:
     access_control:
          - { path: ^/health, roles: PUBLIC_ACCESS }
          - { path: ^/login, roles: PUBLIC_ACCESS }
+         - { path: ^/api/login, roles: PUBLIC_ACCESS }
+         - { path: ^/_mcp, roles: ROLE_USER }
          - { path: ^/, roles: ROLE_USER }
 
 when@test:
