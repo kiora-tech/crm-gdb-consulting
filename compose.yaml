@@ -27,6 +27,10 @@ services:
       - S3_SECRET_KEY=${S3_SECRET_KEY:-minio123}
       - S3_BUCKET=${S3_BUCKET:-gdbcrmdocuments}
       - S3_REGION=${S3_REGION:-us-east-1}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-%kernel.project_dir%/config/jwt/private.pem}
+      - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY:-%kernel.project_dir%/config/jwt/public.pem}
+      - JWT_PASSPHRASE=${JWT_PASSPHRASE:-}
+      - OAUTH_ENCRYPTION_KEY=${OAUTH_ENCRYPTION_KEY:-}
     volumes:
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/uploads:/var/www/website/public/uploads
       - /srv/swarm-data/${ENV:-prod}/crm-gdb/import:/var/www/website/var/import
@@ -76,6 +80,10 @@ services:
       - S3_SECRET_KEY=${S3_SECRET_KEY:-minio123}
       - S3_BUCKET=${S3_BUCKET:-gdbcrmdocuments}
       - S3_REGION=${S3_REGION:-us-east-1}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-%kernel.project_dir%/config/jwt/private.pem}
+      - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY:-%kernel.project_dir%/config/jwt/public.pem}
+      - JWT_PASSPHRASE=${JWT_PASSPHRASE:-}
+      - OAUTH_ENCRYPTION_KEY=${OAUTH_ENCRYPTION_KEY:-}
     deploy:
       placement:
         constraints:
