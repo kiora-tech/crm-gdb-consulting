@@ -8,40 +8,31 @@
     </div>
 
     <section class="section dashboard">
-        <div class="row">
+        {# Ligne 1 : 4 cartes statistiques sur toute la largeur #}
+        <div class="row mb-4">
+            {% include 'home/dashboard/_card_customers.html.twig' %}
+            {% include 'home/dashboard/_card_revenue.html.twig' %}
+            {% include 'home/dashboard/_card_contracts.html.twig' %}
+            {% include 'home/dashboard/_card_stats.html.twig' %}
+        </div>
 
-            <!-- Colonne gauche -->
+        {# Ligne 2 : Clients récents + Documents récents #}
+        <div class="row mb-4">
             <div class="col-lg-8">
-                <div class="row">
-                    {# Card Clients #}
-                    {% include 'home/dashboard/_card_customers.html.twig' %}
-
-                    {# Card Chiffre d'affaires #}
-                    {% include 'home/dashboard/_card_revenue.html.twig' %}
-
-                    {# Card Contrats à renouveler #}
-                    {% include 'home/dashboard/_card_contracts.html.twig' %}
-
-                    {# Clients récents #}
-                    {% include 'home/dashboard/_card_recent_clients.html.twig' %}
-
-                    {# Prochains événements #}
-                    {% include 'home/dashboard/_card_upcoming_events.html.twig' %}
-
-                    {# Contrats expirant bientôt - Déplacé ici #}
-                    {% include 'home/dashboard/_card_expiring_contracts.html.twig' %}
-                </div>
+                {% include 'home/dashboard/_card_recent_clients.html.twig' %}
             </div>
-
-            <!-- Colonne droite -->
             <div class="col-lg-4">
-                <div class="row">
-                    {# Carte des statistiques - Déplacée en haut #}
-                    {% include 'home/dashboard/_card_stats.html.twig' %}
+                {% include 'home/dashboard/_card_recent_documents.html.twig' %}
+            </div>
+        </div>
 
-                    {# Documents récents #}
-                    {% include 'home/dashboard/_card_recent_documents.html.twig' %}
-                </div>
+        {# Ligne 3 : Événements + Contrats expirants #}
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                {% include 'home/dashboard/_card_upcoming_events.html.twig' %}
+            </div>
+            <div class="col-lg-4">
+                {% include 'home/dashboard/_card_expiring_contracts.html.twig' %}
             </div>
         </div>
     </section>

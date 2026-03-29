@@ -1,6 +1,11 @@
 /*--------------------------------------------------------------
 # Dashboard
 --------------------------------------------------------------*/
+.dashboard .row > [class*="col-"] > .card.h-100,
+.dashboard .row > .card.h-100 {
+  margin-bottom: 0;
+}
+
 /* Filter dropdown */
 .dashboard {
 

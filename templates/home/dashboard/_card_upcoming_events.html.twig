@@ -1,7 +1,6 @@
 {# Prochains événements #}
-<div class="col-12">
-    <div class="card">
-        <div class="filter">
+<div class="card h-100">
+    <div class="filter">
             <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <li class="dropdown-header text-start">
@@ -10,9 +9,9 @@
             </ul>
         </div>
 
-        <div class="card-body">
-            <h5 class="card-title">
-                <i class="bi bi-calendar-event text-primary"></i> Prochains événements
+    <div class="card-body d-flex flex-column">
+        <h5 class="card-title">
+            <i class="bi bi-calendar-event text-primary"></i> Prochains événements
             </h5>
 
             {% if upcomingEvents|length > 0 %}
@@ -66,6 +65,5 @@
                     Aucun événement à venir
                 </div>
             {% endif %}
-        </div>
     </div>
 </div>
