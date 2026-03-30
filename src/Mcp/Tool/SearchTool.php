@@ -27,17 +27,15 @@ class SearchTool
     /**
      * Rechercher des clients dans le CRM par nom, SIRET, statut, ville, fournisseur d'énergie ou date de fin de contrat.
      *
-     * @param string|null $name             Nom du client (recherche partielle)
-     * @param string|null $siret            Numero SIRET (recherche partielle)
-     * @param string|null $status           Statut: in_progress, won, lost
-     * @param string|null $contactName      Nom du contact (recherche partielle)
+     * @param string|null $name               Nom du client (recherche partielle)
+     * @param string|null $siret              Numero SIRET (recherche partielle)
+     * @param string|null $status             Statut: in_progress, won, lost
+     * @param string|null $contactName        Nom du contact (recherche partielle)
      * @param string|null $energyProviderName Nom du fournisseur d'énergie
-     * @param string|null $contractEndBefore Contrats expirant avant (YYYY-MM-DD)
-     * @param string|null $contractEndAfter  Contrats expirant après (YYYY-MM-DD)
-     * @param string      $sort             Tri: newest (plus recents), oldest, name (alphabetique)
-     * @param int         $limit            Nombre max de résultats (max 50)
-     *
-     * @return CallToolResult
+     * @param string|null $contractEndBefore  Contrats expirant avant (YYYY-MM-DD)
+     * @param string|null $contractEndAfter   Contrats expirant après (YYYY-MM-DD)
+     * @param string      $sort               Tri: newest (plus recents), oldest, name (alphabetique)
+     * @param int         $limit              Nombre max de résultats (max 50)
      */
     #[McpTool(name: 'search_customers', description: 'Rechercher des clients dans le CRM par nom, SIRET, statut, fournisseur d\'energie ou date de fin de contrat. Supporte le tri par date d\'ajout (newest/oldest) ou par nom.')]
     public function searchCustomers(
@@ -86,7 +84,7 @@ class SearchTool
             'statut' => $c->getStatus()?->value,
             'ville' => $c->getAddressCity(),
             'nb_energies' => $c->getEnergies()->count(),
-            'commercial' => $c->getUser() ? $c->getUser()->getFirstName() . ' ' . $c->getUser()->getLastName() : 'Non assigné',
+            'commercial' => $c->getUser() ? $c->getUser()->getFirstName().' '.$c->getUser()->getLastName() : 'Non assigné',
         ], $results);
 
         return CallToolResult::success([new TextContent(text: json_encode([
@@ -101,8 +99,6 @@ class SearchTool
      * @param string $fromDate Date de début (YYYY-MM-DD)
      * @param string $toDate   Date de fin (YYYY-MM-DD)
      * @param int    $limit    Nombre max de résultats (max 50)
-     *
-     * @return CallToolResult
      */
     #[McpTool(name: 'search_expiring_contracts', description: 'Trouver les contrats energie qui expirent dans une periode donnee. Utile pour preparer les renouvellements.')]
     public function searchExpiringContracts(string $fromDate, string $toDate, int $limit = 30): CallToolResult
@@ -148,8 +144,6 @@ class SearchTool
 
     /**
      * Obtenir un résumé du pipeline commercial.
-     *
-     * @return CallToolResult
      */
     #[McpTool(name: 'pipeline_summary', description: 'Resume du pipeline commercial : nombre de clients par statut et contrats expirant bientot.')]
     public function pipelineSummary(): CallToolResult

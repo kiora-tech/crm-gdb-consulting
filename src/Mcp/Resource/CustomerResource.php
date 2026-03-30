@@ -80,7 +80,7 @@ class CustomerResource
         $data = [];
         foreach ($customer->getEnergies() as $energy) {
             $code = $energy->getCode();
-            $maskedCode = $code ? substr($code, 0, 4) . '**********' : null;
+            $maskedCode = $code ? substr($code, 0, 4).'**********' : null;
 
             $data[] = [
                 'id' => $energy->getId(),
@@ -118,7 +118,7 @@ class CustomerResource
         foreach ($customer->getContacts() as $contact) {
             $data[] = [
                 'id' => $contact->getId(),
-                'nom' => mb_substr($contact->getFirstName(), 0, 1) . '. ' . $contact->getLastName(),
+                'nom' => mb_substr($contact->getFirstName(), 0, 1).'. '.$contact->getLastName(),
                 'poste' => $contact->getPosition(),
                 'contact_principal' => $contact->isPrimary(),
             ];
@@ -194,7 +194,7 @@ class CustomerResource
             'forme_juridique' => $customer->getLegalForm(),
             'nb_energies' => $customer->getEnergies()->count(),
             'nb_contacts' => $customer->getContacts()->count(),
-            'commercial' => $customer->getUser() ? $customer->getUser()->getFirstName() . ' ' . $customer->getUser()->getLastName() : null,
+            'commercial' => $customer->getUser() ? $customer->getUser()->getFirstName().' '.$customer->getUser()->getLastName() : null,
         ];
     }
 
@@ -210,16 +210,16 @@ class CustomerResource
             'statut' => $customer->getStatus()?->value,
             'origine' => $customer->getOrigin()?->value,
             'origine_lead' => $customer->getLeadOrigin(),
-            'adresse' => trim(($customer->getAddressNumber() ?? '') . ' ' . ($customer->getAddressStreet() ?? '')),
+            'adresse' => trim(($customer->getAddressNumber() ?? '').' '.($customer->getAddressStreet() ?? '')),
             'code_postal' => $customer->getAddressPostalCode(),
             'ville' => $customer->getAddressCity(),
-            'siret' => $isAdmin ? $siret : ($siret ? substr($siret, 0, 9) . '*****' : null),
+            'siret' => $isAdmin ? $siret : ($siret ? substr($siret, 0, 9).'*****' : null),
             'forme_juridique' => $customer->getLegalForm(),
             'groupe' => $customer->getCompanyGroup(),
             'canal_signature' => $customer->getCanalSignature()?->value,
             'valeur' => $customer->getWorth(),
             'action' => $customer->getAction(),
-            'commercial' => $customer->getUser() ? $customer->getUser()->getFirstName() . ' ' . $customer->getUser()->getLastName() : null,
+            'commercial' => $customer->getUser() ? $customer->getUser()->getFirstName().' '.$customer->getUser()->getLastName() : null,
             'nb_energies' => $customer->getEnergies()->count(),
             'nb_contacts' => $customer->getContacts()->count(),
             'nb_documents' => $customer->getDocuments()->count(),

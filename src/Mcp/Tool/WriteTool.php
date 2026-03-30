@@ -26,19 +26,17 @@ class WriteTool
     /**
      * Creer un nouveau client dans le CRM.
      *
-     * @param string      $name         Nom du client (raison sociale)
-     * @param string      $origin       Origine: acquisition ou renouvellement
-     * @param string|null $status       Statut: in_progress, won, lost
-     * @param string|null $siret        Numero SIRET (14 chiffres)
-     * @param string|null $leadOrigin   Origine du lead (ex: Apporteur, Prospection)
-     * @param string|null $addressCity  Ville
+     * @param string      $name              Nom du client (raison sociale)
+     * @param string      $origin            Origine: acquisition ou renouvellement
+     * @param string|null $status            Statut: in_progress, won, lost
+     * @param string|null $siret             Numero SIRET (14 chiffres)
+     * @param string|null $leadOrigin        Origine du lead (ex: Apporteur, Prospection)
+     * @param string|null $addressCity       Ville
      * @param string|null $addressPostalCode Code postal
-     * @param string|null $addressStreet Rue
-     * @param string|null $legalForm    Forme juridique (SAS, SARL, etc.)
-     * @param string|null $companyGroup Groupe d'entreprises
-     * @param string|null $comment      Commentaire initial sur le client
-     *
-     * @return CallToolResult
+     * @param string|null $addressStreet     Rue
+     * @param string|null $legalForm         Forme juridique (SAS, SARL, etc.)
+     * @param string|null $companyGroup      Groupe d'entreprises
+     * @param string|null $comment           Commentaire initial sur le client
      */
     #[McpTool(name: 'create_customer', description: 'Creer un nouveau client dans le CRM. Necessite au minimum un nom et une origine (acquisition ou renouvellement).')]
     public function createCustomer(
@@ -62,7 +60,7 @@ class WriteTool
         // Vérifier le SIRET s'il est fourni
         if ($siret) {
             $siret = preg_replace('/\s/', '', $siret);
-            if (strlen($siret) !== 14 || !ctype_digit($siret)) {
+            if (14 !== strlen($siret) || !ctype_digit($siret)) {
                 return CallToolResult::error([new TextContent(text: "SIRET invalide: '$siret'. Doit contenir exactement 14 chiffres.")]);
             }
 
@@ -140,7 +138,7 @@ class WriteTool
                 'statut' => $customer->getStatus()?->value,
                 'siret' => $customer->getSiret(),
                 'ville' => $customer->getAddressCity(),
-                'commercial' => $user instanceof User ? $user->getFirstName() . ' ' . $user->getLastName() : null,
+                'commercial' => $user instanceof User ? $user->getFirstName().' '.$user->getLastName() : null,
             ],
         ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))]);
     }
@@ -150,8 +148,6 @@ class WriteTool
      *
      * @param int    $customerId ID du client
      * @param string $note       Contenu du commentaire
-     *
-     * @return CallToolResult
      */
     #[McpTool(name: 'add_comment', description: 'Ajouter un commentaire/note sur un client existant dans le CRM.')]
     public function addComment(int $customerId, string $note): CallToolResult
@@ -191,8 +187,6 @@ class WriteTool
      *
      * @param int    $customerId ID du client
      * @param string $status     Nouveau statut: in_progress, won, lost
-     *
-     * @return CallToolResult
      */
     #[McpTool(name: 'update_customer_status', description: 'Mettre a jour le statut d\'un client (in_progress, won, lost).')]
     public function updateCustomerStatus(int $customerId, string $status): CallToolResult
@@ -242,8 +236,6 @@ class WriteTool
      * @param string|null $phone      Numero de telephone
      * @param string|null $position   Poste/fonction du contact
      * @param bool        $isPrimary  Contact principal (defaut: false)
-     *
-     * @return CallToolResult
      */
     #[McpTool(name: 'create_contact', description: 'Creer un contact pour un client existant dans le CRM.')]
     public function createContact(
@@ -310,17 +302,15 @@ class WriteTool
     /**
      * Mettre a jour les informations d'un client.
      *
-     * @param int         $customerId       ID du client
-     * @param string|null $name             Nom du client (raison sociale)
-     * @param string|null $addressCity      Ville
+     * @param int         $customerId        ID du client
+     * @param string|null $name              Nom du client (raison sociale)
+     * @param string|null $addressCity       Ville
      * @param string|null $addressPostalCode Code postal
-     * @param string|null $addressStreet    Rue
-     * @param string|null $legalForm        Forme juridique (SAS, SARL, etc.)
-     * @param string|null $companyGroup     Groupe d'entreprises
-     * @param string|null $leadOrigin       Origine du lead
-     * @param string|null $worth            Valeur estimee du client
-     *
-     * @return CallToolResult
+     * @param string|null $addressStreet     Rue
+     * @param string|null $legalForm         Forme juridique (SAS, SARL, etc.)
+     * @param string|null $companyGroup      Groupe d'entreprises
+     * @param string|null $leadOrigin        Origine du lead
+     * @param string|null $worth             Valeur estimee du client
      */
     #[McpTool(name: 'update_customer', description: 'Mettre a jour les informations d\'un client existant (nom, adresse, forme juridique, groupe, origine du lead, valeur).')]
     public function updateCustomer(
