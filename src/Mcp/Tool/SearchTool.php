@@ -54,7 +54,7 @@ class SearchTool
         $search = new CustomerSearchData();
         $search->name = $name;
         $search->contactName = $contactName;
-        $search->siret = $siret; // @phpstan-ignore property.notFound
+        $search->siret = $siret;
 
         if ($contractEndBefore) {
             $search->contractEndBefore = new \DateTime($contractEndBefore);
