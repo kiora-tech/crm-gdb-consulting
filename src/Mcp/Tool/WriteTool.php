@@ -3,6 +3,7 @@
 namespace App\Mcp\Tool;
 
 use App\Entity\Comment;
+use App\Entity\Contact;
 use App\Entity\Customer;
 use App\Entity\ProspectOrigin;
 use App\Entity\ProspectStatus;
@@ -18,6 +19,7 @@ class WriteTool
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly Security $security,
+        private readonly AuditLogger $auditLogger,
     ) {
     }
 
@@ -121,6 +123,13 @@ class WriteTool
 
         $this->entityManager->flush();
 
+        $this->auditLogger->log(
+            'create_customer',
+            $user instanceof User ? $user->getEmail() : null,
+            $customer->getId(),
+            $customer->getName(),
+        );
+
         return CallToolResult::success([new TextContent(text: json_encode([
             'success' => true,
             'message' => "Client '$name' cree avec succes",
@@ -162,6 +171,14 @@ class WriteTool
         $this->entityManager->persist($comment);
         $this->entityManager->flush();
 
+        $user = $this->security->getUser();
+        $this->auditLogger->log(
+            'add_comment',
+            $user instanceof User ? $user->getEmail() : null,
+            $customerId,
+            $customer->getName(),
+        );
+
         return CallToolResult::success([new TextContent(text: json_encode([
             'success' => true,
             'message' => "Commentaire ajoute sur le client '{$customer->getName()}'",
@@ -198,12 +215,188 @@ class WriteTool
         $customer->setStatus($newStatus);
         $this->entityManager->flush();
 
+        $user = $this->security->getUser();
+        $this->auditLogger->log(
+            'update_customer_status',
+            $user instanceof User ? $user->getEmail() : null,
+            $customerId,
+            $customer->getName(),
+        );
+
         return CallToolResult::success([new TextContent(text: json_encode([
             'success' => true,
             'message' => "Statut du client '{$customer->getName()}' mis a jour: $oldStatus → $status",
             'client_id' => $customerId,
             'ancien_statut' => $oldStatus,
             'nouveau_statut' => $status,
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))]);
+    }
+
+    /**
+     * Creer un contact pour un client existant.
+     *
+     * @param int         $customerId ID du client
+     * @param string      $firstName  Prenom du contact
+     * @param string      $lastName   Nom du contact
+     * @param string|null $email      Adresse email
+     * @param string|null $phone      Numero de telephone
+     * @param string|null $position   Poste/fonction du contact
+     * @param bool        $isPrimary  Contact principal (defaut: false)
+     *
+     * @return CallToolResult
+     */
+    #[McpTool(name: 'create_contact', description: 'Creer un contact pour un client existant dans le CRM.')]
+    public function createContact(
+        int $customerId,
+        string $firstName,
+        string $lastName,
+        ?string $email = null,
+        ?string $phone = null,
+        ?string $position = null,
+        bool $isPrimary = false,
+    ): CallToolResult {
+        $customer = $this->entityManager->getRepository(Customer::class)->find($customerId);
+        if (!$customer) {
+            return CallToolResult::error([new TextContent(text: "Client ID $customerId non trouve")]);
+        }
+
+        if (!$this->canAccess($customer)) {
+            return CallToolResult::error([new TextContent(text: 'Acces refuse')]);
+        }
+
+        $contact = new Contact();
+        $contact->setCustomer($customer);
+        $contact->setFirstName($firstName);
+        $contact->setLastName($lastName);
+
+        if ($email) {
+            $contact->setEmail($email);
+        }
+        if ($phone) {
+            $contact->setPhone($phone);
+        }
+        if ($position) {
+            $contact->setPosition($position);
+        }
+        $contact->setIsPrimary($isPrimary);
+
+        $this->entityManager->persist($contact);
+        $this->entityManager->flush();
+
+        $user = $this->security->getUser();
+        $this->auditLogger->log(
+            'create_contact',
+            $user instanceof User ? $user->getEmail() : null,
+            $customerId,
+            $customer->getName(),
+        );
+
+        return CallToolResult::success([new TextContent(text: json_encode([
+            'success' => true,
+            'message' => "Contact '$firstName $lastName' cree pour le client '{$customer->getName()}'",
+            'contact' => [
+                'id' => $contact->getId(),
+                'prenom' => $contact->getFirstName(),
+                'nom' => $contact->getLastName(),
+                'email' => $contact->getEmail(),
+                'telephone' => $contact->getPhone(),
+                'poste' => $contact->getPosition(),
+                'principal' => $contact->isPrimary(),
+            ],
+            'client_id' => $customerId,
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))]);
+    }
+
+    /**
+     * Mettre a jour les informations d'un client.
+     *
+     * @param int         $customerId       ID du client
+     * @param string|null $name             Nom du client (raison sociale)
+     * @param string|null $addressCity      Ville
+     * @param string|null $addressPostalCode Code postal
+     * @param string|null $addressStreet    Rue
+     * @param string|null $legalForm        Forme juridique (SAS, SARL, etc.)
+     * @param string|null $companyGroup     Groupe d'entreprises
+     * @param string|null $leadOrigin       Origine du lead
+     * @param string|null $worth            Valeur estimee du client
+     *
+     * @return CallToolResult
+     */
+    #[McpTool(name: 'update_customer', description: 'Mettre a jour les informations d\'un client existant (nom, adresse, forme juridique, groupe, origine du lead, valeur).')]
+    public function updateCustomer(
+        int $customerId,
+        ?string $name = null,
+        ?string $addressCity = null,
+        ?string $addressPostalCode = null,
+        ?string $addressStreet = null,
+        ?string $legalForm = null,
+        ?string $companyGroup = null,
+        ?string $leadOrigin = null,
+        ?string $worth = null,
+    ): CallToolResult {
+        $customer = $this->entityManager->getRepository(Customer::class)->find($customerId);
+        if (!$customer) {
+            return CallToolResult::error([new TextContent(text: "Client ID $customerId non trouve")]);
+        }
+
+        if (!$this->canAccess($customer)) {
+            return CallToolResult::error([new TextContent(text: 'Acces refuse')]);
+        }
+
+        $updated = [];
+
+        if (null !== $name) {
+            $customer->setName($name);
+            $updated[] = 'nom';
+        }
+        if (null !== $addressCity) {
+            $customer->setAddressCity($addressCity);
+            $updated[] = 'ville';
+        }
+        if (null !== $addressPostalCode) {
+            $customer->setAddressPostalCode($addressPostalCode);
+            $updated[] = 'code_postal';
+        }
+        if (null !== $addressStreet) {
+            $customer->setAddressStreet($addressStreet);
+            $updated[] = 'rue';
+        }
+        if (null !== $legalForm) {
+            $customer->setLegalForm($legalForm);
+            $updated[] = 'forme_juridique';
+        }
+        if (null !== $companyGroup) {
+            $customer->setCompanyGroup($companyGroup);
+            $updated[] = 'groupe';
+        }
+        if (null !== $leadOrigin) {
+            $customer->setLeadOrigin($leadOrigin);
+            $updated[] = 'origine_lead';
+        }
+        if (null !== $worth) {
+            $customer->setWorth($worth);
+            $updated[] = 'valeur';
+        }
+
+        if (empty($updated)) {
+            return CallToolResult::error([new TextContent(text: 'Aucun champ a mettre a jour. Fournissez au moins un parametre.')]);
+        }
+
+        $this->entityManager->flush();
+
+        $user = $this->security->getUser();
+        $this->auditLogger->log(
+            'update_customer',
+            $user instanceof User ? $user->getEmail() : null,
+            $customerId,
+            $customer->getName(),
+        );
+
+        return CallToolResult::success([new TextContent(text: json_encode([
+            'success' => true,
+            'message' => "Client '{$customer->getName()}' mis a jour",
+            'champs_modifies' => $updated,
+            'client_id' => $customerId,
         ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))]);
     }
 

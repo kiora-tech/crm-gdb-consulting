@@ -25,9 +25,10 @@ class SearchTool
     }
 
     /**
-     * Rechercher des clients dans le CRM par nom, statut, ville, fournisseur d'énergie ou date de fin de contrat.
+     * Rechercher des clients dans le CRM par nom, SIRET, statut, ville, fournisseur d'énergie ou date de fin de contrat.
      *
      * @param string|null $name             Nom du client (recherche partielle)
+     * @param string|null $siret            Numero SIRET (recherche partielle)
      * @param string|null $status           Statut: in_progress, won, lost
      * @param string|null $contactName      Nom du contact (recherche partielle)
      * @param string|null $energyProviderName Nom du fournisseur d'énergie
@@ -38,9 +39,10 @@ class SearchTool
      *
      * @return CallToolResult
      */
-    #[McpTool(name: 'search_customers', description: 'Rechercher des clients dans le CRM par nom, statut, fournisseur d\'energie ou date de fin de contrat. Supporte le tri par date d\'ajout (newest/oldest) ou par nom.')]
+    #[McpTool(name: 'search_customers', description: 'Rechercher des clients dans le CRM par nom, SIRET, statut, fournisseur d\'energie ou date de fin de contrat. Supporte le tri par date d\'ajout (newest/oldest) ou par nom.')]
     public function searchCustomers(
         ?string $name = null,
+        ?string $siret = null,
         ?string $status = null,
         ?string $contactName = null,
         ?string $energyProviderName = null,
@@ -52,6 +54,7 @@ class SearchTool
         $search = new CustomerSearchData();
         $search->name = $name;
         $search->contactName = $contactName;
+        $search->siret = $siret; // @phpstan-ignore property.notFound
 
         if ($contractEndBefore) {
             $search->contractEndBefore = new \DateTime($contractEndBefore);
