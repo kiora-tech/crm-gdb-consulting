@@ -39,6 +39,9 @@ class CustomerSearchData
     public ?int $energyProviderId = null;
 
     #[Groups(['search'])]
+    public ?string $siret = '';
+
+    #[Groups(['search'])]
     public ?string $code = '';
 
     #[Groups(['search'])]

@@ -21,9 +21,9 @@ class OAuthController extends AbstractController
 
         return new JsonResponse([
             'issuer' => $baseUrl,
-            'authorization_endpoint' => $baseUrl . '/authorize',
-            'token_endpoint' => $baseUrl . '/token',
-            'registration_endpoint' => $baseUrl . '/oauth/register',
+            'authorization_endpoint' => $baseUrl.'/authorize',
+            'token_endpoint' => $baseUrl.'/token',
+            'registration_endpoint' => $baseUrl.'/oauth/register',
             'response_types_supported' => ['code'],
             'grant_types_supported' => ['authorization_code', 'refresh_token'],
             'code_challenge_methods_supported' => ['S256'],

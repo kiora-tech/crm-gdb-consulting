@@ -27,7 +27,7 @@ class OAuthRegistrationController extends AbstractController
             return new JsonResponse(['error' => 'invalid_request'], Response::HTTP_BAD_REQUEST);
         }
 
-        $clientName = $data['client_name'] ?? 'mcp-client-' . bin2hex(random_bytes(8));
+        $clientName = $data['client_name'] ?? 'mcp-client-'.bin2hex(random_bytes(8));
         $redirectUris = $data['redirect_uris'] ?? [];
 
         if (empty($redirectUris)) {
